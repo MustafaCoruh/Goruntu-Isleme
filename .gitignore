@@ -1,0 +1,50 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment and local configuration
+.env
+.env.*
+!.env.example
+
+# Build and packaging artifacts
+build/
+dist/
+*.egg-info/
+
+# Model files and ML artifacts
+models/
+checkpoints/
+weights/
+artifacts/
+*.pt
+*.pth
+*.onnx
+*.h5
+*.pkl
+*.joblib
+
+# Temporary outputs and generated data
+outputs/
+output/
+tmp/
+temp/
+.cache/
+*.log
+
+# OS and editor files
+.DS_Store
+.idea/
+.vscode/
