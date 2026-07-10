@@ -126,3 +126,28 @@ def test_load_camera_config_reports_invalid_json(tmp_path: Path) -> None:
 
     with pytest.raises(CameraConfigError, match="Invalid JSON"):
         load_camera_config(str(config_path))
+
+
+def test_save_camera_config_validates_and_writes_json(tmp_path: Path) -> None:
+    from app.calibration.service import save_camera_config
+
+    config_path = tmp_path / "saved" / "camera.json"
+    saved = save_camera_config(
+        str(config_path),
+        {
+            "utym_id": "UTYM-001",
+            "camera_id": "CAM-001",
+            "resolution": {"width": 640, "height": 480},
+            "tables": [
+                {
+                    "table_id": "T-001",
+                    "name": "Masa 1",
+                    "capacity": 4,
+                    "polygon": [[1, 2], [3, 4], [5, 6]],
+                }
+            ],
+        },
+    )
+
+    assert saved.resolution.width == 640
+    assert json.loads(config_path.read_text(encoding="utf-8"))["tables"][0]["name"] == "Masa 1"

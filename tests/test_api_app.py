@@ -176,3 +176,35 @@ def test_debug_state_can_be_disabled_for_operation_mode(monkeypatch) -> None:
         get_debug_state()
 
     assert error.value.status_code == 404
+
+
+def test_calibration_config_route_is_registered() -> None:
+    route_paths = set(app.openapi()["paths"])
+
+    assert "/calibration/config" in route_paths
+
+
+def test_save_calibration_config_writes_validated_json(tmp_path, monkeypatch) -> None:
+    from app.api.routes_tables import save_calibration_config
+
+    config_path = tmp_path / "camera-config.json"
+    monkeypatch.setenv("FTMC_CALIBRATION_CONFIG_PATH", str(config_path))
+
+    response = save_calibration_config(
+        {
+            "utym_id": "UTYM-001",
+            "camera_id": "CAM-001",
+            "resolution": {"width": 640, "height": 480},
+            "tables": [
+                {
+                    "table_id": "T-001",
+                    "name": "Masa 1",
+                    "capacity": 4,
+                    "polygon": [[1, 2], [3, 4], [5, 6]],
+                }
+            ],
+        }
+    )
+
+    assert response["path"] == str(config_path)
+    assert config_path.exists()
