@@ -182,6 +182,7 @@ def test_calibration_config_route_is_registered() -> None:
     route_paths = set(app.openapi()["paths"])
 
     assert "/calibration/config" in route_paths
+    assert "/calibration/save" in route_paths
 
 
 def test_save_calibration_config_writes_validated_json(tmp_path, monkeypatch) -> None:
@@ -208,3 +209,66 @@ def test_save_calibration_config_writes_validated_json(tmp_path, monkeypatch) ->
 
     assert response["path"] == str(config_path)
     assert config_path.exists()
+
+
+def test_save_calibration_tables_config_writes_under_configs(tmp_path, monkeypatch) -> None:
+    from app.api.routes_tables import save_calibration_tables_config
+
+    config_dir = tmp_path / "configs"
+    monkeypatch.setenv("FTMC_CALIBRATION_CONFIG_DIR", str(config_dir))
+
+    response = save_calibration_tables_config(
+        {
+            "utym_id": "UTYM-001",
+            "camera_id": "CAM-001",
+            "resolution": {"width": 1920, "height": 1080},
+            "tables": [
+                {
+                    "table_id": "T-001",
+                    "name": "Masa 1",
+                    "capacity": 4,
+                    "polygon": [[100, 200], [300, 200], [320, 420]],
+                }
+            ],
+        }
+    )
+
+    config_path = config_dir / "UTYM-001-CAM-001.json"
+    assert response["path"] == str(config_path)
+    assert config_path.exists()
+    assert response["config"]["tables"][0]["table_id"] == "T-001"
+
+
+def test_save_calibration_tables_config_rejects_duplicate_table_ids(tmp_path, monkeypatch) -> None:
+    import pytest
+    from fastapi import HTTPException
+
+    from app.api.routes_tables import save_calibration_tables_config
+
+    monkeypatch.setenv("FTMC_CALIBRATION_CONFIG_DIR", str(tmp_path / "configs"))
+
+    with pytest.raises(HTTPException) as error:
+        save_calibration_tables_config(
+            {
+                "utym_id": "UTYM-001",
+                "camera_id": "CAM-001",
+                "resolution": {"width": 1920, "height": 1080},
+                "tables": [
+                    {
+                        "table_id": "T-001",
+                        "name": "Masa 1",
+                        "capacity": 4,
+                        "polygon": [[100, 200], [300, 200], [320, 420]],
+                    },
+                    {
+                        "table_id": "T-001",
+                        "name": "Masa 2",
+                        "capacity": 2,
+                        "polygon": [[10, 20], [30, 20], [30, 40]],
+                    },
+                ],
+            }
+        )
+
+    assert error.value.status_code == 422
+    assert "unique" in error.value.detail
