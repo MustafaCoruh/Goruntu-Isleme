@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FTMC Debug Görselleştirme</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="dashboard debug-dashboard">
+      <header class="dashboard__header">
+        <div>
+          <p class="eyebrow">Debug ekranı</p>
+          <h1>Kamera / Masa Overlay</h1>
+          <p class="debug-help">Operasyon modunda bu ekran <code>FTMC_DEBUG_UI_ENABLED=false</code> ile kapatılabilir.</p>
+        </div>
+        <button id="debug-refresh-button" type="button">Şimdi Yenile</button>
+      </header>
+
+      <section id="debug-status" class="status-message" role="status">Debug verisi yükleniyor...</section>
+
+      <section class="debug-stage" aria-label="İşlenmiş kamera frame'i">
+        <img id="debug-frame" alt="Kamera görüntüsü ve debug overlay" />
+        <svg id="debug-overlay" aria-hidden="true"></svg>
+      </section>
+
+      <section class="debug-legend" aria-label="Renk açıklaması">
+        <span><i class="legend-box legend-box--occupied"></i>Dolu masa</span>
+        <span><i class="legend-box legend-box--empty"></i>Boş masa</span>
+        <span><i class="legend-box legend-box--uncertain"></i>Belirsiz masa</span>
+        <span><i class="legend-box legend-box--person"></i>İnsan bounding box</span>
+      </section>
+    </main>
+
+    <script src="debug.js" defer></script>
+  </body>
+</html>

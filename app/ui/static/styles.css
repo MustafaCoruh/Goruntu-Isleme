@@ -129,3 +129,58 @@ button:hover {
 .table-card dd {
   margin: 0;
 }
+
+.debug-help {
+  color: #5d6b85;
+  margin: 12px 0 0;
+}
+
+.debug-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #111827;
+  box-shadow: 0 12px 32px rgb(23 32 51 / 14%);
+}
+
+.debug-stage img,
+.debug-stage svg {
+  display: block;
+  width: 100%;
+}
+
+.debug-stage svg {
+  inset: 0;
+  height: 100%;
+  position: absolute;
+}
+
+.debug-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.debug-legend span {
+  align-items: center;
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: 0 12px 32px rgb(23 32 51 / 8%);
+  display: inline-flex;
+  font-weight: 700;
+  gap: 8px;
+  padding: 10px 14px;
+}
+
+.legend-box {
+  border-radius: 6px;
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+}
+
+.legend-box--occupied { background: #dc2626; }
+.legend-box--empty { background: #16a34a; }
+.legend-box--uncertain { background: #facc15; }
+.legend-box--person { background: #2563eb; }
