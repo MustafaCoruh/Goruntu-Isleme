@@ -221,18 +221,39 @@ def test_session_assignment_routes_are_registered() -> None:
 
 def test_manual_session_assignment_updates_table_time_and_source() -> None:
     from app.api.routes_sessions import ManualAssignmentRequest, assign_participant_to_table, get_active_session_assignment
-    from app.database.models import FlightTest, Participant, SessionParticipant, UtymSession
+    from app.database.models import (
+        FlightTest,
+        Participant,
+        SessionParticipant,
+        UtymSession,
+    )
 
     session_factory = _session_factory()
     with session_factory() as session:
         utym = Utym(name="UTYM Assignment", location="Test")
         camera = Camera(name="Camera Assignment", source_type="file", utym=utym)
-        table = Table(name="Masa 1", capacity=2, polygon_json="[]", utym=utym, camera=camera)
+        table = Table(
+            name="Masa 1",
+            capacity=2,
+            polygon_json="[]",
+            utym=utym,
+            camera=camera,
+        )
         flight_test = FlightTest(aircraft_name="Jet", test_name="Aktif Test")
         utym_session = UtymSession(flight_test=flight_test, utym=utym, status="active")
         participant = Participant(full_name="Ayşe Demir", organization="Test", role="Operatör")
         session_participant = SessionParticipant(utym_session=utym_session, participant=participant)
-        session.add_all([utym, camera, table, flight_test, utym_session, participant, session_participant])
+        session.add_all(
+            [
+                utym,
+                camera,
+                table,
+                flight_test,
+                utym_session,
+                participant,
+                session_participant,
+            ]
+        )
         session.commit()
         session_participant_id = session_participant.id
         table_id = table.id
@@ -251,3 +272,76 @@ def test_manual_session_assignment_updates_table_time_and_source() -> None:
         state = get_active_session_assignment(session)
         assert state["participants"][0]["assigned_table_name"] == "Masa 1"
         assert state["tables"][0]["assigned_count"] == 1
+
+
+def test_session_participant_report_route_is_registered() -> None:
+    route_paths = set(app.openapi()["paths"])
+
+    assert "/reports/session/{session_id}/participants" in route_paths
+
+
+def test_session_participant_report_returns_assignment_history() -> None:
+    from app.api.routes_reports import get_session_participant_table_history
+    from app.database.models import (
+        FlightTest,
+        Participant,
+        SessionParticipant,
+        UtymSession,
+    )
+
+    session_factory = _session_factory()
+    with session_factory() as session:
+        utym = Utym(name="UTYM Report", location="Test")
+        camera = Camera(name="Camera Report", source_type="file", utym=utym)
+        table = Table(
+            name="Masa 1",
+            capacity=2,
+            polygon_json="[]",
+            utym=utym,
+            camera=camera,
+        )
+        flight_test = FlightTest(aircraft_name="Jet", test_name="Rapor Test")
+        utym_session = UtymSession(
+            flight_test=flight_test,
+            utym=utym,
+            status="completed",
+        )
+        participant = Participant(
+            full_name="Ahmet Yılmaz",
+            organization="Test",
+            role="Mühendis",
+        )
+        session_participant = SessionParticipant(
+            utym_session=utym_session,
+            participant=participant,
+            expected_table=table,
+            assigned_at=datetime(2026, 7, 9, 9, 5, 0),
+            assignment_source="manual",
+        )
+        session.add_all(
+            [
+                utym,
+                camera,
+                table,
+                flight_test,
+                utym_session,
+                participant,
+                session_participant,
+            ]
+        )
+        session.commit()
+        session_id = utym_session.id
+        table_id = table.id
+
+    with session_factory() as session:
+        report = get_session_participant_table_history(session_id, session)
+
+    assert report == [
+        {
+            "participant_name": "Ahmet Yılmaz",
+            "table_id": table_id,
+            "table_name": "Masa 1",
+            "assigned_at": "2026-07-09T09:05:00Z",
+            "assignment_source": "manual",
+        }
+    ]
