@@ -182,6 +182,8 @@ class SessionParticipant(Base):
         ForeignKey("table.id"), nullable=True, index=True
     )
     confidence: Mapped[float | None] = mapped_column(Float, nullable=True)
+    assigned_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    assignment_source: Mapped[str | None] = mapped_column(String(50), nullable=True)
 
     utym_session: Mapped[UtymSession] = relationship(
         back_populates="session_participants"
