@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
 
-import cv2
 import numpy as np
 
 from app.calibration.models import Point, TablePolygon
@@ -30,6 +29,8 @@ def draw_table_polygons(
     in green. The function mutates and returns ``frame`` so callers can use it in
     OpenCV pipelines without an additional copy.
     """
+
+    import cv2
 
     for table in tables:
         points = _polygon_to_cv_points(table.polygon)
