@@ -7,21 +7,28 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from app.calibration.models import CameraConfig, Point, Resolution, TablePolygon
+from app.calibration.models import (
+    CameraConfig,
+    Point,
+    Resolution,
+    TablePolygon,
+    UtymConfig,
+)
 
 
 class CameraConfigError(ValueError):
     """Raised when a camera calibration config cannot be loaded or validated."""
 
 
-def load_camera_config(path: str) -> CameraConfig:
+def load_camera_config(path: str) -> UtymConfig | CameraConfig:
     """Load, validate, and convert a camera calibration JSON file.
 
     Parameters
     ----------
     path:
-        Path to a JSON file containing ``utym_id``, ``camera_id``,
-        ``resolution`` and ``tables`` fields.
+        Path to a JSON file containing top-level ``utym_id`` and ``cameras`` fields.
+        Legacy single-camera files with ``camera_id``, ``resolution`` and ``tables``
+        are also accepted for backward compatibility.
 
     Raises
     ------
@@ -42,21 +49,35 @@ def load_camera_config(path: str) -> CameraConfig:
     return parse_camera_config(raw_config)
 
 
-def parse_camera_config(raw_config: Mapping[str, Any]) -> CameraConfig:
-    """Validate and convert a raw calibration config mapping to models."""
+def parse_camera_config(raw_config: Mapping[str, Any]) -> UtymConfig | CameraConfig:
+    """Validate and convert a raw calibration config mapping to models.
+
+    The preferred shape is a top-level UTYM config with a ``cameras`` list.
+    Legacy single-camera configs are still parsed as ``CameraConfig`` so older
+    callers and saved calibration files keep working during migration.
+    """
 
     if not isinstance(raw_config, Mapping):
         raise CameraConfigError("Camera config root must be a JSON object")
 
-    return CameraConfig(
-        utym_id=_require_non_empty_string(raw_config, "utym_id"),
-        camera_id=_require_non_empty_string(raw_config, "camera_id"),
-        resolution=_parse_resolution(_require_mapping(raw_config, "resolution")),
-        tables=_parse_tables(_require_sequence(raw_config, "tables")),
-    )
+    if "cameras" not in raw_config:
+        return _parse_legacy_camera_config(raw_config)
+
+    utym_id = _require_non_empty_string(raw_config, "utym_id")
+    raw_cameras = _require_sequence(raw_config, "cameras")
+    if not raw_cameras:
+        raise CameraConfigError("Field 'cameras' must contain at least one camera")
+
+    cameras: list[CameraConfig] = []
+    for index, raw_camera in enumerate(raw_cameras):
+        cameras.append(_parse_camera(raw_camera, f"cameras[{index}]", utym_id))
+
+    return UtymConfig(utym_id=utym_id, cameras=tuple(cameras))
 
 
-def save_camera_config(path: str, raw_config: Mapping[str, Any]) -> CameraConfig:
+def save_camera_config(
+    path: str, raw_config: Mapping[str, Any]
+) -> UtymConfig | CameraConfig:
     """Validate a calibration config and persist it as pretty-printed JSON."""
 
     config = parse_camera_config(raw_config)
@@ -69,15 +90,28 @@ def save_camera_config(path: str, raw_config: Mapping[str, Any]) -> CameraConfig
     return config
 
 
-def camera_config_to_dict(config: CameraConfig) -> dict[str, Any]:
-    """Serialize a camera calibration config model to JSON-compatible data."""
+def camera_config_to_dict(config: UtymConfig | CameraConfig) -> dict[str, Any]:
+    """Serialize a calibration config model to JSON-compatible data."""
 
-    return {
-        "utym_id": config.utym_id,
-        "camera_id": config.camera_id,
+    if isinstance(config, UtymConfig):
+        return {
+            "utym_id": config.utym_id,
+            "cameras": [_camera_to_dict(camera) for camera in config.cameras],
+        }
+
+    data = _camera_to_dict(config)
+    if config.utym_id is not None:
+        return {"utym_id": config.utym_id, **data}
+    return data
+
+
+def _camera_to_dict(camera: CameraConfig) -> dict[str, Any]:
+    data: dict[str, Any] = {
+        "camera_id": camera.camera_id,
+        "source_type": camera.source_type,
         "resolution": {
-            "width": config.resolution.width,
-            "height": config.resolution.height,
+            "width": camera.resolution.width,
+            "height": camera.resolution.height,
         },
         "tables": [
             {
@@ -86,35 +120,81 @@ def camera_config_to_dict(config: CameraConfig) -> dict[str, Any]:
                 "capacity": table.capacity,
                 "polygon": [[point.x, point.y] for point in table.polygon],
             }
-            for table in config.tables
+            for table in camera.tables
         ],
     }
+    if camera.stream_url is not None:
+        data["stream_url"] = camera.stream_url
+    return data
 
-def _parse_resolution(raw_resolution: Mapping[str, Any]) -> Resolution:
-    width = _require_positive_int(raw_resolution, "resolution.width")
-    height = _require_positive_int(raw_resolution, "resolution.height")
+
+def _parse_legacy_camera_config(raw_config: Mapping[str, Any]) -> CameraConfig:
+    utym_id = _require_non_empty_string(raw_config, "utym_id")
+    return _parse_camera(raw_config, "", utym_id)
+
+
+def _parse_camera(raw_camera: Any, field_prefix: str, utym_id: str) -> CameraConfig:
+    if not isinstance(raw_camera, Mapping):
+        raise CameraConfigError(f"Field '{field_prefix or 'camera'}' must be an object")
+
+    def field(name: str) -> str:
+        return f"{field_prefix}.{name}" if field_prefix else name
+
+    source_type = str(raw_camera.get("source_type", "rtsp"))
+    stream_url = raw_camera.get("stream_url")
+    if stream_url is not None and not isinstance(stream_url, str):
+        raise CameraConfigError(f"Field '{field('stream_url')}' must be a string")
+
+    return CameraConfig(
+        utym_id=utym_id,
+        camera_id=_require_non_empty_string(raw_camera, field("camera_id")),
+        source_type=source_type,
+        stream_url=(
+            stream_url.strip()
+            if isinstance(stream_url, str) and stream_url.strip()
+            else None
+        ),
+        resolution=_parse_resolution(
+            _require_mapping(raw_camera, field("resolution")), field("resolution")
+        ),
+        tables=_parse_tables(
+            _require_sequence(raw_camera, field("tables")), field("tables")
+        ),
+    )
+
+
+def _parse_resolution(
+    raw_resolution: Mapping[str, Any], field_prefix: str = "resolution"
+) -> Resolution:
+    width = _require_positive_int(raw_resolution, f"{field_prefix}.width")
+    height = _require_positive_int(raw_resolution, f"{field_prefix}.height")
     return Resolution(width=width, height=height)
 
 
-def _parse_tables(raw_tables: Sequence[Any]) -> tuple[TablePolygon, ...]:
+def _parse_tables(
+    raw_tables: Sequence[Any], field_name: str = "tables"
+) -> tuple[TablePolygon, ...]:
     if isinstance(raw_tables, (str, bytes)):
-        raise CameraConfigError("Field 'tables' must be a list of table objects")
+        raise CameraConfigError(f"Field '{field_name}' must be a list of table objects")
     if not raw_tables:
-        raise CameraConfigError("Field 'tables' must contain at least one table")
+        raise CameraConfigError(f"Field '{field_name}' must contain at least one table")
 
     tables: list[TablePolygon] = []
     for index, raw_table in enumerate(raw_tables):
-        field_prefix = f"tables[{index}]"
+        field_prefix = f"{field_name}[{index}]"
         if not isinstance(raw_table, Mapping):
             raise CameraConfigError(f"Field '{field_prefix}' must be an object")
 
         tables.append(
             TablePolygon(
-                table_id=_require_non_empty_string(raw_table, f"{field_prefix}.table_id"),
+                table_id=_require_non_empty_string(
+                    raw_table, f"{field_prefix}.table_id"
+                ),
                 name=_require_non_empty_string(raw_table, f"{field_prefix}.name"),
                 capacity=_require_positive_int(raw_table, f"{field_prefix}.capacity"),
                 polygon=_parse_polygon(
-                    _require_sequence(raw_table, f"{field_prefix}.polygon"), field_prefix
+                    _require_sequence(raw_table, f"{field_prefix}.polygon"),
+                    field_prefix,
                 ),
             )
         )
@@ -124,7 +204,9 @@ def _parse_tables(raw_tables: Sequence[Any]) -> tuple[TablePolygon, ...]:
 
 def _parse_polygon(raw_polygon: Sequence[Any], field_prefix: str) -> tuple[Point, ...]:
     if isinstance(raw_polygon, (str, bytes)):
-        raise CameraConfigError(f"Field '{field_prefix}.polygon' must be a list of points")
+        raise CameraConfigError(
+            f"Field '{field_prefix}.polygon' must be a list of points"
+        )
     if len(raw_polygon) < 3:
         raise CameraConfigError(
             f"Field '{field_prefix}.polygon' must contain at least 3 points"
@@ -144,7 +226,9 @@ def _parse_polygon(raw_polygon: Sequence[Any], field_prefix: str) -> tuple[Point
 
         x, y = raw_point
         if not _is_int(x) or not _is_int(y):
-            raise CameraConfigError(f"Field '{point_field}' coordinates must be integers")
+            raise CameraConfigError(
+                f"Field '{point_field}' coordinates must be integers"
+            )
         if x < 0 or y < 0:
             raise CameraConfigError(
                 f"Field '{point_field}' coordinates must be greater than or equal to 0"

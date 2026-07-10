@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from typing import Any
+
+from app.calibration.models import CameraConfig, UtymConfig
 
 import cv2
 import numpy as np
@@ -30,10 +32,11 @@ class RtspCameraSource:
     advanced retry/backoff behavior.
     """
 
-    def __init__(self, config: Mapping[str, Any]) -> None:
-        self.camera_id = str(config.get("camera_id", "unknown"))
-        self.source_type = str(config.get("source_type", "rtsp"))
-        stream_url = config.get("stream_url")
+    def __init__(self, config: Mapping[str, Any] | CameraConfig) -> None:
+        camera_config = _camera_config_values(config)
+        self.camera_id = str(camera_config.get("camera_id", "unknown"))
+        self.source_type = str(camera_config.get("source_type", "rtsp"))
+        stream_url = camera_config.get("stream_url")
 
         if self.source_type != "rtsp":
             raise RtspCameraSourceError(
@@ -118,3 +121,31 @@ class RtspCameraSource:
 
     def __exit__(self, *exc_info: object) -> None:
         self.close()
+
+
+def build_rtsp_camera_sources(
+    config: UtymConfig | Sequence[CameraConfig] | Sequence[Mapping[str, Any]],
+) -> list[RtspCameraSource]:
+    """Build one RTSP source per configured camera.
+
+    Non-RTSP cameras are intentionally skipped so mixed-source UTYM configs can
+    be handled by source-specific factories without failing the whole setup.
+    """
+
+    cameras: Sequence[CameraConfig] | Sequence[Mapping[str, Any]]
+    cameras = config.cameras if isinstance(config, UtymConfig) else config
+    return [
+        RtspCameraSource(camera)
+        for camera in cameras
+        if str(_camera_config_values(camera).get("source_type", "rtsp")) == "rtsp"
+    ]
+
+
+def _camera_config_values(config: Mapping[str, Any] | CameraConfig) -> dict[str, Any]:
+    if isinstance(config, CameraConfig):
+        return {
+            "camera_id": config.camera_id,
+            "source_type": config.source_type,
+            "stream_url": config.stream_url,
+        }
+    return dict(config)

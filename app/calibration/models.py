@@ -33,9 +33,19 @@ class TablePolygon:
 
 @dataclass(frozen=True)
 class CameraConfig:
-    """Calibration configuration for one UTYM camera."""
+    """Calibration/source configuration for one UTYM camera."""
 
-    utym_id: str
     camera_id: str
     resolution: Resolution
     tables: tuple[TablePolygon, ...]
+    source_type: str = "rtsp"
+    stream_url: str | None = None
+    utym_id: str | None = None
+
+
+@dataclass(frozen=True)
+class UtymConfig:
+    """Top-level configuration for one UTYM containing multiple cameras."""
+
+    utym_id: str
+    cameras: tuple[CameraConfig, ...]
