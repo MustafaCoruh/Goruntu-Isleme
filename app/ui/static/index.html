@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FTMC Masa Doluluk Paneli</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="dashboard">
+      <header class="dashboard__header">
+        <div>
+          <p class="eyebrow">Canlı durum</p>
+          <h1>Masa Doluluk Paneli</h1>
+        </div>
+        <button id="refresh-button" type="button">Yenile</button>
+      </header>
+
+      <section class="summary" aria-live="polite">
+        <span>Son güncelleme:</span>
+        <time id="last-updated" datetime="">Yükleniyor...</time>
+      </section>
+
+      <section id="status-message" class="status-message" role="status"></section>
+      <section id="table-list" class="table-grid" aria-label="Masa doluluk durumları"></section>
+    </main>
+
+    <template id="table-card-template">
+      <article class="table-card">
+        <h2></h2>
+        <dl>
+          <div>
+            <dt>Durum:</dt>
+            <dd class="table-card__status"></dd>
+          </div>
+          <div>
+            <dt>Güven:</dt>
+            <dd class="table-card__confidence"></dd>
+          </div>
+        </dl>
+      </article>
+    </template>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>

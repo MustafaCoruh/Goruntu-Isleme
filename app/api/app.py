@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 from collections.abc import AsyncIterator
+from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from app.database.db import init_db
 
 @asynccontextmanager
@@ -28,6 +30,9 @@ def create_app() -> FastAPI:
     api_app.include_router(health_router)
     api_app.include_router(tables_router)
     api_app.include_router(occupancy_router)
+
+    static_dir = Path(__file__).resolve().parents[1] / "ui" / "static"
+    api_app.mount("/ui", StaticFiles(directory=static_dir, html=True), name="ui")
 
     return api_app
 
