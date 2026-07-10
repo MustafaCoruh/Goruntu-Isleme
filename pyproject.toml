@@ -1,0 +1,11 @@
+[project]
+name = "ftmc-occupancy"
+version = "0.1.0"
+description = "Offline image processing application for detecting table occupancy from camera images in FTMC/UTYM environments."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
