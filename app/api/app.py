@@ -23,11 +23,13 @@ def create_app() -> FastAPI:
 
     api_app = FastAPI(title="FTMC Occupancy API", lifespan=lifespan)
 
+    from app.api.routes_debug import router as debug_router
     from app.api.routes_health import router as health_router
     from app.api.routes_occupancy import router as occupancy_router
     from app.api.routes_tables import router as tables_router
 
     api_app.include_router(health_router)
+    api_app.include_router(debug_router)
     api_app.include_router(tables_router)
     api_app.include_router(occupancy_router)
 
