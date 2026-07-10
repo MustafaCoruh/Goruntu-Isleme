@@ -7,13 +7,13 @@ Bu doküman, ilk prototipin çalışacağı UTYM ortamı ve görüntü işleme k
 | No | Gereksinim | Değer / Açıklama |
 | --- | --- | --- |
 | 1 | İlk prototipin çalışacağı UTYM adı veya kodu | T.UTYM#2 |
-| 2 | UTYM’deki kamera sayısı | Karar bekliyor — ilk prototip için en az 1 IP kamera kullanılacak |
+| 2 | UTYM’deki kamera sayısı | Karar bekliyor — ilk prototip için en az 1 RTSP destekli IP kamera kullanılacak |
 
 ## 2. Kamera Bilgileri
 
 | No | Gereksinim | Değer / Açıklama |
 | --- | --- | --- |
-| 3 | İlk prototipte kullanılacak kamera | T.UTYM#2 ortamındaki ilk IP video kamera; kamera ID ve RTSP/yerel video erişim bilgisi saha kurulumunda belirlenecek |
+| 3 | İlk prototipte kullanılacak kamera | T.UTYM#2 ortamındaki ilk RTSP destekli IP video kamera; gerçek RTSP URL repo’ya yazılmayacak |
 | 4 | Kameranın tipi | IP video kamera |
 | 5 | Görüntü çözünürlüğü ve yaklaşık FPS | 1920x1080 (1080P); FPS karar bekliyor |
 
@@ -30,7 +30,7 @@ Bu doküman, ilk prototipin çalışacağı UTYM ortamı ve görüntü işleme k
 | No | Gereksinim | Değer / Açıklama |
 | --- | --- | --- |
 | 9 | Uygulamanın çalışacağı işletim sistemi | Windows |
-| 10 | İnternetsiz çalışma zorunluluğu | Evet — uygulama offline/lokal ortamda çalışacak şekilde tasarlanmalıdır |
+| 10 | İnternetsiz çalışma zorunluluğu | Geliştirme bilgisayarı kontrollü internete açık; operasyon bilgisayarı tamamen internetsiz çalışacaktır |
 | 11 | Görüntü kaydı tutulup tutulmayacağı | Hayır — gerçek görüntü/video repo’ya konmayacak ve paylaşılmayacak |
 
 ## 5. İlk Hedef Kapsamı
@@ -44,7 +44,7 @@ Bu doküman, ilk prototipin çalışacağı UTYM ortamı ve görüntü işleme k
 - Gerçek T.UTYM#2 görüntüleri ve videoları repo’ya eklenmeyecektir.
 - Gerçek görüntü/video asistanla veya dış ortamla paylaşılmayacaktır.
 - Geliştirme reposunda yalnızca sentetik/anonim örnek veri, kalibrasyon şablonu ve test fixture'ları tutulacaktır.
-- Saha doğrulaması, kurum içi Windows makinede ve gerçek IP video kaynağına erişimi olan operatör tarafından çalıştırılacaktır.
+- Saha doğrulaması, kurum içi Windows makinede ve gerçek RTSP/IP video kaynağına erişimi olan operatör tarafından çalıştırılacaktır.
 - Kalibrasyon noktaları gerçek görüntü paylaşılmadan; kullanıcı tarafından lokal kalibrasyon ekranında veya koordinat dosyası üzerinden girilecektir.
 
 ## 7. Açık Kararlar
@@ -52,12 +52,16 @@ Bu doküman, ilk prototipin çalışacağı UTYM ortamı ve görüntü işleme k
 | Konu | Durum | Etki |
 | --- | --- | --- |
 | Toplam kamera sayısı | Karar bekliyor | Çoklu kamera birleştirme kapsamını etkiler |
-| İlk kamera ID / RTSP URL | Saha kurulumunda belirlenecek | Canlı IP video bağlantı testini etkiler |
+| İlk kamera ID / RTSP URL | RTSP var; gerçek URL saha kurulumunda lokal secret/config olarak girilecek | Canlı IP video bağlantı testini etkiler |
 | FPS | Karar bekliyor | Performans kabul kriterini etkiler |
+| İlk test kaynağı | Lokal geçmiş video veya fotoğraf | Gerçek görüntü paylaşılmadan ilk saha denemesini mümkün kılar |
+| Geliştirme donanımı | Intel Xeon Gold 6284R CPU; GPU yok | CPU baseline performansını belirler |
+| Operasyon donanımı | GPU bulunan Windows bilgisayarlar | Son saha performansı GPU ile ayrıca ölçülmelidir |
 | Masaların sabitliği | Karar bekliyor | Kalibrasyon yenileme sıklığını etkiler |
 
 ## Notlar
 
 - İlk prototipte T.UTYM#2 için 14 masa ve masa başına 1 sandalye üzerinden masa doluluk tespiti yapılacaktır.
 - Gerçek veri paylaşılmayacağı için bir sonraki geliştirme aşaması, gerçek görüntü gerektirmeyen Windows offline kurulum, kalibrasyon ve saha doğrulama prosedürlerine odaklanmalıdır.
-- Kamera tipi IP video olduğundan RTSP/ONVIF veya kurum içi kamera yazılımından alınacak yerel stream/file erişimi ayrıca netleştirilmelidir.
+- Kamera tipi RTSP destekli IP video olduğundan ilk canlı bağlantı testi gerçek RTSP URL repo’ya yazılmadan lokal ortamda yapılmalıdır.
+- İlk algoritma denemesi canlı kamera yerine lokal geçmiş video veya fotoğraf üzerinden yapılabilir; gerçek dosya repo’ya eklenmemelidir.
