@@ -2,7 +2,11 @@ from datetime import datetime, timedelta
 
 from app.api.app import app
 from app.api.routes_health import get_health
-from app.api.routes_occupancy import get_current_occupancy, list_occupancy_events
+from app.api.routes_occupancy import (
+    CURRENT_OCCUPANCY_SNAPSHOT,
+    get_current_occupancy,
+    list_occupancy_events,
+)
 from app.api.routes_tables import list_tables
 from app.database.db import Base, create_database_engine, create_session_factory
 from app.database.models import Camera, OccupancyEvent, Table, Utym
@@ -87,18 +91,21 @@ def test_tables_endpoint_lists_configured_tables() -> None:
     assert response[0]["polygon"] == [[0, 0], [1, 0], [1, 1]]
 
 
-def test_occupancy_endpoints_return_current_and_historical_events() -> None:
+def test_current_occupancy_endpoint_returns_in_memory_snapshot() -> None:
+    response = get_current_occupancy()
+
+    assert response == CURRENT_OCCUPANCY_SNAPSHOT
+    assert response is not CURRENT_OCCUPANCY_SNAPSHOT
+    assert response["tables"] is not CURRENT_OCCUPANCY_SNAPSHOT["tables"]
+
+
+def test_occupancy_events_endpoint_returns_historical_events() -> None:
     session_factory = _session_factory()
     _seed_api_data(session_factory)
 
     with session_factory() as session:
-        current_events = get_current_occupancy(session)
         historical_events = list_occupancy_events(session)
 
-    assert [(event["table_id"], event["status"]) for event in current_events] == [
-        (1, "occupied"),
-        (2, "uncertain"),
-    ]
     assert [event["status"] for event in historical_events] == [
         "occupied",
         "uncertain",
