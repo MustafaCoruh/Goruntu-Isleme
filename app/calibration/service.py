@@ -90,6 +90,7 @@ def camera_config_to_dict(config: CameraConfig) -> dict[str, Any]:
         ],
     }
 
+
 def _parse_resolution(raw_resolution: Mapping[str, Any]) -> Resolution:
     width = _require_positive_int(raw_resolution, "resolution.width")
     height = _require_positive_int(raw_resolution, "resolution.height")
@@ -103,14 +104,20 @@ def _parse_tables(raw_tables: Sequence[Any]) -> tuple[TablePolygon, ...]:
         raise CameraConfigError("Field 'tables' must contain at least one table")
 
     tables: list[TablePolygon] = []
+    table_ids: set[str] = set()
     for index, raw_table in enumerate(raw_tables):
         field_prefix = f"tables[{index}]"
         if not isinstance(raw_table, Mapping):
             raise CameraConfigError(f"Field '{field_prefix}' must be an object")
 
+        table_id = _require_non_empty_string(raw_table, f"{field_prefix}.table_id")
+        if table_id in table_ids:
+            raise CameraConfigError(f"Field '{field_prefix}.table_id' must be unique")
+        table_ids.add(table_id)
+
         tables.append(
             TablePolygon(
-                table_id=_require_non_empty_string(raw_table, f"{field_prefix}.table_id"),
+                table_id=table_id,
                 name=_require_non_empty_string(raw_table, f"{field_prefix}.name"),
                 capacity=_require_positive_int(raw_table, f"{field_prefix}.capacity"),
                 polygon=_parse_polygon(
