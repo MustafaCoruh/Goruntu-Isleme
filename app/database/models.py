@@ -1,22 +1,13 @@
-"""SQLAlchemy ORM models and database configuration for FTMC occupancy."""
+"""SQLAlchemy ORM models for FTMC occupancy."""
 
 from __future__ import annotations
 
 from datetime import datetime
-from pathlib import Path
 
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, create_engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-DATABASE_PATH = Path("data/ftmc.sqlite")
-DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
-
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-
-class Base(DeclarativeBase):
-    """Base class for all SQLAlchemy ORM models."""
+from app.database.db import Base
 
 
 def utc_now() -> datetime:
@@ -100,10 +91,3 @@ class OccupancyEvent(Base):
     utym: Mapped[Utym] = relationship(back_populates="occupancy_events")
     camera: Mapped[Camera] = relationship(back_populates="occupancy_events")
     table: Mapped[Table] = relationship(back_populates="occupancy_events")
-
-
-def init_db() -> None:
-    """Create the SQLite database directory and all ORM tables."""
-
-    DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    Base.metadata.create_all(bind=engine)
