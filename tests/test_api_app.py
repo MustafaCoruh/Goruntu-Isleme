@@ -208,3 +208,46 @@ def test_save_calibration_config_writes_validated_json(tmp_path, monkeypatch) ->
 
     assert response["path"] == str(config_path)
     assert config_path.exists()
+
+
+def test_session_assignment_routes_are_registered() -> None:
+    route_paths = set(app.openapi()["paths"])
+
+    assert {
+        "/sessions/active/assignment",
+        "/sessions/active/participants/{session_participant_id}/assignment",
+    }.issubset(route_paths)
+
+
+def test_manual_session_assignment_updates_table_time_and_source() -> None:
+    from app.api.routes_sessions import ManualAssignmentRequest, assign_participant_to_table, get_active_session_assignment
+    from app.database.models import FlightTest, Participant, SessionParticipant, UtymSession
+
+    session_factory = _session_factory()
+    with session_factory() as session:
+        utym = Utym(name="UTYM Assignment", location="Test")
+        camera = Camera(name="Camera Assignment", source_type="file", utym=utym)
+        table = Table(name="Masa 1", capacity=2, polygon_json="[]", utym=utym, camera=camera)
+        flight_test = FlightTest(aircraft_name="Jet", test_name="Aktif Test")
+        utym_session = UtymSession(flight_test=flight_test, utym=utym, status="active")
+        participant = Participant(full_name="Ayşe Demir", organization="Test", role="Operatör")
+        session_participant = SessionParticipant(utym_session=utym_session, participant=participant)
+        session.add_all([utym, camera, table, flight_test, utym_session, participant, session_participant])
+        session.commit()
+        session_participant_id = session_participant.id
+        table_id = table.id
+
+    with session_factory() as session:
+        response = assign_participant_to_table(
+            session_participant_id,
+            ManualAssignmentRequest(table_id=table_id),
+            session,
+        )
+        assert response["assigned_table_id"] == table_id
+        assert response["assignment_source"] == "manual"
+        assert response["assigned_at"] is not None
+
+    with session_factory() as session:
+        state = get_active_session_assignment(session)
+        assert state["participants"][0]["assigned_table_name"] == "Masa 1"
+        assert state["tables"][0]["assigned_count"] == 1
