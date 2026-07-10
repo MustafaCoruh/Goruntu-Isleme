@@ -48,3 +48,6 @@ temp/
 .DS_Store
 .idea/
 .vscode/
+
+# Keep project skeleton directories
+!models/.gitkeep
