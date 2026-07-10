@@ -1,0 +1,9 @@
+opencv-python
+numpy
+fastapi
+uvicorn
+pydantic
+sqlalchemy
+onnxruntime
+# Optional: enable if the first prototype will run YOLO directly.
+# ultralytics
