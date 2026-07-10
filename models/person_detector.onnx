@@ -1,0 +1,9 @@
+YOLOX-Nano ONNX artifact pointer
+
+Selected artifact: YOLOX-Nano ONNX, COCO-trained, Apache-2.0 YOLOX project.
+Expected runtime filtering: keep class id 0 (person) only.
+Expected model input: 416x416.
+Primary source: https://github.com/Megvii-BaseDetection/YOLOX
+ONNX documentation: https://yolox.readthedocs.io/en/latest/demo/onnx_readme.html
+
+NOTE: Binary download attempts from this environment returned HTTP 403 through the configured proxy. Replace this pointer with the official yolox_nano.onnx binary for production packaging.
