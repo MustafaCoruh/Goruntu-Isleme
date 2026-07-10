@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections import deque
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 
 from app.calibration.models import TablePolygon
 from app.vision.detector import Detection, PERSON_CLASS_NAME
@@ -16,6 +17,76 @@ MIN_OCCUPIED_CONFIDENCE = 0.5
 MIN_OCCUPIED_OVERLAP = 0.10
 BORDERLINE_OVERLAP = 0.02
 EMPTY_CONFIDENCE = 1.0
+
+
+class OccupancySmoother:
+    """Smooth table occupancy decisions across the last N frame results.
+
+    The smoother keeps an independent rolling history per ``table_id``. A table
+    is reported as ``occupied`` when at least ``min_votes`` results in the
+    current window are occupied, as ``empty`` when at least ``min_votes``
+    results are empty, and as ``uncertain`` otherwise.
+    """
+
+    def __init__(self, smoothing_window: int = 10, occupied_min_votes: int = 6) -> None:
+        if smoothing_window <= 0:
+            raise ValueError("smoothing_window must be greater than 0")
+        if occupied_min_votes <= 0:
+            raise ValueError("occupied_min_votes must be greater than 0")
+        if occupied_min_votes > smoothing_window:
+            raise ValueError("occupied_min_votes cannot exceed smoothing_window")
+
+        self.smoothing_window = smoothing_window
+        self.occupied_min_votes = occupied_min_votes
+        self._history: dict[str, deque[OccupancyStatus]] = {}
+
+    @classmethod
+    def from_config(cls, config: Mapping[str, Any]) -> "OccupancySmoother":
+        """Create a smoother from application configuration values."""
+
+        return cls(
+            smoothing_window=int(config.get("smoothing_window", 10)),
+            occupied_min_votes=int(config.get("occupied_min_votes", 6)),
+        )
+
+    def smooth(self, occupancies: Sequence[TableOccupancy]) -> list[TableOccupancy]:
+        """Record one frame of table results and return smoothed decisions."""
+
+        return [self._smooth_single_table(occupancy) for occupancy in occupancies]
+
+    def reset(self, table_id: str | None = None) -> None:
+        """Clear accumulated history for one table or for all tables."""
+
+        if table_id is None:
+            self._history.clear()
+            return
+
+        self._history.pop(table_id, None)
+
+    def _smooth_single_table(self, occupancy: TableOccupancy) -> TableOccupancy:
+        history = self._history.setdefault(
+            occupancy.table_id, deque(maxlen=self.smoothing_window)
+        )
+        history.append(occupancy.status)
+
+        occupied_votes = history.count("occupied")
+        empty_votes = history.count("empty")
+
+        if occupied_votes >= self.occupied_min_votes:
+            status: OccupancyStatus = "occupied"
+            confidence = occupied_votes / len(history)
+        elif empty_votes >= self.occupied_min_votes:
+            status = "empty"
+            confidence = empty_votes / len(history)
+        else:
+            status = "uncertain"
+            confidence = max(occupied_votes, empty_votes) / len(history)
+
+        return TableOccupancy(
+            table_id=occupancy.table_id,
+            status=status,
+            confidence=round(confidence, 2),
+        )
 
 
 @dataclass(frozen=True)
