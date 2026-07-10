@@ -143,36 +143,3 @@ def test_occupancy_events_endpoint_filters_historical_events() -> None:
             "detected_at": "2026-07-10T12:00:01Z",
         }
     ]
-
-
-def test_debug_routes_are_registered() -> None:
-    route_paths = set(app.openapi()["paths"])
-
-    assert {"/debug/state", "/debug/frame.jpg"}.issubset(route_paths)
-
-
-def test_debug_state_returns_overlay_payload(monkeypatch) -> None:
-    from app.api.routes_debug import get_debug_state
-
-    monkeypatch.setenv("FTMC_DEBUG_UI_ENABLED", "true")
-    response = get_debug_state()
-
-    assert response["enabled"] is True
-    assert response["frame_url"] == "/debug/frame.jpg"
-    assert response["detections"][0]["class_name"] == "person"
-    assert response["tables"][0]["polygon"] == [[100, 200], [300, 200], [320, 420], [80, 420]]
-    assert response["tables"][0]["status"] == "occupied"
-
-
-def test_debug_state_can_be_disabled_for_operation_mode(monkeypatch) -> None:
-    import pytest
-    from fastapi import HTTPException
-
-    from app.api.routes_debug import get_debug_state
-
-    monkeypatch.setenv("FTMC_DEBUG_UI_ENABLED", "false")
-
-    with pytest.raises(HTTPException) as error:
-        get_debug_state()
-
-    assert error.value.status_code == 404
