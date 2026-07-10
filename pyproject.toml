@@ -4,7 +4,17 @@ version = "0.1.0"
 description = "Offline image processing application for detecting table occupancy from camera images in FTMC/UTYM environments."
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "opencv-python",
+    "numpy",
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "sqlalchemy",
+    "onnxruntime",
+    # Optional: enable if the first prototype will run YOLO directly.
+    # "ultralytics",
+]
 
 [build-system]
 requires = ["setuptools>=68"]
