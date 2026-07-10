@@ -111,3 +111,35 @@ def test_occupancy_events_endpoint_returns_historical_events() -> None:
         "uncertain",
         "empty",
     ]
+    assert set(historical_events[0]) == {
+        "table_id",
+        "status",
+        "confidence",
+        "detected_at",
+    }
+    assert historical_events[0]["detected_at"] == "2026-07-10T12:00:01Z"
+
+
+def test_occupancy_events_endpoint_filters_historical_events() -> None:
+    session_factory = _session_factory()
+    _seed_api_data(session_factory)
+
+    with session_factory() as session:
+        filtered_events = list_occupancy_events(
+            session,
+            utym_id="UTYM-001",
+            camera_id="CAM-001",
+            table_id="1",
+            start_time="2026-07-10T12:00:01Z",
+            end_time="2026-07-10T12:00:01Z",
+            status="occupied",
+        )
+
+    assert filtered_events == [
+        {
+            "table_id": 1,
+            "status": "occupied",
+            "confidence": 0.95,
+            "detected_at": "2026-07-10T12:00:01Z",
+        }
+    ]
