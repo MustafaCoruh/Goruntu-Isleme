@@ -2,16 +2,38 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import Any
 
 from fastapi import APIRouter, Depends
-from sqlalchemy import Select, func, select
+from sqlalchemy import Select, select
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_db
 from app.database.models import OccupancyEvent
 
 router = APIRouter(prefix="/occupancy", tags=["occupancy"])
+
+# In-memory current occupancy snapshot until live inference or storage is wired in.
+CURRENT_OCCUPANCY_SNAPSHOT: dict[str, Any] = {
+    "utym_id": "UTYM-001",
+    "camera_id": "CAM-001",
+    "timestamp": "2026-07-09T10:05:21Z",
+    "tables": [
+        {
+            "table_id": "T-001",
+            "name": "Masa 1",
+            "status": "occupied",
+            "confidence": 0.91,
+        },
+        {
+            "table_id": "T-002",
+            "name": "Masa 2",
+            "status": "empty",
+            "confidence": 0.83,
+        },
+    ],
+}
 
 
 def _event_to_dict(event: OccupancyEvent) -> dict[str, Any]:
@@ -34,34 +56,10 @@ def _events_statement() -> Select[tuple[OccupancyEvent]]:
 
 
 @router.get("/current")
-def get_current_occupancy(db: Session = Depends(get_db)) -> list[dict[str, Any]]:
-    """Return the most recent occupancy event for each table."""
+def get_current_occupancy() -> dict[str, Any]:
+    """Return the latest in-memory occupancy snapshot."""
 
-    latest_per_table = (
-        select(
-            OccupancyEvent.table_id,
-            func.max(OccupancyEvent.detected_at).label("latest_detected_at"),
-        )
-        .group_by(OccupancyEvent.table_id)
-        .subquery()
-    )
-    latest_ids = (
-        select(func.max(OccupancyEvent.id).label("latest_id"))
-        .join(
-            latest_per_table,
-            (OccupancyEvent.table_id == latest_per_table.c.table_id)
-            & (OccupancyEvent.detected_at == latest_per_table.c.latest_detected_at),
-        )
-        .group_by(OccupancyEvent.table_id)
-        .subquery()
-    )
-    statement = (
-        select(OccupancyEvent)
-        .join(latest_ids, OccupancyEvent.id == latest_ids.c.latest_id)
-        .order_by(OccupancyEvent.table_id)
-    )
-    events = db.execute(statement).scalars().all()
-    return [_event_to_dict(event) for event in events]
+    return deepcopy(CURRENT_OCCUPANCY_SNAPSHOT)
 
 
 @router.get("/events")
