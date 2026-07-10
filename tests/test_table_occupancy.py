@@ -5,6 +5,7 @@ from app.vision.occupancy import (
     OccupancyStatus,
     TableOccupancy,
     compute_table_occupancy,
+    merge_camera_occupancy_results,
 )
 
 
@@ -19,7 +20,9 @@ def _table(table_id: str, x1: int, y1: int, x2: int, y2: int) -> TablePolygon:
 
 def test_compute_table_occupancy_marks_matching_person_as_occupied() -> None:
     tables = (_table("T-001", 0, 0, 100, 100), _table("T-002", 120, 0, 220, 100))
-    detections = [Detection(class_name="person", confidence=0.91, bbox=[20, 20, 60, 60])]
+    detections = [
+        Detection(class_name="person", confidence=0.91, bbox=[20, 20, 60, 60])
+    ]
 
     assert compute_table_occupancy(tables, detections) == [
         TableOccupancy(table_id="T-001", status="occupied", confidence=0.91),
@@ -29,20 +32,28 @@ def test_compute_table_occupancy_marks_matching_person_as_occupied() -> None:
 
 def test_compute_table_occupancy_marks_low_confidence_match_as_uncertain() -> None:
     tables = (_table("T-001", 0, 0, 100, 100),)
-    detections = [Detection(class_name="person", confidence=0.42, bbox=[20, 20, 60, 60])]
+    detections = [
+        Detection(class_name="person", confidence=0.42, bbox=[20, 20, 60, 60])
+    ]
 
     result = compute_table_occupancy(tables, detections)
 
-    assert result == [TableOccupancy(table_id="T-001", status="uncertain", confidence=0.58)]
+    assert result == [
+        TableOccupancy(table_id="T-001", status="uncertain", confidence=0.58)
+    ]
 
 
 def test_compute_table_occupancy_marks_borderline_overlap_as_uncertain() -> None:
     tables = (_table("T-001", 0, 0, 100, 100),)
-    detections = [Detection(class_name="person", confidence=0.84, bbox=[90, 90, 140, 140])]
+    detections = [
+        Detection(class_name="person", confidence=0.84, bbox=[90, 90, 140, 140])
+    ]
 
     result = compute_table_occupancy(tables, detections)
 
-    assert result == [TableOccupancy(table_id="T-001", status="uncertain", confidence=0.84)]
+    assert result == [
+        TableOccupancy(table_id="T-001", status="uncertain", confidence=0.84)
+    ]
 
 
 def test_compute_table_occupancy_ignores_non_person_detections() -> None:
@@ -75,7 +86,9 @@ def test_occupancy_smoother_returns_empty_after_minimum_votes() -> None:
 
     result = [smoother.smooth([_occupancy("T-001", status)])[0] for status in statuses]
 
-    assert result[-1] == TableOccupancy(table_id="T-001", status="empty", confidence=0.6)
+    assert result[-1] == TableOccupancy(
+        table_id="T-001", status="empty", confidence=0.6
+    )
 
 
 def test_occupancy_smoother_returns_uncertain_without_enough_votes() -> None:
@@ -102,4 +115,49 @@ def test_occupancy_smoother_tracks_tables_independently_and_loads_config() -> No
     assert result == [
         TableOccupancy(table_id="T-001", status="occupied", confidence=1.0),
         TableOccupancy(table_id="T-002", status="empty", confidence=1.0),
+    ]
+
+
+def test_merge_camera_occupancy_results_collapses_same_table_across_cameras() -> None:
+    result = merge_camera_occupancy_results(
+        {
+            "cam-1": [TableOccupancy("T-001", "empty", 0.92)],
+            "cam-2": [TableOccupancy("T-001", "occupied", 0.88)],
+        }
+    )
+
+    assert result == [
+        TableOccupancy(table_id="T-001", status="occupied", confidence=0.92)
+    ]
+
+
+def test_merge_camera_occupancy_results_marks_conflicts_uncertain_by_default() -> None:
+    result = merge_camera_occupancy_results(
+        {
+            "cam-1": [TableOccupancy("T-001", "empty", 0.91)],
+            "cam-2": [TableOccupancy("T-001", "occupied", 0.72)],
+        }
+    )
+
+    assert result == [
+        TableOccupancy(table_id="T-001", status="uncertain", confidence=0.91)
+    ]
+
+
+def test_merge_camera_occupancy_results_accepts_configurable_rules() -> None:
+    result = merge_camera_occupancy_results(
+        {
+            "cam-1": [TableOccupancy("T-001", "empty", 0.60)],
+            "cam-2": [TableOccupancy("T-001", "occupied", 0.75)],
+        },
+        config={
+            "high_confidence_occupied_threshold": 0.70,
+            "conflict_status": "empty",
+            "confidence_strategy": "weighted_average",
+            "camera_weights": {"cam-1": 1.0, "cam-2": 3.0},
+        },
+    )
+
+    assert result == [
+        TableOccupancy(table_id="T-001", status="occupied", confidence=0.71)
     ]
