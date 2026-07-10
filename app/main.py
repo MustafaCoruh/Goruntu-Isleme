@@ -9,7 +9,7 @@ from typing import Any, Protocol
 
 import cv2
 
-from app.calibration.models import CameraConfig, TablePolygon
+from app.calibration.models import CameraConfig, TablePolygon, UtymConfig
 from app.camera.capture import ImageFileSource, SUPPORTED_IMAGE_EXTENSIONS
 from app.config import load_camera_config
 from app.vision.detector import PersonDetector
@@ -90,8 +90,12 @@ def build_argument_parser() -> argparse.ArgumentParser:
     """Create the command-line argument parser for the demo app."""
 
     parser = argparse.ArgumentParser(description="Run the UTYM occupancy demo flow.")
-    parser.add_argument("--config", required=True, help="Path to camera calibration JSON.")
-    parser.add_argument("--source", required=True, help="Path to an image or video source.")
+    parser.add_argument(
+        "--config", required=True, help="Path to camera calibration JSON."
+    )
+    parser.add_argument(
+        "--source", required=True, help="Path to an image or video source."
+    )
     parser.add_argument(
         "--model",
         default="models/person_detector.onnx",
@@ -121,7 +125,7 @@ def main(argv: list[str] | None = None) -> int:
     """Run the demo and exit with a process-style status code."""
 
     args = build_argument_parser().parse_args(argv)
-    camera_config = load_camera_config(args.config)
+    camera_config = _select_demo_camera(load_camera_config(args.config))
     detector = _load_person_detector(args)
     source = _build_source(args.source)
 
@@ -136,6 +140,16 @@ def main(argv: list[str] | None = None) -> int:
         cv2.destroyAllWindows()
 
     return 0
+
+
+def _select_demo_camera(config: UtymConfig | CameraConfig) -> CameraConfig:
+    """Select the first camera for the single-source demo flow."""
+
+    if isinstance(config, CameraConfig):
+        return config
+    if not config.cameras:
+        raise ValueError(f"UTYM config {config.utym_id} does not contain any cameras")
+    return config.cameras[0]
 
 
 def _load_person_detector(args: argparse.Namespace) -> PersonDetector:
@@ -184,9 +198,13 @@ def _run_demo_loop(
 
             detections = detector.detect(frame)
             occupancies = smoother.smooth(
-                compute_table_occupancy(camera_config.tables, detections)
+                compute_table_occupancy(
+                    camera_config.tables, detections, camera_config.camera_id
+                )
             )
-            debug_occupancies = _attach_table_geometry(camera_config.tables, occupancies)
+            debug_occupancies = _attach_table_geometry(
+                camera_config.tables, occupancies
+            )
             overlay = draw_debug_overlay(frame, detections, debug_occupancies)
 
             cv2.imshow(window_name, overlay)

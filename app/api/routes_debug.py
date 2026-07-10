@@ -10,13 +10,16 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException, Response, status
 
+from app.calibration.models import CameraConfig, UtymConfig
 from app.config import load_camera_config
 from app.api.routes_occupancy import CURRENT_OCCUPANCY_SNAPSHOT
 from app.vision.visualization import draw_debug_overlay
 
 router = APIRouter(prefix="/debug", tags=["debug"])
 
-_DEFAULT_CONFIG_PATH = Path(__file__).resolve().parents[2] / "configs" / "utym_001_cam_001.json"
+_DEFAULT_CONFIG_PATH = (
+    Path(__file__).resolve().parents[2] / "configs" / "utym_001_cam_001.json"
+)
 _DEBUG_ENABLED_ENV = "FTMC_DEBUG_UI_ENABLED"
 
 _SAMPLE_DETECTIONS: list[dict[str, Any]] = [
@@ -40,10 +43,21 @@ def _require_debug_enabled() -> None:
         )
 
 
+def _select_debug_camera(config: UtymConfig | CameraConfig) -> CameraConfig:
+    if isinstance(config, CameraConfig):
+        return config
+    if not config.cameras:
+        raise ValueError(f"UTYM config {config.utym_id} does not contain any cameras")
+    return config.cameras[0]
+
+
 def _load_debug_tables() -> list[dict[str, Any]]:
-    config = load_camera_config(os.getenv("FTMC_CAMERA_CONFIG", _DEFAULT_CONFIG_PATH))
+    config = _select_debug_camera(
+        load_camera_config(os.getenv("FTMC_CAMERA_CONFIG", _DEFAULT_CONFIG_PATH))
+    )
     snapshot_tables = {
-        str(table["table_id"]): table for table in CURRENT_OCCUPANCY_SNAPSHOT.get("tables", [])
+        str(table["table_id"]): table
+        for table in CURRENT_OCCUPANCY_SNAPSHOT.get("tables", [])
     }
 
     tables: list[dict[str, Any]] = []
@@ -64,11 +78,17 @@ def _load_debug_tables() -> list[dict[str, Any]]:
 
 def _resolution_from_tables(tables: list[dict[str, Any]]) -> tuple[int, int]:
     try:
-        config = load_camera_config(os.getenv("FTMC_CAMERA_CONFIG", _DEFAULT_CONFIG_PATH))
+        config = _select_debug_camera(
+            load_camera_config(os.getenv("FTMC_CAMERA_CONFIG", _DEFAULT_CONFIG_PATH))
+        )
         return config.resolution.width, config.resolution.height
     except (FileNotFoundError, KeyError, ValueError):
-        max_x = max((point[0] for table in tables for point in table["polygon"]), default=1280)
-        max_y = max((point[1] for table in tables for point in table["polygon"]), default=720)
+        max_x = max(
+            (point[0] for table in tables for point in table["polygon"]), default=1280
+        )
+        max_y = max(
+            (point[1] for table in tables for point in table["polygon"]), default=720
+        )
         return max(640, max_x + 80), max(360, max_y + 80)
 
 

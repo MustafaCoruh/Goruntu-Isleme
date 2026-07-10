@@ -9,7 +9,11 @@ from typing import Any, Literal
 
 from app.calibration.models import TablePolygon
 from app.vision.detector import Detection, PERSON_CLASS_NAME
-from app.vision.geometry import bbox_center, bbox_polygon_overlap_ratio, point_in_polygon
+from app.vision.geometry import (
+    bbox_center,
+    bbox_polygon_overlap_ratio,
+    point_in_polygon,
+)
 
 OccupancyStatus = Literal["empty", "occupied", "uncertain"]
 
@@ -65,7 +69,7 @@ class OccupancySmoother:
 
     def _smooth_single_table(self, occupancy: TableOccupancy) -> TableOccupancy:
         history = self._history.setdefault(
-            occupancy.table_id, deque(maxlen=self.smoothing_window)
+            occupancy.history_key, deque(maxlen=self.smoothing_window)
         )
         history.append(occupancy.status)
 
@@ -86,6 +90,7 @@ class OccupancySmoother:
             table_id=occupancy.table_id,
             status=status,
             confidence=round(confidence, 2),
+            camera_id=occupancy.camera_id,
         )
 
 
@@ -96,11 +101,19 @@ class TableOccupancy:
     table_id: str
     status: OccupancyStatus
     confidence: float
+    camera_id: str | None = None
+
+    @property
+    def history_key(self) -> str:
+        """Unique smoothing key, including camera id when available."""
+
+        return f"{self.camera_id}:{self.table_id}" if self.camera_id else self.table_id
 
 
 def compute_table_occupancy(
     tables: Sequence[TablePolygon],
     detections: Sequence[Detection],
+    camera_id: str | None = None,
 ) -> list[TableOccupancy]:
     """Compute table occupancy from calibrated table polygons and detections.
 
@@ -110,11 +123,13 @@ def compute_table_occupancy(
     """
 
     person_detections = [
-        detection for detection in detections if detection.class_name == PERSON_CLASS_NAME
+        detection
+        for detection in detections
+        if detection.class_name == PERSON_CLASS_NAME
     ]
 
     return [
-        _compute_single_table_occupancy(table, person_detections)
+        _compute_single_table_occupancy(table, person_detections, camera_id)
         for table in tables
     ]
 
@@ -122,6 +137,7 @@ def compute_table_occupancy(
 def _compute_single_table_occupancy(
     table: TablePolygon,
     detections: Sequence[Detection],
+    camera_id: str | None = None,
 ) -> TableOccupancy:
     occupied_confidences: list[float] = []
     uncertain_confidences: list[float] = []
@@ -138,6 +154,7 @@ def _compute_single_table_occupancy(
             table_id=table.table_id,
             status="occupied",
             confidence=max(occupied_confidences),
+            camera_id=camera_id,
         )
 
     if uncertain_confidences:
@@ -145,16 +162,20 @@ def _compute_single_table_occupancy(
             table_id=table.table_id,
             status="uncertain",
             confidence=max(uncertain_confidences),
+            camera_id=camera_id,
         )
 
     return TableOccupancy(
         table_id=table.table_id,
         status="empty",
         confidence=EMPTY_CONFIDENCE,
+        camera_id=camera_id,
     )
 
 
-def _match_detection_to_table(table: TablePolygon, detection: Detection) -> OccupancyStatus | None:
+def _match_detection_to_table(
+    table: TablePolygon, detection: Detection
+) -> OccupancyStatus | None:
     center_inside = point_in_polygon(bbox_center(detection.bbox), table.polygon)
     overlap_ratio = bbox_polygon_overlap_ratio(detection.bbox, table.polygon)
     confident = detection.confidence >= MIN_OCCUPIED_CONFIDENCE
@@ -169,7 +190,9 @@ def _match_detection_to_table(table: TablePolygon, detection: Detection) -> Occu
 
 
 def _uncertain_confidence(detection: Detection) -> float:
-    return _clamp_confidence(round(max(detection.confidence, 1.0 - detection.confidence), 2))
+    return _clamp_confidence(
+        round(max(detection.confidence, 1.0 - detection.confidence), 2)
+    )
 
 
 def _clamp_confidence(confidence: float) -> float:
