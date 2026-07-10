@@ -39,6 +39,12 @@ def load_camera_config(path: str) -> CameraConfig:
             f"Invalid JSON in camera config {config_path}: {exc.msg}"
         ) from exc
 
+    return parse_camera_config(raw_config)
+
+
+def parse_camera_config(raw_config: Mapping[str, Any]) -> CameraConfig:
+    """Validate and convert a raw calibration config mapping to models."""
+
     if not isinstance(raw_config, Mapping):
         raise CameraConfigError("Camera config root must be a JSON object")
 
@@ -49,6 +55,40 @@ def load_camera_config(path: str) -> CameraConfig:
         tables=_parse_tables(_require_sequence(raw_config, "tables")),
     )
 
+
+def save_camera_config(path: str, raw_config: Mapping[str, Any]) -> CameraConfig:
+    """Validate a calibration config and persist it as pretty-printed JSON."""
+
+    config = parse_camera_config(raw_config)
+    config_path = Path(path)
+    config_path.parent.mkdir(parents=True, exist_ok=True)
+    config_path.write_text(
+        json.dumps(camera_config_to_dict(config), ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return config
+
+
+def camera_config_to_dict(config: CameraConfig) -> dict[str, Any]:
+    """Serialize a camera calibration config model to JSON-compatible data."""
+
+    return {
+        "utym_id": config.utym_id,
+        "camera_id": config.camera_id,
+        "resolution": {
+            "width": config.resolution.width,
+            "height": config.resolution.height,
+        },
+        "tables": [
+            {
+                "table_id": table.table_id,
+                "name": table.name,
+                "capacity": table.capacity,
+                "polygon": [[point.x, point.y] for point in table.polygon],
+            }
+            for table in config.tables
+        ],
+    }
 
 def _parse_resolution(raw_resolution: Mapping[str, Any]) -> Resolution:
     width = _require_positive_int(raw_resolution, "resolution.width")

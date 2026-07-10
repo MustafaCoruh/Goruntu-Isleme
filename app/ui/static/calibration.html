@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Masa Kalibrasyonu</title>
+  <style>
+    :root { color-scheme: light; font-family: Arial, sans-serif; }
+    body { margin: 0; background: #f5f7fb; color: #172033; }
+    header { padding: 16px 24px; background: #102a43; color: white; }
+    main { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; padding: 16px; }
+    .card { background: white; border-radius: 12px; box-shadow: 0 2px 12px rgb(16 42 67 / 12%); padding: 16px; }
+    .toolbar, .fields { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 12px; }
+    label { display: grid; gap: 4px; font-size: 13px; font-weight: 700; }
+    input, button { border: 1px solid #c9d6e2; border-radius: 8px; padding: 9px 10px; font: inherit; }
+    button { cursor: pointer; background: #0b69a3; color: white; border: none; font-weight: 700; }
+    button.secondary { background: #627d98; }
+    button.danger { background: #c52727; }
+    button:disabled { background: #bcccdc; cursor: not-allowed; }
+    .stage { position: relative; width: 100%; min-height: 420px; border: 2px dashed #9fb3c8; border-radius: 12px; overflow: hidden; background: #d9e2ec; }
+    video, img, canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+    canvas { cursor: crosshair; }
+    .hint { color: #486581; font-size: 13px; margin: 8px 0 0; }
+    aside h2 { margin-top: 0; }
+    .table-item { border: 1px solid #d9e2ec; border-radius: 10px; padding: 10px; margin-bottom: 10px; background: #f8fbff; }
+    .table-item strong { display: block; }
+    pre { max-height: 240px; overflow: auto; background: #102a43; color: #d9e2ec; padding: 12px; border-radius: 8px; }
+    .status { min-height: 20px; color: #334e68; }
+  </style>
+</head>
+<body>
+  <header><h1>Masa Kalibrasyonu</h1></header>
+  <main>
+    <section class="card">
+      <div class="toolbar">
+        <label>Örnek fotoğraf yükle
+          <input id="imageInput" type="file" accept="image/*" />
+        </label>
+        <button id="cameraButton" type="button">Kamerayı Aç</button>
+        <button id="snapshotButton" class="secondary" type="button" disabled>Kareyi Yakala</button>
+        <button id="undoButton" class="secondary" type="button">Son Noktayı Sil</button>
+        <button id="clearButton" class="danger" type="button">Poligonu Temizle</button>
+      </div>
+      <div class="fields">
+        <label>Masa adı
+          <input id="tableName" type="text" placeholder="Örn. Masa 1" />
+        </label>
+        <label>Kapasite
+          <input id="capacity" type="number" min="1" step="1" value="4" />
+        </label>
+        <label>UTYM ID
+          <input id="utymId" type="text" value="UTYM-001" />
+        </label>
+        <label>Kamera ID
+          <input id="cameraId" type="text" value="CAM-001" />
+        </label>
+        <button id="addTableButton" type="button">Masayı Ekle</button>
+      </div>
+      <div class="stage" id="stage">
+        <video id="video" playsinline muted hidden></video>
+        <img id="photo" alt="Kalibrasyon görseli" hidden />
+        <canvas id="canvas"></canvas>
+      </div>
+      <p class="hint">Görsel üzerinde tıklayarak en az 3 poligon noktası ekleyin. Noktalar gerçek görsel çözünürlüğüne göre kaydedilir.</p>
+      <p id="status" class="status"></p>
+    </section>
+    <aside class="card">
+      <h2>Oluşturulan Masalar</h2>
+      <div id="tableList"></div>
+      <button id="saveButton" type="button">Config JSON Kaydet</button>
+      <button id="downloadButton" class="secondary" type="button">JSON İndir</button>
+      <h3>Önizleme</h3>
+      <pre id="jsonPreview"></pre>
+    </aside>
+  </main>
+<script>
+const state = { tables: [], points: [], width: 1280, height: 720, stream: null, source: null };
+const $ = (id) => document.getElementById(id);
+const canvas = $('canvas');
+const ctx = canvas.getContext('2d');
+
+function fitCanvas() {
+  const rect = $('stage').getBoundingClientRect();
+  canvas.width = Math.max(1, Math.round(rect.width));
+  canvas.height = Math.max(1, Math.round(rect.height));
+  draw();
+}
+
+function stageToImagePoint(event) {
+  const rect = canvas.getBoundingClientRect();
+  const scale = Math.min(rect.width / state.width, rect.height / state.height);
+  const displayWidth = state.width * scale;
+  const displayHeight = state.height * scale;
+  const offsetX = (rect.width - displayWidth) / 2;
+  const offsetY = (rect.height - displayHeight) / 2;
+  const x = event.clientX - rect.left - offsetX;
+  const y = event.clientY - rect.top - offsetY;
+  if (x < 0 || y < 0 || x > displayWidth || y > displayHeight) return null;
+  return [Math.round(x / scale), Math.round(y / scale)];
+}
+
+function imageToCanvasPoint(point) {
+  const scale = Math.min(canvas.width / state.width, canvas.height / state.height);
+  const offsetX = (canvas.width - state.width * scale) / 2;
+  const offsetY = (canvas.height - state.height * scale) / 2;
+  return [offsetX + point[0] * scale, offsetY + point[1] * scale];
+}
+
+function drawPolygon(points, color, fill = false) {
+  if (!points.length) return;
+  ctx.beginPath();
+  points.forEach((point, index) => {
+    const [x, y] = imageToCanvasPoint(point);
+    index ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+  });
+  if (points.length > 2) ctx.closePath();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = color;
+  ctx.stroke();
+  if (fill && points.length > 2) {
+    ctx.fillStyle = color.replace('1)', '0.18)');
+    ctx.fill();
+  }
+  points.forEach((point) => {
+    const [x, y] = imageToCanvasPoint(point);
+    ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  state.tables.forEach((table) => drawPolygon(table.polygon, 'rgba(11, 105, 163, 1)', true));
+  drawPolygon(state.points, 'rgba(197, 39, 39, 1)', false);
+}
+
+function configPayload() {
+  return {
+    utym_id: $('utymId').value.trim(),
+    camera_id: $('cameraId').value.trim(),
+    resolution: { width: state.width, height: state.height },
+    tables: state.tables,
+  };
+}
+
+function render() {
+  $('tableList').innerHTML = state.tables.length ? state.tables.map((table, index) => `
+    <div class="table-item">
+      <strong>${table.name}</strong>
+      <span>Kapasite: ${table.capacity}</span><br />
+      <span>Nokta: ${table.polygon.length}</span><br />
+      <button class="danger" type="button" onclick="removeTable(${index})">Sil</button>
+    </div>`).join('') : '<p>Henüz masa eklenmedi.</p>';
+  $('jsonPreview').textContent = JSON.stringify(configPayload(), null, 2);
+  draw();
+}
+
+window.removeTable = (index) => { state.tables.splice(index, 1); render(); };
+
+canvas.addEventListener('click', (event) => {
+  const point = stageToImagePoint(event);
+  if (!point) return;
+  state.points.push(point);
+  render();
+});
+
+$('imageInput').addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+  $('photo').src = url; $('photo').hidden = false; $('video').hidden = true;
+  $('photo').onload = () => { state.width = $('photo').naturalWidth; state.height = $('photo').naturalHeight; state.source = 'image'; fitCanvas(); render(); };
+});
+
+$('cameraButton').addEventListener('click', async () => {
+  try {
+    state.stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    $('video').srcObject = state.stream; await $('video').play();
+    $('video').hidden = false; $('photo').hidden = true; $('snapshotButton').disabled = false;
+    state.width = $('video').videoWidth || 1280; state.height = $('video').videoHeight || 720; state.source = 'camera';
+    fitCanvas(); render();
+  } catch (error) { $('status').textContent = `Kamera açılamadı: ${error.message}`; }
+});
+
+$('snapshotButton').addEventListener('click', () => {
+  const snap = document.createElement('canvas'); snap.width = state.width; snap.height = state.height;
+  snap.getContext('2d').drawImage($('video'), 0, 0, state.width, state.height);
+  $('photo').src = snap.toDataURL('image/jpeg'); $('photo').hidden = false; $('video').hidden = true;
+});
+
+$('undoButton').addEventListener('click', () => { state.points.pop(); render(); });
+$('clearButton').addEventListener('click', () => { state.points = []; render(); });
+$('addTableButton').addEventListener('click', () => {
+  const name = $('tableName').value.trim(); const capacity = Number($('capacity').value);
+  if (!name) { $('status').textContent = 'Masa adı girin.'; return; }
+  if (!Number.isInteger(capacity) || capacity < 1) { $('status').textContent = 'Kapasite pozitif tam sayı olmalı.'; return; }
+  if (state.points.length < 3) { $('status').textContent = 'Poligon için en az 3 nokta ekleyin.'; return; }
+  state.tables.push({ table_id: `T-${String(state.tables.length + 1).padStart(3, '0')}`, name, capacity, polygon: [...state.points] });
+  state.points = []; $('tableName').value = ''; $('status').textContent = 'Masa eklendi.'; render();
+});
+
+$('saveButton').addEventListener('click', async () => {
+  const response = await fetch('/calibration/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(configPayload()) });
+  const data = await response.json();
+  $('status').textContent = response.ok ? `Config kaydedildi: ${data.path}` : `Kaydetme hatası: ${data.detail}`;
+});
+$('downloadButton').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(configPayload(), null, 2)], { type: 'application/json' });
+  const link = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'camera-config.json' });
+  link.click(); URL.revokeObjectURL(link.href);
+});
+window.addEventListener('resize', fitCanvas);
+fitCanvas(); render();
+</script>
+</body>
+</html>

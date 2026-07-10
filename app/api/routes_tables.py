@@ -3,13 +3,20 @@
 from __future__ import annotations
 
 import json
+import os
+from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_db
+from app.calibration.service import (
+    CameraConfigError,
+    camera_config_to_dict,
+    save_camera_config,
+)
 from app.database.models import Table
 
 router = APIRouter(tags=["tables"])
@@ -41,3 +48,25 @@ def list_tables(db: Session = Depends(get_db)) -> list[dict[str, Any]]:
         }
         for table in tables
     ]
+
+
+def _default_calibration_config_path() -> Path:
+    return Path(os.getenv("FTMC_CALIBRATION_CONFIG_PATH", "camera-config.json"))
+
+
+@router.post("/calibration/config", status_code=status.HTTP_201_CREATED)
+def save_calibration_config(config: dict[str, Any]) -> dict[str, Any]:
+    """Validate and save a calibration config JSON payload."""
+
+    config_path = _default_calibration_config_path()
+    try:
+        saved_config = save_camera_config(str(config_path), config)
+    except CameraConfigError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+        ) from exc
+
+    return {
+        "path": str(config_path),
+        "config": camera_config_to_dict(saved_config),
+    }
