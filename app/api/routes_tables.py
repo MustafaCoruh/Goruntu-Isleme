@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import os
-import re
 from pathlib import Path
 from typing import Any
 
@@ -55,44 +54,11 @@ def _default_calibration_config_path() -> Path:
     return Path(os.getenv("FTMC_CALIBRATION_CONFIG_PATH", "camera-config.json"))
 
 
-def _calibration_config_dir() -> Path:
-    return Path(os.getenv("FTMC_CALIBRATION_CONFIG_DIR", "configs"))
-
-
-def _safe_config_filename_part(value: str) -> str:
-    sanitized = re.sub(r"[^A-Za-z0-9_.-]+", "-", value.strip())
-    return sanitized.strip(".-") or "unknown"
-
-
-def _calibration_save_path(config: dict[str, Any]) -> Path:
-    utym_id = _safe_config_filename_part(str(config.get("utym_id", "unknown")))
-    camera_id = _safe_config_filename_part(str(config.get("camera_id", "unknown")))
-    return _calibration_config_dir() / f"{utym_id}-{camera_id}.json"
-
-
 @router.post("/calibration/config", status_code=status.HTTP_201_CREATED)
 def save_calibration_config(config: dict[str, Any]) -> dict[str, Any]:
     """Validate and save a calibration config JSON payload."""
 
     config_path = _default_calibration_config_path()
-    try:
-        saved_config = save_camera_config(str(config_path), config)
-    except CameraConfigError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
-        ) from exc
-
-    return {
-        "path": str(config_path),
-        "config": camera_config_to_dict(saved_config),
-    }
-
-
-@router.post("/calibration/save", status_code=status.HTTP_201_CREATED)
-def save_calibration_tables_config(config: dict[str, Any]) -> dict[str, Any]:
-    """Validate and save a table calibration config under the configs directory."""
-
-    config_path = _calibration_save_path(config)
     try:
         saved_config = save_camera_config(str(config_path), config)
     except CameraConfigError as exc:
