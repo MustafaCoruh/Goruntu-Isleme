@@ -8,11 +8,9 @@ RTSP URLs, and model artifacts outside the repository.
 from __future__ import annotations
 
 import argparse
-import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Sequence
 
 SUPPORTED_IMAGE_EXTENSIONS = frozenset({".jpg", ".jpeg", ".png"})
 SUPPORTED_VIDEO_EXTENSIONS = frozenset({".avi", ".m4v", ".mkv", ".mov", ".mp4"})
@@ -35,7 +33,6 @@ class FieldDemoInputs:
     confidence_threshold: float = 0.5
     iou_threshold: float = 0.45
     window_name: str = "T.UTYM#2 Local Field Demo"
-    report_output: Path | None = None
 
 
 def build_argument_parser() -> argparse.ArgumentParser:
@@ -82,14 +79,6 @@ def build_argument_parser() -> argparse.ArgumentParser:
         default="T.UTYM#2 Local Field Demo",
         help="OpenCV window title for the debug overlay.",
     )
-    parser.add_argument(
-        "--report-output",
-        help=(
-            "Optional path for a safe JSON run report. The report stores filenames, "
-            "extensions, thresholds, and run status, but not real images, videos, "
-            "RTSP URLs, full local paths, or credentials."
-        ),
-    )
     return parser
 
 
@@ -99,7 +88,6 @@ def validate_inputs(args: argparse.Namespace) -> FieldDemoInputs:
     config = Path(args.config).expanduser()
     source = Path(args.source).expanduser()
     model = Path(args.model).expanduser()
-    report_output = Path(args.report_output).expanduser() if args.report_output else None
 
     _require_existing_file(config, "config JSON")
     _require_existing_file(source, "local photo/video source")
@@ -107,8 +95,6 @@ def validate_inputs(args: argparse.Namespace) -> FieldDemoInputs:
     _require_supported_source(source)
     _require_probability(args.confidence_threshold, "confidence-threshold")
     _require_probability(args.iou_threshold, "iou-threshold")
-    if report_output is not None:
-        _require_report_output_path(report_output)
 
     return FieldDemoInputs(
         config=config,
@@ -117,7 +103,6 @@ def validate_inputs(args: argparse.Namespace) -> FieldDemoInputs:
         confidence_threshold=args.confidence_threshold,
         iou_threshold=args.iou_threshold,
         window_name=args.window_name,
-        report_output=report_output,
     )
 
 
@@ -149,100 +134,11 @@ def run(argv: Sequence[str] | None = None) -> int:
     try:
         inputs = validate_inputs(args)
     except FieldDemoPreflightError as error:
-        _write_preflight_failure_report(args, str(error))
         parser.exit(status=2, message=f"T.UTYM#2 field demo preflight failed: {error}\n")
 
     from app.main import main as app_main
 
-    _write_run_report(inputs, status="started")
-    try:
-        exit_code = app_main(build_app_main_argv(inputs))
-    except Exception as error:
-        _write_run_report(inputs, status="failed", message=str(error))
-        raise
-
-    _write_run_report(inputs, status="completed", exit_code=exit_code)
-    return exit_code
-
-
-def _require_report_output_path(path: Path) -> None:
-    if path.suffix.lower() != ".json":
-        raise FieldDemoPreflightError(
-            f"Report output must be a .json file, got: {path}. "
-            "Use a local path such as C:\\FTMC_FIELD_DATA\\reports\\demo_result.json."
-        )
-
-
-def _write_preflight_failure_report(args: argparse.Namespace, message: str) -> None:
-    report_output = getattr(args, "report_output", None)
-    if not report_output:
-        return
-
-    path = Path(report_output).expanduser()
-    try:
-        _write_json_report(
-            path,
-            {
-                "generated_at": _utc_now(),
-                "site": "T.UTYM#2",
-                "status": "preflight_failed",
-                "message": message,
-                "safety_note": _report_safety_note(),
-            },
-        )
-    except OSError:
-        # Preflight errors should still be shown even if the optional report path
-        # is not writable. The operator can fix the reported input issue first.
-        return
-
-
-def _write_run_report(
-    inputs: FieldDemoInputs,
-    *,
-    status: str,
-    message: str | None = None,
-    exit_code: int | None = None,
-) -> None:
-    if inputs.report_output is None:
-        return
-
-    payload: dict[str, Any] = {
-        "generated_at": _utc_now(),
-        "site": "T.UTYM#2",
-        "status": status,
-        "source": _safe_file_summary(inputs.source),
-        "config": _safe_file_summary(inputs.config),
-        "model": _safe_file_summary(inputs.model),
-        "confidence_threshold": inputs.confidence_threshold,
-        "iou_threshold": inputs.iou_threshold,
-        "safety_note": _report_safety_note(),
-    }
-    if message is not None:
-        payload["message"] = message
-    if exit_code is not None:
-        payload["exit_code"] = exit_code
-
-    _write_json_report(inputs.report_output, payload)
-
-
-def _safe_file_summary(path: Path) -> dict[str, str]:
-    return {"name": path.name, "extension": path.suffix.lower()}
-
-
-def _write_json_report(path: Path, payload: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-
-
-def _utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
-def _report_safety_note() -> str:
-    return (
-        "This report must not contain real images, videos, RTSP URLs, IP addresses, "
-        "credentials, or participant information."
-    )
+    return app_main(build_app_main_argv(inputs))
 
 
 def _require_existing_file(path: Path, label: str) -> None:
