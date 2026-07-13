@@ -139,4 +139,14 @@ python scripts/run_tutym2_rtsp_demo.py `
   --report-output C:\FTMC_FIELD_DATA\reports\rtsp_demo_result.json
 ```
 
+İlk bağlantı testi için dedektör çalıştırmadan birkaç frame okumak istenirse şu ek parametre kullanılabilir:
+
+```powershell
+python scripts/run_tutym2_rtsp_demo.py `
+  --config C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.rtsp.local.json `
+  --model C:\FTMC_FIELD_DATA\models\person_detector.onnx `
+  --report-output C:\FTMC_FIELD_DATA\reports\rtsp_connection_test.json `
+  --connection-test-frames 10
+```
+
 Runner gerçek RTSP URL'yi yalnızca lokal config dosyasından okur, rapora URL veya tam lokal path yazmaz, görüntü kaydetmez ve bağlantı durumunu güvenli rapora işler.

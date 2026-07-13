@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from app.field_demo import FieldDemoPreflightError
-from app.rtsp_field_demo import validate_inputs, _write_rtsp_report
+from app.rtsp_field_demo import _frame_shape_summary, validate_inputs, _write_rtsp_report
 
 
 def _args(tmp_path: Path, stream_url: str = "rtsp://user:pass@camera.local/stream") -> Namespace:
@@ -23,6 +23,7 @@ def _args(tmp_path: Path, stream_url: str = "rtsp://user:pass@camera.local/strea
         iou_threshold=0.45,
         window_name="rtsp demo",
         report_output=None,
+        connection_test_frames=0,
     )
 
 
@@ -60,3 +61,27 @@ def test_write_rtsp_report_omits_stream_url_and_full_paths(tmp_path: Path) -> No
     assert "TUTYM2-CAM-001" in text
     assert "rtsp://" not in text
     assert str(tmp_path) not in text
+
+
+def test_validate_inputs_accepts_connection_test_frames(tmp_path: Path) -> None:
+    args = _args(tmp_path)
+    args.connection_test_frames = 3
+
+    inputs = validate_inputs(args)
+
+    assert inputs.connection_test_frames == 3
+
+
+def test_validate_inputs_rejects_negative_connection_test_frames(tmp_path: Path) -> None:
+    args = _args(tmp_path)
+    args.connection_test_frames = -1
+
+    with pytest.raises(FieldDemoPreflightError, match="connection-test-frames"):
+        validate_inputs(args)
+
+
+def test_frame_shape_summary_extracts_height_and_width() -> None:
+    class FakeFrame:
+        shape = (1080, 1920, 3)
+
+    assert _frame_shape_summary(FakeFrame()) == {"height": 1080, "width": 1920}

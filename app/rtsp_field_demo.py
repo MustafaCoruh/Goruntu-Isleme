@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Sequence
@@ -37,6 +38,7 @@ class RtspFieldDemoInputs:
     iou_threshold: float = 0.45
     window_name: str = "T.UTYM#2 RTSP Field Demo"
     report_output: Path | None = None
+    connection_test_frames: int = 0
 
 
 def build_argument_parser() -> argparse.ArgumentParser:
@@ -86,6 +88,15 @@ def build_argument_parser() -> argparse.ArgumentParser:
             "credentials, images, videos, or full local paths."
         ),
     )
+    parser.add_argument(
+        "--connection-test-frames",
+        type=int,
+        default=0,
+        help=(
+            "If greater than 0, open the RTSP stream, read this many frames, "
+            "write a safe connection report, and exit without running the detector."
+        ),
+    )
     return parser
 
 
@@ -102,6 +113,7 @@ def validate_inputs(args: argparse.Namespace) -> RtspFieldDemoInputs:
     _require_probability(args.iou_threshold, "iou-threshold")
     if report_output is not None:
         _require_report_output_path(report_output)
+    _require_non_negative_int(args.connection_test_frames, "connection-test-frames")
 
     raw_config = _load_json_object(config)
     camera_config = _select_camera_config(raw_config)
@@ -115,6 +127,7 @@ def validate_inputs(args: argparse.Namespace) -> RtspFieldDemoInputs:
         iou_threshold=args.iou_threshold,
         window_name=args.window_name,
         report_output=report_output,
+        connection_test_frames=args.connection_test_frames,
     )
 
 
@@ -136,6 +149,19 @@ def run(argv: Sequence[str] | None = None) -> int:
 
     camera_config = _select_runtime_camera(load_camera_config(str(inputs.config)))
     source = RtspCameraSource(camera_config)
+
+    if inputs.connection_test_frames > 0:
+        _write_rtsp_report(inputs, status="connection_test_started")
+        try:
+            connection_result = _run_connection_test(source, inputs.connection_test_frames)
+        except Exception as error:
+            _write_rtsp_report(inputs, status="connection_test_failed", message=str(error))
+            raise
+        _write_rtsp_report(
+            inputs, status="connection_test_completed", details=connection_result
+        )
+        return 0
+
     detector = _load_person_detector(_detector_args(inputs))
 
     _write_rtsp_report(inputs, status="started")
@@ -160,6 +186,11 @@ def _detector_args(inputs: RtspFieldDemoInputs) -> argparse.Namespace:
         confidence_threshold=inputs.confidence_threshold,
         iou_threshold=inputs.iou_threshold,
     )
+
+
+def _require_non_negative_int(value: int, label: str) -> None:
+    if value < 0:
+        raise FieldDemoPreflightError(f"{label} must be 0 or greater, got {value}")
 
 
 def _require_existing_file(path: Path, label: str) -> None:
@@ -242,12 +273,46 @@ def _write_preflight_failure_report(args: argparse.Namespace, message: str) -> N
         return
 
 
+def _run_connection_test(source: Any, frame_count: int) -> dict[str, Any]:
+    started = time.perf_counter()
+    frames_read = 0
+    first_frame_shape: dict[str, int] | None = None
+
+    source.open()
+    try:
+        for _ in range(frame_count):
+            frame = source.read_frame()
+            frames_read += 1
+            if first_frame_shape is None:
+                first_frame_shape = _frame_shape_summary(frame)
+    finally:
+        source.close()
+
+    elapsed_seconds = max(time.perf_counter() - started, 0.000001)
+    return {
+        "requested_frames": frame_count,
+        "frames_read": frames_read,
+        "first_frame_shape": first_frame_shape or {},
+        "elapsed_seconds": round(elapsed_seconds, 3),
+        "average_fps": round(frames_read / elapsed_seconds, 2),
+    }
+
+
+def _frame_shape_summary(frame: Any) -> dict[str, int]:
+    shape = getattr(frame, "shape", None)
+    if not isinstance(shape, tuple) or len(shape) < 2:
+        return {}
+
+    return {"height": int(shape[0]), "width": int(shape[1])}
+
+
 def _write_rtsp_report(
     inputs: RtspFieldDemoInputs,
     *,
     status: str,
     message: str | None = None,
     exit_code: int | None = None,
+    details: dict[str, Any] | None = None,
 ) -> None:
     if inputs.report_output is None:
         return
@@ -267,6 +332,8 @@ def _write_rtsp_report(
         payload["message"] = message
     if exit_code is not None:
         payload["exit_code"] = exit_code
+    if details is not None:
+        payload["details"] = details
 
     _write_json_report(inputs.report_output, payload)
 
