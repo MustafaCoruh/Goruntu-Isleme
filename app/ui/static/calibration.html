@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Masa Kalibrasyonu</title>
+  <title>T.UTYM#2 Lokal Masa Kalibrasyonu</title>
   <style>
     :root { color-scheme: light; font-family: Arial, sans-serif; }
     body { margin: 0; background: #f5f7fb; color: #172033; }
@@ -18,7 +18,7 @@
     button.danger { background: #c52727; }
     button:disabled { background: #bcccdc; cursor: not-allowed; }
     .stage { position: relative; width: 100%; min-height: 420px; border: 2px dashed #9fb3c8; border-radius: 12px; overflow: hidden; background: #d9e2ec; }
-    video, img, canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+    img, canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
     canvas { cursor: crosshair; }
     .hint { color: #486581; font-size: 13px; margin: 8px 0 0; }
     aside h2 { margin-top: 0; }
@@ -29,15 +29,13 @@
   </style>
 </head>
 <body>
-  <header><h1>T.UTYM#2 Masa Kalibrasyonu</h1></header>
+  <header><h1>T.UTYM#2 Lokal Masa Kalibrasyonu</h1></header>
   <main>
     <section class="card">
       <div class="toolbar">
         <label>Örnek fotoğraf yükle
           <input id="imageInput" type="file" accept="image/*" />
         </label>
-        <button id="cameraButton" type="button">Kamerayı Aç</button>
-        <button id="snapshotButton" class="secondary" type="button" disabled>Kareyi Yakala</button>
         <button id="undoButton" class="secondary" type="button">Son Noktayı Sil</button>
         <button id="clearButton" class="danger" type="button">Poligonu Temizle</button>
       </div>
@@ -57,29 +55,26 @@
         <button id="addTableButton" type="button">Masayı Ekle</button>
       </div>
       <div class="stage" id="stage">
-        <video id="video" playsinline muted hidden></video>
         <img id="photo" alt="Kalibrasyon görseli" hidden />
         <canvas id="canvas"></canvas>
       </div>
-      <p class="hint">Görsel üzerinde tıklayarak en az 3 poligon noktası ekleyin. Noktalar gerçek görsel çözünürlüğüne göre kaydedilir.</p>
-      <p class="hint"><strong>Güvenlik:</strong> Gerçek görüntü, RTSP URL veya lokal config dosyasını GitHub'a yüklemeyin.</p>
-      <p id="targetStatus" class="status"></p>
+      <p class="hint">Lokal fotoğraf yalnızca tarayıcı belleğinde gösterilir; repo’ya veya API’ye yüklenmez. Görsel üzerinde tıklayarak en az 3 poligon noktası ekleyin. Noktalar gerçek görsel çözünürlüğüne göre kaydedilir.</p>
       <p id="status" class="status"></p>
     </section>
     <aside class="card">
       <h2>Oluşturulan Masalar</h2>
       <div id="tableList"></div>
-      <button id="saveButton" type="button">Config JSON Kaydet</button>
-      <button id="downloadButton" class="secondary" type="button">tutym2_cam_001.local.json İndir</button>
+      <p id="completionStatus" class="status"></p>
+      <p class="hint">Hedef kayıt yolu: <code>C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json</code></p>
+      <button id="saveButton" type="button" disabled>14 Masa Tamamlanınca Config JSON Kaydet</button>
+      <button id="downloadButton" class="secondary" type="button">JSON İndir</button>
       <h3>Önizleme</h3>
       <pre id="jsonPreview"></pre>
     </aside>
   </main>
 <script>
-const TARGET_TABLE_COUNT = 14;
-const DEFAULT_CAPACITY = 1;
-const DOWNLOAD_FILENAME = 'tutym2_cam_001.local.json';
-const state = { tables: [], points: [], width: 1280, height: 720, stream: null, source: null };
+const REQUIRED_TABLE_COUNT = 14;
+const state = { tables: [], points: [], width: 1920, height: 1080, source: null };
 const $ = (id) => document.getElementById(id);
 const canvas = $('canvas');
 const ctx = canvas.getContext('2d');
@@ -142,6 +137,7 @@ function configPayload() {
   return {
     utym_id: $('utymId').value.trim(),
     camera_id: $('cameraId').value.trim(),
+    source_type: 'local_image',
     resolution: { width: state.width, height: state.height },
     tables: state.tables,
   };
@@ -157,6 +153,11 @@ function render() {
       <span>Nokta: ${table.polygon.length}</span><br />
       <button class="danger" type="button" onclick="removeTable(${index})">Sil</button>
     </div>`).join('') : '<p>Henüz masa eklenmedi.</p>';
+  const remaining = Math.max(0, REQUIRED_TABLE_COUNT - state.tables.length);
+  $('completionStatus').textContent = remaining === 0
+    ? '14 masa tamamlandı. Config lokal Windows yoluna kaydedilebilir.'
+    : `${state.tables.length}/${REQUIRED_TABLE_COUNT} masa eklendi. ${remaining} masa kaldı.`;
+  $('saveButton').disabled = state.tables.length !== REQUIRED_TABLE_COUNT;
   $('jsonPreview').textContent = JSON.stringify(configPayload(), null, 2);
   draw();
 }
@@ -174,24 +175,8 @@ $('imageInput').addEventListener('change', (event) => {
   const file = event.target.files[0];
   if (!file) return;
   const url = URL.createObjectURL(file);
-  $('photo').src = url; $('photo').hidden = false; $('video').hidden = true;
+  $('photo').src = url; $('photo').hidden = false;
   $('photo').onload = () => { state.width = $('photo').naturalWidth; state.height = $('photo').naturalHeight; state.source = 'image'; fitCanvas(); render(); };
-});
-
-$('cameraButton').addEventListener('click', async () => {
-  try {
-    state.stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    $('video').srcObject = state.stream; await $('video').play();
-    $('video').hidden = false; $('photo').hidden = true; $('snapshotButton').disabled = false;
-    state.width = $('video').videoWidth || 1280; state.height = $('video').videoHeight || 720; state.source = 'camera';
-    fitCanvas(); render();
-  } catch (error) { $('status').textContent = `Kamera açılamadı: ${error.message}`; }
-});
-
-$('snapshotButton').addEventListener('click', () => {
-  const snap = document.createElement('canvas'); snap.width = state.width; snap.height = state.height;
-  snap.getContext('2d').drawImage($('video'), 0, 0, state.width, state.height);
-  $('photo').src = snap.toDataURL('image/jpeg'); $('photo').hidden = false; $('video').hidden = true;
 });
 
 $('undoButton').addEventListener('click', () => { state.points.pop(); render(); });
@@ -201,19 +186,21 @@ $('addTableButton').addEventListener('click', () => {
   if (!name) { $('status').textContent = 'Masa adı girin.'; return; }
   if (!Number.isInteger(capacity) || capacity < 1) { $('status').textContent = 'Kapasite pozitif tam sayı olmalı.'; return; }
   if (state.points.length < 3) { $('status').textContent = 'Poligon için en az 3 nokta ekleyin.'; return; }
-  if (state.tables.length >= TARGET_TABLE_COUNT) { $('status').textContent = `T.UTYM#2 için hedef masa sayısı ${TARGET_TABLE_COUNT}. Daha fazla masa eklenemez.`; return; }
+  if (state.tables.length >= REQUIRED_TABLE_COUNT) { $('status').textContent = '14 masa zaten tamamlandı. Yeni masa eklemek için önce bir masa silin.'; return; }
   state.tables.push({ table_id: `T-${String(state.tables.length + 1).padStart(3, '0')}`, name, capacity, polygon: [...state.points] });
   state.points = []; $('tableName').value = ''; $('capacity').value = String(DEFAULT_CAPACITY); $('status').textContent = `Masa eklendi. ${state.tables.length} / ${TARGET_TABLE_COUNT}`; render();
 });
 
 $('saveButton').addEventListener('click', async () => {
+  if (state.tables.length !== REQUIRED_TABLE_COUNT) { $('status').textContent = 'Config kaydetmeden önce 14 masa tamamlanmalı.'; return; }
   const response = await fetch('/calibration/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(configPayload()) });
   const data = await response.json();
   $('status').textContent = response.ok ? `Config kaydedildi: ${data.path}` : `Kaydetme hatası: ${data.detail}`;
 });
 $('downloadButton').addEventListener('click', () => {
+  if (state.tables.length !== REQUIRED_TABLE_COUNT) { $('status').textContent = 'JSON indirmeden önce 14 masa tamamlanmalı.'; return; }
   const blob = new Blob([JSON.stringify(configPayload(), null, 2)], { type: 'application/json' });
-  const link = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: DOWNLOAD_FILENAME });
+  const link = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'tutym2_cam_001.local.json' });
   link.click(); URL.revokeObjectURL(link.href);
 });
 window.addEventListener('resize', fitCanvas);

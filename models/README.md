@@ -1,65 +1,91 @@
-# Person Detector Model Artifact Guide
+# Person Detector ONNX Model Placement
 
-Bu klasör, FTMC/UTYM masa doluluk demosunda kullanılacak kişi tespit modelinin beklenen konumunu ve güvenli taşıma kurallarını açıklar.
+Bu dizin, saha makinesinde çalışacak person detector ONNX modelinin beklenen konumunu dokümante eder. Gerçek model dosyası büyük boyutlu olabileceği veya lisans/dağıtım kısıtları içerebileceği için repo'ya eklenmeyebilir.
 
-## 1. Beklenen Model Dosyası
+## Beklenen repo içi model yolu
 
-Uygulama varsayılan olarak aşağıdaki ONNX model dosyasını bekler:
+Uygulamanın varsayılan olarak arayacağı model dosyası aşağıdaki konumdadır:
 
 ```text
 models/person_detector.onnx
 ```
 
-T.UTYM#2 Windows saha demosunda önerilen lokal model yolu şudur:
+Saha kurulumunda model repo ile birlikte dağıtılıyorsa, `person_detector.onnx` dosyasını bu README ile aynı dizine kopyalayın.
+
+## Alternatif saha yolu
+
+Saha operasyon bilgisayarında modelin uygulama dizininden bağımsız ve kalıcı bir veri alanında tutulması istenirse aşağıdaki yol kullanılabilir:
 
 ```text
 C:\FTMC_FIELD_DATA\models\person_detector.onnx
 ```
 
-## 2. Model Repository'ye Eklenmeli mi?
+Bu yol özellikle uygulama klasörünün güncelleme sırasında silinebileceği veya yeniden oluşturulabileceği kurulumlarda tercih edilmelidir. Operatör, uygulama yapılandırmasında model yolu seçeneği varsa bu mutlak Windows yolunu kullanmalıdır.
 
-Varsayılan kural:
+## Model repo'ya eklenmiyorsa taşıma adımları
 
-```text
-Model dosyası büyükse, lisanslıysa veya kurum politikası gereği kontrollü dağıtılıyorsa repository'ye eklenmemelidir.
+1. Model dosyasını güvenilir dağıtım kaynağından saha makinesine indirin veya harici disk/kurumsal dosya paylaşımı ile taşıyın.
+2. Dosya adının tam olarak `person_detector.onnx` olduğundan emin olun.
+3. Aşağıdaki hedeflerden yalnızca birine kopyalayın:
+   - Repo içi varsayılan yol: `models/person_detector.onnx`
+   - Alternatif saha yolu: `C:\FTMC_FIELD_DATA\models\person_detector.onnx`
+4. Alternatif saha yolunu kullanıyorsanız klasör yoksa oluşturun:
+
+   ```powershell
+   New-Item -ItemType Directory -Force C:\FTMC_FIELD_DATA\models
+   ```
+
+5. Kopyalama sonrası bütünlük kontrolünü SHA256 checksum ile doğrulayın.
+
+## SHA256 bütünlük kontrolü
+
+Model dosyası için beklenen SHA256 değeri model dağıtım notunda, sürüm manifest dosyasında veya teslimat e-postasında ayrıca paylaşılmalıdır. Kurulum operatörü, kopyalanan dosyanın checksum değerini bu beklenen değerle karşılaştırmalıdır.
+
+Windows PowerShell ile repo içi yol için:
+
+```powershell
+Get-FileHash .\models\person_detector.onnx -Algorithm SHA256
 ```
 
-Bu durumda model yalnızca saha makinesinde veya kurum içi güvenli dosya paylaşım alanında tutulmalıdır.
-
-## 3. Modelin Bütünlüğünü Kontrol Etme
-
-Windows PowerShell ile SHA256 hash alınabilir:
+Windows PowerShell ile alternatif saha yolu için:
 
 ```powershell
 Get-FileHash C:\FTMC_FIELD_DATA\models\person_detector.onnx -Algorithm SHA256
 ```
 
-Elde edilen hash kurum içi onaylı hash değeriyle karşılaştırılmalıdır.
+Linux/macOS geliştirme ortamında repo içi yol için:
 
-## 4. CPU ve GPU Notları
+```bash
+sha256sum models/person_detector.onnx
+```
 
-- Geliştirme bilgisayarı CPU-only olabilir.
-- T.UTYM#2 operasyon bilgisayarlarında GPU varsa performans ayrıca ölçülmelidir.
-- ONNX Runtime CPU provider baseline olarak kullanılabilir.
-- GPU kullanımı istenirse ONNX Runtime GPU kurulumu, CUDA/cuDNN sürümleri ve kurum BT politikaları ayrıca değerlendirilmelidir.
+Çıktıdaki hash değeri beklenen SHA256 değeriyle birebir aynı olmalıdır. Farklıysa model dosyasını kullanmayın; dosyayı yeniden indirin veya tekrar kopyalayın.
 
-## 5. Model Yoksa Beklenen Hata
+## CPU-only geliştirme bilgisayarı ve GPU'lu operasyon bilgisayarı
 
-T.UTYM#2 lokal demo runner model yoksa demo başlamadan önce şu tip hata verir:
+- CPU-only geliştirme bilgisayarı: Geliştirici, gerçek model dosyası olmadan kodu düzenleyebilir, dokümantasyonu güncelleyebilir ve model yüklemeyen testleri çalıştırabilir. Model gerektiren entegrasyon testleri veya gerçek zamanlı çıkarım performans kontrolleri bu ortamda beklenen performansı vermeyebilir.
+- GPU'lu operasyon bilgisayarı: Saha çalıştırması için `person_detector.onnx` dosyası yukarıdaki beklenen yollardan birinde bulunmalıdır. GPU sürücüleri, CUDA/cuDNN veya kullanılan çıkarım sağlayıcısının gerektirdiği runtime bileşenleri ayrıca kurulu olmalıdır.
+
+Model dosyasının konumu CPU ve GPU ayrımından bağımsızdır; fark, çıkarımın hangi donanım ve runtime sağlayıcısıyla çalıştırılacağıdır.
+
+## Model bulunamazsa hata ve çözüm
+
+Model dosyası beklenen konumlarda yoksa uygulama başlatılırken veya person detector bileşeni etkinleştirilirken aşağıdakine benzer bir hata alınır:
 
 ```text
-Missing ONNX person detector model
+FileNotFoundError: person detector model not found: models/person_detector.onnx
+```
+
+Alternatif saha yolu yapılandırılmışsa hata mesajı şu yolu da içerebilir:
+
+```text
+FileNotFoundError: person detector model not found: C:\FTMC_FIELD_DATA\models\person_detector.onnx
 ```
 
 Çözüm:
 
-1. Model dosyasını lokal saha klasörüne koyun.
-2. Dosya adının `person_detector.onnx` olduğundan emin olun.
-3. Komutta `--model` path'inin doğru olduğundan emin olun.
-
-## 6. Güvenlik Notları
-
-- Model dosyasının kaynağı kurum tarafından onaylanmalıdır.
-- Model hash değeri kayıt altına alınmalıdır.
-- Model dosyası değiştirilirse saha doğrulama metrikleri yeniden alınmalıdır.
-- Model dosyasıyla birlikte gerçek görüntü, video veya RTSP credential taşınmamalıdır.
+1. `person_detector.onnx` dosyasının gerçekten hedef klasörde olduğunu kontrol edin.
+2. Dosya adında yazım hatası, ek uzantı veya büyük/küçük harf farkı olmadığını doğrulayın.
+3. Alternatif saha yolu kullanılıyorsa uygulama yapılandırmasının `C:\FTMC_FIELD_DATA\models\person_detector.onnx` yolunu gösterdiğinden emin olun.
+4. SHA256 checksum değerini tekrar kontrol edin.
+5. Dosya eksik veya checksum hatalıysa modeli güvenilir kaynaktan yeniden taşıyın.
