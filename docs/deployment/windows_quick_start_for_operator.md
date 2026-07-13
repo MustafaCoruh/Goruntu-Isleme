@@ -169,3 +169,5 @@ Gerçek görüntü, video, RTSP URL veya kişi bilgisi rapora eklenmemelidir.
 Lokal saha doğrulama sonuçlarını görüntü paylaşmadan yazmak için `docs/validation/tutym2_local_field_validation_template.md` şablonunu kullanın.
 
 RTSP canlı kameraya geçmeden önce `docs/deployment/tutym2_rtsp_operator_guide.md` kılavuzunu okuyun.
+
+RTSP lokal config hazırlığında `configs/templates/tutym2_cam_001.rtsp.template.json` dosyasını yalnızca şablon olarak kullanın; gerçek RTSP URL sadece lokal kopyaya yazılmalıdır.

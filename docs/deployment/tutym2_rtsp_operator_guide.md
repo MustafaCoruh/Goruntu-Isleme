@@ -44,6 +44,18 @@ Bu dosya repository içinde olmamalıdır.
 
 ## 4. RTSP Lokal Config Örneği
 
+Repository içinde güvenli bir RTSP template dosyası vardır:
+
+```text
+configs/templates/tutym2_cam_001.rtsp.template.json
+```
+
+Bu template lokal Windows makinede şu dosyaya kopyalanmalıdır:
+
+```text
+C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.rtsp.local.json
+```
+
 Aşağıdaki örnek gerçek değer içermez. Gerçek kullanıcı adı, parola, IP ve stream yolu yalnızca lokal dosyada doldurulmalıdır.
 
 ```json
