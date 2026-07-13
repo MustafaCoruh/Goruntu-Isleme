@@ -43,7 +43,7 @@ Bu klasör repository dışında kalmalıdır.
 
 ## 4. İlk Lokal Fotoğraf/Video Testi
 
-Gerçek görüntü paylaşılmadan, saha makinesindeki lokal dosya ile demo çalıştırılır.
+Gerçek görüntü paylaşılmadan, saha makinesindeki lokal dosya ile demo çalıştırılır. Komut, lokal config path, kaynak fotoğraf/video path ve ONNX model path değerlerini komut satırından alır. Overlay penceresinde masa poligonları, insan tespit kutuları ve masa doluluk durumları gösterilir; istenirse son overlay çıktısı repo dışındaki lokal rapor klasörüne yazılabilir.
 
 Fotoğraf örneği:
 
@@ -52,6 +52,18 @@ python -m app.main `
   --config C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json `
   --source C:\FTMC_FIELD_DATA\input\photos\sample.jpg `
   --model C:\FTMC_FIELD_DATA\models\person_detector.onnx
+```
+
+
+Fotoğraf için overlay dosyası üretip pencere açmadan çalıştırma örneği:
+
+```powershell
+python -m app.main `
+  --config C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json `
+  --source C:\FTMC_FIELD_DATA\input\photos\sample.jpg `
+  --model C:\FTMC_FIELD_DATA\models\person_detector.onnx `
+  --output C:\FTMC_FIELD_DATA\reports\sample_overlay.jpg `
+  --no-display
 ```
 
 Video örneği:
@@ -109,7 +121,11 @@ Görüntü paylaşmadan aşağıdaki sonuçlar raporlanabilir:
 | Belirsiz karar oranı | %4 |
 | Donanım | CPU/GPU modeli, RAM |
 
-## 8. Sıradaki Kod İhtiyacı
+## 8. Hata Mesajları ve Kontroller
+
+Runner, eksik config/source/model path, desteklenmeyen dosya uzantısı veya okunamayan kaynak durumunda saha kullanıcısına kontrol edilecek Windows path örnekleriyle birlikte anlaşılır hata mesajı döndürür. Gerçek RTSP URL, kimlik bilgisi, fotoğraf veya video hiçbir hata mesajı ya da doküman örneği üzerinden repository içine yazılmamalıdır.
+
+## 9. Sıradaki Kod İhtiyacı
 
 Aşağıdaki geliştirmeler önerilir:
 
