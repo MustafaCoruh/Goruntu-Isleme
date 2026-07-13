@@ -44,7 +44,7 @@
           <input id="tableName" type="text" placeholder="Örn. Masa 1" />
         </label>
         <label>Kapasite
-          <input id="capacity" type="number" min="1" step="1" value="4" />
+          <input id="capacity" type="number" min="1" step="1" value="1" />
         </label>
         <label>UTYM ID
           <input id="utymId" type="text" value="T.UTYM#2" />
@@ -144,6 +144,8 @@ function configPayload() {
 }
 
 function render() {
+  $('targetStatus').textContent = `T.UTYM#2 hedef masa sayısı: ${state.tables.length} / ${TARGET_TABLE_COUNT}`;
+  $('addTableButton').disabled = state.tables.length >= TARGET_TABLE_COUNT;
   $('tableList').innerHTML = state.tables.length ? state.tables.map((table, index) => `
     <div class="table-item">
       <strong>${table.name}</strong>
@@ -186,7 +188,7 @@ $('addTableButton').addEventListener('click', () => {
   if (state.points.length < 3) { $('status').textContent = 'Poligon için en az 3 nokta ekleyin.'; return; }
   if (state.tables.length >= REQUIRED_TABLE_COUNT) { $('status').textContent = '14 masa zaten tamamlandı. Yeni masa eklemek için önce bir masa silin.'; return; }
   state.tables.push({ table_id: `T-${String(state.tables.length + 1).padStart(3, '0')}`, name, capacity, polygon: [...state.points] });
-  state.points = []; $('tableName').value = ''; $('status').textContent = 'Masa eklendi.'; render();
+  state.points = []; $('tableName').value = ''; $('capacity').value = String(DEFAULT_CAPACITY); $('status').textContent = `Masa eklendi. ${state.tables.length} / ${TARGET_TABLE_COUNT}`; render();
 });
 
 $('saveButton').addEventListener('click', async () => {
