@@ -150,3 +150,5 @@ python scripts/run_tutym2_rtsp_demo.py `
 ```
 
 Runner gerçek RTSP URL'yi yalnızca lokal config dosyasından okur, rapora URL veya tam lokal path yazmaz, görüntü kaydetmez ve bağlantı durumunu güvenli rapora işler.
+
+Bağlantı testi raporunu yorumlamak için `docs/deployment/tutym2_rtsp_connection_report_guide.md` kılavuzunu kullanın.
