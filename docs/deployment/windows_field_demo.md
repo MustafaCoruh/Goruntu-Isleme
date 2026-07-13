@@ -43,7 +43,7 @@ Bu klasör repository dışında kalmalıdır.
 
 ## 4. İlk Lokal Fotoğraf/Video Testi
 
-Gerçek görüntü paylaşılmadan, saha makinesindeki lokal dosya ile demo çalıştırılır. Komut, lokal config path, kaynak fotoğraf/video path ve ONNX model path değerlerini komut satırından alır. Overlay penceresinde masa poligonları, insan tespit kutuları ve masa doluluk durumları gösterilir; istenirse son overlay çıktısı repo dışındaki lokal rapor klasörüne yazılabilir.
+Gerçek görüntü paylaşılmadan, saha makinesindeki lokal dosya ile demo çalıştırılır.
 
 Fotoğraf örneği:
 
@@ -52,18 +52,6 @@ python -m app.main `
   --config C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json `
   --source C:\FTMC_FIELD_DATA\input\photos\sample.jpg `
   --model C:\FTMC_FIELD_DATA\models\person_detector.onnx
-```
-
-
-Fotoğraf için overlay dosyası üretip pencere açmadan çalıştırma örneği:
-
-```powershell
-python -m app.main `
-  --config C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json `
-  --source C:\FTMC_FIELD_DATA\input\photos\sample.jpg `
-  --model C:\FTMC_FIELD_DATA\models\person_detector.onnx `
-  --output C:\FTMC_FIELD_DATA\reports\sample_overlay.jpg `
-  --no-display
 ```
 
 Video örneği:
@@ -121,9 +109,38 @@ Görüntü paylaşmadan aşağıdaki sonuçlar raporlanabilir:
 | Belirsiz karar oranı | %4 |
 | Donanım | CPU/GPU modeli, RAM |
 
-## 8. Hata Mesajları ve Kontroller
+## 8. Operatör Dostu Lokal Demo Runner
 
-Runner, eksik config/source/model path, desteklenmeyen dosya uzantısı veya okunamayan kaynak durumunda saha kullanıcısına kontrol edilecek Windows path örnekleriyle birlikte anlaşılır hata mesajı döndürür. Gerçek RTSP URL, kimlik bilgisi, fotoğraf veya video hiçbir hata mesajı ya da doküman örneği üzerinden repository içine yazılmamalıdır.
+Lokal fotoğraf veya video testleri için daha anlaşılır preflight hataları veren T.UTYM#2 runner eklenmiştir. Bu runner gerçek görüntü, video, model ve lokal config dosyalarının repository dışında tutulduğunu varsayar.
+
+Örnek kullanım:
+
+```powershell
+python scripts/run_tutym2_local_demo.py `
+  --config C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json `
+  --source C:\FTMC_FIELD_DATA\input\photos\sample.jpg `
+  --model C:\FTMC_FIELD_DATA\models\person_detector.onnx `
+  --report-output C:\FTMC_FIELD_DATA\reports\demo_result.json
+```
+
+Bu rapor dosyası gerçek görüntü veya RTSP bilgisi içermez; yalnızca güvenli özet metadata ve çalışma durumunu içerir.
+
+Alternatif modül kullanımı:
+
+```powershell
+python -m app.field_demo `
+  --config C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json `
+  --source C:\FTMC_FIELD_DATA\input\videos\sample.mp4 `
+  --model C:\FTMC_FIELD_DATA\models\person_detector.onnx
+```
+
+Runner şu kontrolleri demo başlamadan yapar:
+
+1. Lokal config dosyası var mı?
+2. Lokal fotoğraf/video kaynağı var mı?
+3. ONNX model dosyası var mı?
+4. Kaynak uzantısı destekleniyor mu?
+5. Confidence ve IoU eşikleri 0 ile 1 arasında mı?
 
 ## 9. Sıradaki Kod İhtiyacı
 
@@ -131,6 +148,5 @@ Aşağıdaki geliştirmeler önerilir:
 
 1. RTSP kaynaklarını komut satırı demosuna güvenli şekilde bağlamak.
 2. Windows için `.env` veya lokal config secret stratejisi eklemek.
-3. T.UTYM#2 14 masa config şablonunu gerçek koordinatlar girilene kadar placeholder olarak tutmak.
-4. Lokal saha raporu üretim komutu eklemek.
-5. CPU ve GPU performansını ayrı ayrı raporlamak.
+3. Lokal saha raporu üretim komutu eklemek.
+4. CPU ve GPU performansını ayrı ayrı raporlamak.

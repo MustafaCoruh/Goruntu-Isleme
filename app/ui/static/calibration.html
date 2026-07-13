@@ -29,7 +29,7 @@
   </style>
 </head>
 <body>
-  <header><h1>T.UTYM#2 Lokal Masa Kalibrasyonu</h1></header>
+  <header><h1>T.UTYM#2 Masa Kalibrasyonu</h1></header>
   <main>
     <section class="card">
       <div class="toolbar">
@@ -58,23 +58,26 @@
         <img id="photo" alt="Kalibrasyon görseli" hidden />
         <canvas id="canvas"></canvas>
       </div>
-      <p class="hint">Lokal fotoğraf yalnızca tarayıcı belleğinde gösterilir; repo’ya veya API’ye yüklenmez. Görsel üzerinde tıklayarak en az 3 poligon noktası ekleyin. Noktalar gerçek görsel çözünürlüğüne göre kaydedilir.</p>
+      <p class="hint">Görsel üzerinde tıklayarak en az 3 poligon noktası ekleyin. Noktalar gerçek görsel çözünürlüğüne göre kaydedilir.</p>
+      <p class="hint"><strong>Güvenlik:</strong> Gerçek görüntü, RTSP URL veya lokal config dosyasını GitHub'a yüklemeyin.</p>
+      <p id="targetStatus" class="status"></p>
       <p id="status" class="status"></p>
     </section>
     <aside class="card">
       <h2>Oluşturulan Masalar</h2>
       <div id="tableList"></div>
-      <p id="completionStatus" class="status"></p>
-      <p class="hint">Hedef kayıt yolu: <code>C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json</code></p>
-      <button id="saveButton" type="button" disabled>14 Masa Tamamlanınca Config JSON Kaydet</button>
-      <button id="downloadButton" class="secondary" type="button">JSON İndir</button>
+      <button id="saveButton" type="button">Config JSON Kaydet</button>
+      <button id="downloadButton" class="secondary" type="button">tutym2_cam_001.local.json İndir</button>
       <h3>Önizleme</h3>
       <pre id="jsonPreview"></pre>
     </aside>
   </main>
 <script>
-const REQUIRED_TABLE_COUNT = 14;
-const state = { tables: [], points: [], width: 1920, height: 1080, source: null };
+// MERGE-CHECK: TARGET_TABLE_COUNT must stay 14 for T.UTYM#2 calibration.
+const TARGET_TABLE_COUNT = 14;
+const DEFAULT_CAPACITY = 1;
+const DOWNLOAD_FILENAME = 'tutym2_cam_001.local.json';
+const state = { tables: [], points: [], width: 1280, height: 720, stream: null, source: null };
 const $ = (id) => document.getElementById(id);
 const canvas = $('canvas');
 const ctx = canvas.getContext('2d');
@@ -186,7 +189,7 @@ $('addTableButton').addEventListener('click', () => {
   if (!name) { $('status').textContent = 'Masa adı girin.'; return; }
   if (!Number.isInteger(capacity) || capacity < 1) { $('status').textContent = 'Kapasite pozitif tam sayı olmalı.'; return; }
   if (state.points.length < 3) { $('status').textContent = 'Poligon için en az 3 nokta ekleyin.'; return; }
-  if (state.tables.length >= REQUIRED_TABLE_COUNT) { $('status').textContent = '14 masa zaten tamamlandı. Yeni masa eklemek için önce bir masa silin.'; return; }
+  if (state.tables.length >= TARGET_TABLE_COUNT) { $('status').textContent = `T.UTYM#2 için hedef masa sayısı ${TARGET_TABLE_COUNT}. Daha fazla masa eklenemez.`; return; }
   state.tables.push({ table_id: `T-${String(state.tables.length + 1).padStart(3, '0')}`, name, capacity, polygon: [...state.points] });
   state.points = []; $('tableName').value = ''; $('capacity').value = String(DEFAULT_CAPACITY); $('status').textContent = `Masa eklendi. ${state.tables.length} / ${TARGET_TABLE_COUNT}`; render();
 });
@@ -200,7 +203,7 @@ $('saveButton').addEventListener('click', async () => {
 $('downloadButton').addEventListener('click', () => {
   if (state.tables.length !== REQUIRED_TABLE_COUNT) { $('status').textContent = 'JSON indirmeden önce 14 masa tamamlanmalı.'; return; }
   const blob = new Blob([JSON.stringify(configPayload(), null, 2)], { type: 'application/json' });
-  const link = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'tutym2_cam_001.local.json' });
+  const link = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: DOWNLOAD_FILENAME });
   link.click(); URL.revokeObjectURL(link.href);
 });
 window.addEventListener('resize', fitCanvas);

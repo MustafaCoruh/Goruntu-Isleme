@@ -45,6 +45,7 @@ Sadece sayısal sonuçlar, genel gözlemler ve masa numarası bazlı hata türle
 | Masa başına sandalye | 1 |
 | Kullanılan config dosyası | `C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json` |
 | Kullanılan model dosyası | `C:\FTMC_FIELD_DATA\models\person_detector.onnx` |
+| Güvenli otomatik rapor | `C:\FTMC_FIELD_DATA\reports\demo_result.json` |
 | Test bilgisayarı | CPU/GPU/RAM bilgisi |
 | İnternet durumu | Offline / Kontrollü internet / Bilinmiyor |
 

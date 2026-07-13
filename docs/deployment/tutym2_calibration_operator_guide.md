@@ -207,3 +207,5 @@ scripts/run_tutym2_local_demo.py
 ```
 
 Bu komutu terminal erişimi olan yetkili BT/geliştirme sorumlusu çalıştırmalıdır.
+
+Testten sonra görüntü paylaşmadan sonuçları yazmak için `docs/validation/tutym2_local_field_validation_template.md` şablonunu kullanın.
