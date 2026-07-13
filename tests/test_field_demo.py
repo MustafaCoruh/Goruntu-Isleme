@@ -4,9 +4,7 @@ from pathlib import Path
 import pytest
 
 from app.field_demo import (
-    FieldDemoInputs,
     FieldDemoPreflightError,
-    _write_run_report,
     build_app_main_argv,
     validate_inputs,
 )
@@ -26,7 +24,6 @@ def _args(tmp_path: Path, source_name: str = "sample.jpg") -> Namespace:
         confidence_threshold=0.5,
         iou_threshold=0.45,
         window_name="demo",
-        report_output=None,
     )
 
 
@@ -74,38 +71,3 @@ def test_build_app_main_argv_forwards_paths_and_thresholds(tmp_path: Path) -> No
     ]
     assert "--confidence-threshold" in argv
     assert "--iou-threshold" in argv
-
-
-def test_validate_inputs_accepts_json_report_output(tmp_path: Path) -> None:
-    args = _args(tmp_path)
-    args.report_output = str(tmp_path / "reports" / "demo_result.json")
-
-    inputs = validate_inputs(args)
-
-    assert inputs.report_output == tmp_path / "reports" / "demo_result.json"
-
-
-def test_validate_inputs_rejects_non_json_report_output(tmp_path: Path) -> None:
-    args = _args(tmp_path)
-    args.report_output = str(tmp_path / "reports" / "demo_result.txt")
-
-    with pytest.raises(FieldDemoPreflightError, match="Report output must be a .json file"):
-        validate_inputs(args)
-
-
-def test_write_run_report_omits_full_local_paths(tmp_path: Path) -> None:
-    report = tmp_path / "reports" / "demo_result.json"
-    inputs = FieldDemoInputs(
-        config=tmp_path / "tutym2_cam_001.local.json",
-        source=tmp_path / "secret_photo.jpg",
-        model=tmp_path / "person_detector.onnx",
-        report_output=report,
-    )
-
-    _write_run_report(inputs, status="completed", exit_code=0)
-
-    text = report.read_text()
-    assert "completed" in text
-    assert "secret_photo.jpg" in text
-    assert str(tmp_path) not in text
-    assert "RTSP URLs" in text
