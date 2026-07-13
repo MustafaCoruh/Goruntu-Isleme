@@ -118,14 +118,13 @@ RTSP URL paylaşılmadı: Evet
 
 ## 9. Sonraki Kod Adımı
 
-Bu kılavuz hazırlık içindir. Bir sonraki teknik PR'da güvenli RTSP runner eklenebilir.
+Güvenli RTSP runner eklenmiştir. Yetkili BT/geliştirme sorumlusu canlı test için şu komutu kullanabilir:
 
-Önerilen özellikler:
-
-```text
-1. Gerçek RTSP URL'yi yalnızca lokal config dosyasından oku.
-2. URL'yi loglara veya rapora yazma.
-3. Bağlantı kurulamazsa anlaşılır hata ver.
-4. FPS ve bağlantı durumunu güvenli rapora yaz.
-5. Görüntü veya RTSP credential kaydetme.
+```powershell
+python scripts/run_tutym2_rtsp_demo.py `
+  --config C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.rtsp.local.json `
+  --model C:\FTMC_FIELD_DATA\models\person_detector.onnx `
+  --report-output C:\FTMC_FIELD_DATA\reports\rtsp_demo_result.json
 ```
+
+Runner gerçek RTSP URL'yi yalnızca lokal config dosyasından okur, rapora URL veya tam lokal path yazmaz, görüntü kaydetmez ve bağlantı durumunu güvenli rapora işler.
