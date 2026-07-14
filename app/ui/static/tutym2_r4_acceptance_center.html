@@ -87,9 +87,9 @@
       <ul class="operator-checklist" id="operatorChecklist">
         <li><label><input type="checkbox" data-check="open-r4" /> Bu sayfa açılıyor: <code>tutym2_r4_acceptance_center.html</code></label></li>
         <li><label><input type="checkbox" data-check="open-dashboard" /> <strong>Dashboard Aç</strong> butonu yeni sekmede dashboard'u açıyor.</label></li>
-        <li><label><input type="checkbox" data-check="dashboard-state-picker" /> <code>dashboard_state.json seç</code> alanı görünüyor.</label></li>
-        <li><label><input type="checkbox" data-check="handoff-picker" /> <code>field_handoff_summary.json seç</code> alanı görünüyor.</label></li>
-        <li><label><input type="checkbox" data-check="r4-gate-picker" /> <code>r4_acceptance_gate.json seç</code> alanı görünüyor.</label></li>
+        <li><label><input type="checkbox" data-check="dashboard-state-picker" /> <strong>1. Dashboard Durum Raporu seç</strong> alanı görünüyor.</label></li>
+        <li><label><input type="checkbox" data-check="handoff-picker" /> <strong>2. Saha Teslim Özeti seç</strong> alanı görünüyor.</label></li>
+        <li><label><input type="checkbox" data-check="r4-gate-picker" /> <strong>3. R4 Final Karar Raporu seç</strong> alanı görünüyor.</label></li>
         <li><label><input type="checkbox" data-check="no-sensitive-data" /> Ekranda gerçek RTSP URL, kamera IP, parola veya gerçek görüntü yok.</label></li>
       </ul>
       <div id="operatorChecklistStatus" class="result">Kontrol listesi bekliyor.</div>
@@ -98,17 +98,27 @@
     <section class="card">
       <h2>Terminalsiz JSON Hızlı Kontrol</h2>
       <p class="muted">Bu kontrol sadece seçtiğin JSON dosyalarının güvenli özet alanlarını tarar. Dosyayı sunucuya göndermez; tarayıcı içinde okur.</p>
-      <label for="dashboardState">dashboard_state.json seç</label>
+      <div class="result">
+        <strong>Dosya adlarını bilmiyorsan:</strong> Dosyayı adına göre değil, içeriğine göre seçiyoruz. Sana verilen güvenli JSON dosyalarında genelde şu anlamlar olur:
+        <ul>
+          <li><strong>1. Dashboard Durum Raporu</strong> — eski teknik adı: <code>dashboard_state.json</code></li>
+          <li><strong>2. Saha Teslim Özeti</strong> — eski teknik adı: <code>field_handoff_summary.json</code></li>
+          <li><strong>3. R4 Final Karar Raporu</strong> — eski teknik adı: <code>r4_acceptance_gate.json</code></li>
+        </ul>
+        Dosya adı farklı olabilir; önemli olan JSON içindeki <code>report_type</code> alanıdır.
+      </div>
+
+      <label for="dashboardState">1. Dashboard Durum Raporu seç <span class="muted">(teknik ad: dashboard_state.json)</span></label>
       <input id="dashboardState" type="file" accept="application/json,.json" />
-      <div id="dashboardResult" class="result">Dashboard state dosyası bekleniyor.</div>
+      <div id="dashboardResult" class="result">1. Dashboard Durum Raporu bekleniyor.</div>
 
-      <label for="handoffSummary">field_handoff_summary.json seç</label>
+      <label for="handoffSummary">2. Saha Teslim Özeti seç <span class="muted">(teknik ad: field_handoff_summary.json)</span></label>
       <input id="handoffSummary" type="file" accept="application/json,.json" />
-      <div id="handoffResult" class="result">Handoff summary dosyası bekleniyor.</div>
+      <div id="handoffResult" class="result">2. Saha Teslim Özeti bekleniyor.</div>
 
-      <label for="r4Gate">r4_acceptance_gate.json seç</label>
+      <label for="r4Gate">3. R4 Final Karar Raporu seç <span class="muted">(teknik ad: r4_acceptance_gate.json)</span></label>
       <input id="r4Gate" type="file" accept="application/json,.json" />
-      <div id="r4GateResult" class="result">R4 acceptance gate dosyası bekleniyor.</div>
+      <div id="r4GateResult" class="result">3. R4 Final Karar Raporu bekleniyor.</div>
       <h3>Toplu R4 Görsel Sonuç</h3>
       <div id="r4AggregateResult" class="result">Henüz tüm R4 JSON kontrolleri tamamlanmadı.</div>
     </section>

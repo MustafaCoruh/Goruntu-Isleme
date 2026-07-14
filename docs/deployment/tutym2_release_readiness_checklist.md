@@ -309,3 +309,15 @@ Bu yazı sadece şu üç dosya hızlı kontrolden geçtiğinde beklenmelidir:
 - `r4_acceptance_gate.json`
 
 Herhangi bir kontrol başarısızsa toplu sonuç `BLOKLU` görünür ve R4 kapatılmamalıdır.
+
+## 19. Dosya Adı Yerine Anlaşılır R4 Adları
+
+R4 ekranında teknik dosya adlarını ezberlemek gerekmez. Üç dosya şu anlaşılır adlarla seçilir:
+
+| Ekrandaki ad | Teknik JSON türü | Eski dosya adı örneği |
+| --- | --- | --- |
+| 1. Dashboard Durum Raporu | `report_type=dashboard_state` | `dashboard_state.json` |
+| 2. Saha Teslim Özeti | `report_type=field_handoff_summary` | `field_handoff_summary.json` |
+| 3. R4 Final Karar Raporu | `report_type=r4_acceptance_gate` | `r4_acceptance_gate.json` |
+
+Dosya adları farklı olabilir. Doğru dosyayı anlamak için JSON içindeki `report_type` alanı kontrol edilir. Operatör için önemli olan ekranda görünen 1-2-3 sırasıdır.

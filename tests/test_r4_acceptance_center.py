@@ -14,10 +14,12 @@ def test_r4_acceptance_center_has_terminal_free_acceptance_flow():
 
     assert "T.UTYM#2 R4 Saha Kabul Merkezi" in html
     assert "Terminalsiz JSON Hızlı Kontrol" in html
-    assert "dashboard_state.json seç" in html
-    assert "field_handoff_summary.json seç" in html
+    assert "1. Dashboard Durum Raporu seç" in html
+    assert "2. Saha Teslim Özeti seç" in html
     assert "R4 Bitince Söylenecek Kapanış" in html
-    assert "r4_acceptance_gate.json seç" in html
+    assert "3. R4 Final Karar Raporu seç" in html
+    assert "Dosya adlarını bilmiyorsan" in html
+    assert "report_type" in html
     assert "Merge Sonrası Senin Kontrol Listen" in html
     assert "tutym2_r4_operator_checklist" in html
     assert "Toplu R4 Görsel Sonuç" in html
