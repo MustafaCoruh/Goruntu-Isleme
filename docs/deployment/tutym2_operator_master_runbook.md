@@ -112,6 +112,18 @@ docs/deployment/tutym2_release_readiness_checklist.md
 
 Bu checklist R3 dashboard demo ve R4 saha kabul adayı ayrımını netleştirir.
 
+
+
+## 2.4. R3 Dashboard Demo Smoke Plan
+
+Sunum/demo seviyesine hızlı geçmek için şu R3 smoke plan kullanılmalıdır:
+
+```text
+docs/deployment/tutym2_r3_dashboard_demo_smoke_plan.md
+```
+
+Bu plan, gerçek kamera görüntüsü göstermeden güvenli dashboard örneğiyle sunum yapmayı anlatır.
+
 ## 3. Offline Paket Kontrolü
 
 Saha bilgisayarına dosya taşımadan önce şu doküman okunur:

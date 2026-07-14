@@ -219,3 +219,14 @@ Yani artık hedef, belge üretmekten çok **ilk kontrollü demo koşusunu** haz�
 | Field handoff summary | Evet | Evet |
 
 R3 demo, operatör/yönetici sunumu için yeterlidir. R4 ise gerçek saha kabulüne daha yakındır.
+
+
+## 13. R3 Dashboard Demo Smoke Plan
+
+R3 dashboard demosunu hızlı ve güvenli yapmak için şu plan kullanılmalıdır:
+
+```text
+docs/deployment/tutym2_r3_dashboard_demo_smoke_plan.md
+```
+
+Bu plan gerçek görüntü veya RTSP URL göstermeden statik dashboard sunumu yapmaya odaklanır.
