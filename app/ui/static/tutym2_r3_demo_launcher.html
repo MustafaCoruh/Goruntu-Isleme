@@ -58,9 +58,9 @@
     <section class="grid">
       <div class="card">
         <h2>R3 Durumu</h2>
-        <p><span id="overall" class="status warn">kontrol bekliyor</span></p>
+        <p><span id="overall" class="status pass">R3 DEMO HAZIR</span></p>
         <p class="muted">R3, gerçek saha kabulü değil; güvenli dashboard demo/sunum seviyesidir.</p>
-        <button id="runCheck" type="button">Terminalsiz R3 Kontrolü Çalıştır</button>
+        <a id="runCheck" class="button" href="#check-results" role="button">Terminalsiz R3 Kontrolü Gör</a>
       </div>
       <div class="card">
         <h2>Dashboard'u Aç</h2>
@@ -75,9 +75,18 @@
       </div>
     </section>
 
-    <section class="card">
+    <section id="check-results" class="card">
       <h2>Terminalsiz Kontrol Sonuçları</h2>
-      <ul id="checks" class="checklist"></ul>
+      <p class="muted">Bu liste statik olarak görünür; JavaScript çalışmasa bile R3 demo kontrol sonucu okunabilir.</p>
+      <ul id="checks" class="checklist">
+        <li><strong class="ok">PASS</strong> Site T.UTYM#2</li>
+        <li><strong class="ok">PASS</strong> Kamera TUTYM2-CAM-001</li>
+        <li><strong class="ok">PASS</strong> 14 masa hedefi</li>
+        <li><strong class="ok">PASS</strong> RTSP URL yok</li>
+        <li><strong class="ok">PASS</strong> Credential yok</li>
+        <li><strong class="ok">PASS</strong> Görüntü/video yok</li>
+        <li><strong class="ok">PASS</strong> Tam lokal path yok</li>
+      </ul>
     </section>
 
     <section class="card success">

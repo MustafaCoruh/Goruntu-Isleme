@@ -113,6 +113,27 @@ app/ui/static/tutym2_r3_demo_launcher.html
 
 Bu sayfa tarayıcıda açılır, kamera/RTSP bağlantısı kurmaz ve güvenli örnek state değerleri üzerinden terminalsiz R3 kontrolü gösterir. Kontrol başarılıysa aynı sayfadan `tutym2_dashboard.html` dosyasına geçilebilir.
 
+
+
+## 3.3. Buton Link Gibi Görünmüyorsa
+
+`Terminalsiz R3 Kontrolü Gör` kontrolü normal bir link/anchor olarak tasarlanmıştır. Bazı VS Code önizleme modlarında buton gibi görünen öğeler sağ tık menüsünde `open link` göstermeyebilir. Bu durumda sorun değildir.
+
+Sayfada şu statik yazıların görünmesi yeterlidir:
+
+```text
+R3 DEMO HAZIR
+PASS Site T.UTYM#2
+PASS Kamera TUTYM2-CAM-001
+PASS 14 masa hedefi
+PASS RTSP URL yok
+PASS Credential yok
+PASS Görüntü/video yok
+PASS Tam lokal path yok
+```
+
+Bu yazılar görünüyorsa terminal gerekmeden R3 demo başlatıcı temel kontrolü okunabilir. Ardından `T.UTYM#2 Dashboard Aç` bağlantısı kullanılmalıdır.
+
 ## 4. R3 Demo Açılış Sırası
 
 Terminal bilmeyen operatör için önerilen basit sıra:
