@@ -213,3 +213,12 @@ Sizin yapmanız gereken:
 3. Yetkili kişinin ürettiği dashboard_state.json dosyasını dashboard'a yüklemek.
 4. Genel durum, uyarılar ve kritikler alanlarını okumak.
 ```
+
+
+## 13. Saha Günü Tek Sayfa Checklist
+
+Saha test günü hızlı kontrol için şu tek sayfalık checklist kullanılmalıdır:
+
+```text
+docs/deployment/tutym2_field_day_one_page_checklist.md
+```
