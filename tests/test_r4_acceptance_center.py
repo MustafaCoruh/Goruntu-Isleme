@@ -18,6 +18,8 @@ def test_r4_acceptance_center_has_terminal_free_acceptance_flow():
     assert "field_handoff_summary.json seç" in html
     assert "R4 Bitince Söylenecek Kapanış" in html
     assert "r4_acceptance_gate.json seç" in html
+    assert "Merge Sonrası Senin Kontrol Listen" in html
+    assert "tutym2_r4_operator_checklist" in html
 
 
 def test_r4_acceptance_center_checks_safety_and_14_tables():

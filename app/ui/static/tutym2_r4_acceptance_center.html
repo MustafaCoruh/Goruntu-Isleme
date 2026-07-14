@@ -80,6 +80,21 @@
       </div>
     </section>
 
+
+    <section class="card step">
+      <h2>Merge Sonrası Senin Kontrol Listen</h2>
+      <p class="muted">Bu liste terminal gerektirmez. PR merge edildikten ve VS Code sync/pull yapıldıktan sonra sırayla işaretle.</p>
+      <ul class="operator-checklist" id="operatorChecklist">
+        <li><label><input type="checkbox" data-check="open-r4" /> Bu sayfa açılıyor: <code>tutym2_r4_acceptance_center.html</code></label></li>
+        <li><label><input type="checkbox" data-check="open-dashboard" /> <strong>Dashboard Aç</strong> butonu yeni sekmede dashboard'u açıyor.</label></li>
+        <li><label><input type="checkbox" data-check="dashboard-state-picker" /> <code>dashboard_state.json seç</code> alanı görünüyor.</label></li>
+        <li><label><input type="checkbox" data-check="handoff-picker" /> <code>field_handoff_summary.json seç</code> alanı görünüyor.</label></li>
+        <li><label><input type="checkbox" data-check="r4-gate-picker" /> <code>r4_acceptance_gate.json seç</code> alanı görünüyor.</label></li>
+        <li><label><input type="checkbox" data-check="no-sensitive-data" /> Ekranda gerçek RTSP URL, kamera IP, parola veya gerçek görüntü yok.</label></li>
+      </ul>
+      <div id="operatorChecklistStatus" class="result">Kontrol listesi bekliyor.</div>
+    </section>
+
     <section class="card">
       <h2>Terminalsiz JSON Hızlı Kontrol</h2>
       <p class="muted">Bu kontrol sadece seçtiğin JSON dosyalarının güvenli özet alanlarını tarar. Dosyayı sunucuya göndermez; tarayıcı içinde okur.</p>
@@ -118,6 +133,22 @@
     async function readJson(file) {
       return JSON.parse(await file.text());
     }
+
+    function updateOperatorChecklist() {
+      const checks = [...document.querySelectorAll('#operatorChecklist input[type="checkbox"]')];
+      const completed = checks.filter((item) => item.checked).length;
+      const target = document.getElementById('operatorChecklistStatus');
+      target.textContent = `${completed}/${checks.length} terminalsiz kontrol tamamlandı.`;
+      target.className = `result ${completed === checks.length ? 'pass' : ''}`;
+      localStorage.setItem('tutym2_r4_operator_checklist', JSON.stringify(checks.map((item) => [item.dataset.check, item.checked])));
+    }
+
+    const savedChecklist = new Map(JSON.parse(localStorage.getItem('tutym2_r4_operator_checklist') || '[]'));
+    document.querySelectorAll('#operatorChecklist input[type="checkbox"]').forEach((item) => {
+      item.checked = savedChecklist.get(item.dataset.check) === true;
+      item.addEventListener('change', updateOperatorChecklist);
+    });
+    updateOperatorChecklist();
 
     document.getElementById('dashboardState').addEventListener('change', async (event) => {
       const target = document.getElementById('dashboardResult');

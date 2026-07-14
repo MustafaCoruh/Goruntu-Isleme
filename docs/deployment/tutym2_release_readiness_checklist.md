@@ -280,3 +280,16 @@ configs/templates/tutym2_r4_acceptance_gate.example.json
 ```
 
 Terminal kullanamayan operatör için bu dosya `app/ui/static/tutym2_r4_acceptance_center.html` içinde seçilip hızlı kontrol edilebilir. `overall_status=ready` veya `ready_with_warnings`, `ready_for_controlled_field_acceptance=true`, boş `blockers` listesi ve tüm safety flag değerlerinin `false` olması beklenir.
+
+## 17. Her PR Sonrası Operatör Kontrolü
+
+Her yeni PR merge edildikten sonra terminal kullanmadan şu kontroller yapılmalıdır:
+
+1. VS Code içinde sync/pull tamamlandı mı?
+2. `app/ui/static/tutym2_r4_acceptance_center.html` açılıyor mu?
+3. R4 sayfasındaki merge sonrası kontrol listesi görünüyor mu?
+4. Dashboard butonu dashboard'u açıyor mu?
+5. `dashboard_state.json`, `field_handoff_summary.json` ve `r4_acceptance_gate.json` seçme alanları görünüyor mu?
+6. Ekranda gerçek RTSP URL, IP, parola veya gerçek görüntü var mı? Varsa PR kullanılmamalıdır.
+
+Bu kontrol, teknik testlerin yerine geçmez; ama terminal kullanamayan operatör için her PR sonrası minimum görsel doğrulamadır.
