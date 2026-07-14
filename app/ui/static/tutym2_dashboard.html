@@ -51,6 +51,10 @@
     button { background: var(--blue); color: white; border: none; font-weight: 700; cursor: pointer; }
     pre { max-height: 260px; overflow: auto; background: var(--navy); color: #d9e2ec; padding: 12px; border-radius: 8px; }
     .hint { color: var(--muted); font-size: 13px; }
+
+    .demo-banner { background: #fff7ed; border: 1px solid #fed7aa; border-left: 6px solid var(--yellow); border-radius: 12px; padding: 12px 14px; }
+    .demo-banner strong { color: var(--yellow); }
+    .demo-banner a { color: var(--blue); font-weight: 700; }
   </style>
 </head>
 <body>
@@ -59,6 +63,11 @@
     <p>Güvenli dashboard_state.json önizlemesi. Gerçek görüntü, RTSP URL, IP veya credential göstermez.</p>
   </header>
   <main>
+
+    <section class="demo-banner">
+      <strong>R3 Demo Modu:</strong> Bu ekran güvenli örnek dashboard verisiyle açılır; gerçek kamera görüntüsü, RTSP URL, kamera IP veya credential göstermez.
+      <a href="tutym2_r3_demo_launcher.html">R3 Demo Başlatıcıya dön</a>
+    </section>
     <section class="card toolbar">
       <label>dashboard_state.json yükle
         <input id="stateFile" type="file" accept="application/json,.json" />

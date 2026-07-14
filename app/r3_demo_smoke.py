@@ -20,6 +20,7 @@ DEFAULT_EXAMPLE_STATE = Path("configs/templates/tutym2_dashboard_state.example.j
 REQUIRED_DASHBOARD_TEXT = (
     "T.UTYM#2 Operatör Dashboard",
     "Güvenli Örnek State Yükle",
+    "R3 Demo Modu",
     "Gerçek görüntü, RTSP URL, IP veya credential göstermez",
 )
 

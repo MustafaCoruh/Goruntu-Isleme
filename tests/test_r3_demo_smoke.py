@@ -6,7 +6,7 @@ from app.r3_demo_smoke import build_report_payload, run_smoke_checks
 def test_run_smoke_checks_passes_for_safe_assets(tmp_path):
     dashboard = tmp_path / "tutym2_dashboard.html"
     dashboard.write_text(
-        "T.UTYM#2 Operatör Dashboard\nGüvenli Örnek State Yükle\nGerçek görüntü, RTSP URL, IP veya credential göstermez",
+        "T.UTYM#2 Operatör Dashboard\nGüvenli Örnek State Yükle\nR3 Demo Modu\nGerçek görüntü, RTSP URL, IP veya credential göstermez",
         encoding="utf-8",
     )
     example = tmp_path / "state.json"
@@ -37,7 +37,7 @@ def test_run_smoke_checks_passes_for_safe_assets(tmp_path):
 def test_run_smoke_checks_fails_for_wrong_table_count(tmp_path):
     dashboard = tmp_path / "tutym2_dashboard.html"
     dashboard.write_text(
-        "T.UTYM#2 Operatör Dashboard\nGüvenli Örnek State Yükle\nGerçek görüntü, RTSP URL, IP veya credential göstermez",
+        "T.UTYM#2 Operatör Dashboard\nGüvenli Örnek State Yükle\nR3 Demo Modu\nGerçek görüntü, RTSP URL, IP veya credential göstermez",
         encoding="utf-8",
     )
     example = tmp_path / "state.json"
@@ -61,7 +61,7 @@ def test_run_smoke_checks_fails_for_wrong_table_count(tmp_path):
 def test_run_smoke_checks_fails_for_unsafe_safety_flag(tmp_path):
     dashboard = tmp_path / "tutym2_dashboard.html"
     dashboard.write_text(
-        "T.UTYM#2 Operatör Dashboard\nGüvenli Örnek State Yükle\nGerçek görüntü, RTSP URL, IP veya credential göstermez",
+        "T.UTYM#2 Operatör Dashboard\nGüvenli Örnek State Yükle\nR3 Demo Modu\nGerçek görüntü, RTSP URL, IP veya credential göstermez",
         encoding="utf-8",
     )
     example = tmp_path / "state.json"

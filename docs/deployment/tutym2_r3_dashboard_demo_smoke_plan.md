@@ -189,6 +189,19 @@ Kişi/yüz bilgisi görünmesi
 
 Beklenmeyen bir durum varsa R3 demo durdurulur.
 
+
+
+## 6.1. Dashboard Üzerindeki R3 Demo Banner
+
+`tutym2_dashboard.html` açıldığında üst bölümde `R3 Demo Modu` banner'ı görünmelidir. Bu banner şunu anlatır:
+
+```text
+Bu ekran güvenli örnek dashboard verisiyle açılır.
+Gerçek kamera görüntüsü, RTSP URL, kamera IP veya credential göstermez.
+```
+
+Banner içinde `R3 Demo Başlatıcıya dön` bağlantısı da bulunur. Operatör yanlışlıkla dashboard'a doğrudan geldiyse bu bağlantıyla terminalsiz başlatıcı sayfasına dönebilir.
+
 ## 7. R3 Demo Sonrası Paylaşılabilir Özet
 
 Demo sonrası paylaşılabilir güvenli özet:
