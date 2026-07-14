@@ -144,3 +144,19 @@ Eğer herhangi bir adımda emin olunmazsa canlı teste geçilmemelidir.
 ```text
 Güvenlik > Doğruluk > Hız > Görsellik
 ```
+
+## 11. Saha Sonu Teslim Özeti
+
+Saha günü sonunda birden fazla güvenli rapor oluştuysa tek bir paylaşılabilir özet üretmek için şu dokümana bakılmalıdır:
+
+```text
+docs/deployment/tutym2_field_handoff_summary.md
+```
+
+İlgili script:
+
+```text
+scripts/build_tutym2_field_handoff_summary.py
+```
+
+Bu özet; RTSP URL, kamera IP, credential, gerçek görüntü/video veya tam lokal path paylaşmadan gün sonu durumunu tek JSON içinde toplamak için kullanılır.
