@@ -322,3 +322,12 @@ Bu katalog komutları anlatır. Tüm saha akışının baştan sona açıklamas�
 ```text
 docs/deployment/tutym2_operator_master_runbook.md
 ```
+
+
+## 15. Hata ve Çözüm Rehberi
+
+Komutlardan hata alındığında veya `warning/critical/fail` sonucu görüldüğünde şu rehber kullanılmalıdır:
+
+```text
+docs/deployment/tutym2_operator_troubleshooting_guide.md
+```

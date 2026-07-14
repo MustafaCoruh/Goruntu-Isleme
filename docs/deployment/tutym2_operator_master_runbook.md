@@ -88,6 +88,18 @@ Scriptlerin tek tek ne işe yaradığını, hangi girdileri istediğini, hangi �
 docs/deployment/tutym2_operator_command_catalog.md
 ```
 
+
+
+## 2.2. Hata ve Çözüm Rehberi
+
+Komutlardan veya validatorlardan hata alındığında şu rehber kullanılmalıdır:
+
+```text
+docs/deployment/tutym2_operator_troubleshooting_guide.md
+```
+
+Bu rehber hata mesajını nasıl yorumlayacağını, ne zaman duracağını ve teknik kişiye hassas veri paylaşmadan ne söyleyeceğini açıklar.
+
 ## 3. Offline Paket Kontrolü
 
 Saha bilgisayarına dosya taşımadan önce şu doküman okunur:
