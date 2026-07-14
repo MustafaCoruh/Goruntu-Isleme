@@ -101,6 +101,18 @@ python scripts/check_tutym2_r3_demo_smoke.py `
 
 `overall_status = pass` ise R3 dashboard demo dosyaları temel olarak sunuma hazırdır.
 
+
+
+## 3.2. Terminal Kullanamayan Operatör İçin R3 Başlatıcı
+
+Terminal kullanılamıyorsa R3 demo için şu statik HTML dosyası açılmalıdır:
+
+```text
+app/ui/static/tutym2_r3_demo_launcher.html
+```
+
+Bu sayfa tarayıcıda açılır, kamera/RTSP bağlantısı kurmaz ve güvenli örnek state değerleri üzerinden terminalsiz R3 kontrolü gösterir. Kontrol başarılıysa aynı sayfadan `tutym2_dashboard.html` dosyasına geçilebilir.
+
 ## 4. R3 Demo Açılış Sırası
 
 Terminal bilmeyen operatör için önerilen basit sıra:
