@@ -230,3 +230,21 @@ docs/deployment/tutym2_r3_dashboard_demo_smoke_plan.md
 ```
 
 Bu plan gerçek görüntü veya RTSP URL göstermeden statik dashboard sunumu yapmaya odaklanır.
+
+## 14. Terminalsiz R4 Kabul Merkezi
+
+R4'e odaklanmak için terminalsiz bir statik kabul merkezi eklendi:
+
+```text
+app/ui/static/tutym2_r4_acceptance_center.html
+```
+
+Bu sayfa şu amaçlarla kullanılmalıdır:
+
+- R4 için zorunlu çıktıları tek ekranda görmek.
+- `dashboard_state.json` dosyasını tarayıcı içinde hızlı kontrol etmek.
+- `field_handoff_summary.json` dosyasını tarayıcı içinde hızlı kontrol etmek.
+- R4 ile R3 arasındaki farkı net anlatmak.
+- Gerçek görüntü, RTSP URL, kamera IP, credential ve tam lokal path göstermeden saha kabul paketini kapatmak.
+
+Bu sayfa tek başına gerçek saha testinin yerine geçmez. R4'ün tamamlanması için gerçek saha makinesinde üretilmiş güvenli raporların bu merkezde ve Python validator'larında başarılı olması gerekir.
