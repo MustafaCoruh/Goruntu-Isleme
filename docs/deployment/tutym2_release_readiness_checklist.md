@@ -293,3 +293,19 @@ Her yeni PR merge edildikten sonra terminal kullanmadan şu kontroller yapılmal
 6. Ekranda gerçek RTSP URL, IP, parola veya gerçek görüntü var mı? Varsa PR kullanılmamalıdır.
 
 Bu kontrol, teknik testlerin yerine geçmez; ama terminal kullanamayan operatör için her PR sonrası minimum görsel doğrulamadır.
+
+## 18. Toplu R4 Görsel Sonuç
+
+R4 acceptance center içinde üç JSON hızlı kontrolü tamamlandığında toplu sonuç alanı görünür:
+
+```text
+R4 GÖRSEL SONUÇ: KONTROLLÜ SAHA KABULÜNE HAZIR.
+```
+
+Bu yazı sadece şu üç dosya hızlı kontrolden geçtiğinde beklenmelidir:
+
+- `dashboard_state.json`
+- `field_handoff_summary.json`
+- `r4_acceptance_gate.json`
+
+Herhangi bir kontrol başarısızsa toplu sonuç `BLOKLU` görünür ve R4 kapatılmamalıdır.

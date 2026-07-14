@@ -20,6 +20,8 @@ def test_r4_acceptance_center_has_terminal_free_acceptance_flow():
     assert "r4_acceptance_gate.json seç" in html
     assert "Merge Sonrası Senin Kontrol Listen" in html
     assert "tutym2_r4_operator_checklist" in html
+    assert "Toplu R4 Görsel Sonuç" in html
+    assert "R4 GÖRSEL SONUÇ: KONTROLLÜ SAHA KABULÜNE HAZIR" in html
 
 
 def test_r4_acceptance_center_checks_safety_and_14_tables():
@@ -33,6 +35,8 @@ def test_r4_acceptance_center_checks_safety_and_14_tables():
     assert "hasUnsafeText" in html
     assert "requiredGateSafetyKeys" in html
     assert "ready_for_controlled_field_acceptance" in html
+    assert "quickCheckState" in html
+    assert "updateAggregateResult" in html
 
 
 def test_r4_acceptance_center_is_linked_from_static_pages_and_docs():
