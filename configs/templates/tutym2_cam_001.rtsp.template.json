@@ -1,0 +1,17 @@
+{
+  "utym_id": "T.UTYM#2",
+  "camera_id": "TUTYM2-CAM-001",
+  "source_type": "rtsp",
+  "stream_url": "rtsp://<USER>:<PASSWORD>@<CAMERA_IP>/<STREAM_PATH>",
+  "resolution": {
+    "width": 1920,
+    "height": 1080
+  },
+  "tables": [],
+  "notes": [
+    "Template only. Do not commit real RTSP URLs, camera IPs, usernames, passwords, or local calibrated table polygons if they are considered sensitive.",
+    "Copy this file to C:\\FTMC_FIELD_DATA\\configs\\tutym2_cam_001.rtsp.local.json on the Windows field machine.",
+    "Replace stream_url only in the local copy, never in the repository.",
+    "Paste the 14 locally calibrated table polygons from tutym2_cam_001.local.json into tables before running the RTSP demo."
+  ]
+}
