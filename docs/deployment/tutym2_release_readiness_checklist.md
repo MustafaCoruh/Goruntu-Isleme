@@ -264,3 +264,19 @@ Bu araç şu üç güvenli JSON dosyasını birlikte değerlendirir:
 - `table_accuracy_report.json`
 
 Çıktı olarak `r4_acceptance_gate` raporu üretir. Bu raporda sadece güvenli özetler, durum, blocker/warning listeleri ve safety flag değerleri bulunur. Gerçek görüntü, RTSP URL, IP, credential veya tam lokal path yazılmaz.
+
+## 16. R4 Final Kapanış Dosyası
+
+R4'ü kapatırken bakılacak son güvenli dosya:
+
+```text
+r4_acceptance_gate.json
+```
+
+Örnek güvenli format:
+
+```text
+configs/templates/tutym2_r4_acceptance_gate.example.json
+```
+
+Terminal kullanamayan operatör için bu dosya `app/ui/static/tutym2_r4_acceptance_center.html` içinde seçilip hızlı kontrol edilebilir. `overall_status=ready` veya `ready_with_warnings`, `ready_for_controlled_field_acceptance=true`, boş `blockers` listesi ve tüm safety flag değerlerinin `false` olması beklenir.

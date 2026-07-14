@@ -464,3 +464,8 @@ Her UTYM için ayrı field_handoff_summary
 ```
 
 Bu yüzden bu ana runbook, ileride çoklu UTYM standardının başlangıç dokümanı olarak düşünülmelidir.
+
+
+## R4 Final Kapanış
+
+R4 için son karar dosyası `r4_acceptance_gate.json` olmalıdır. Örnek güvenli format `configs/templates/tutym2_r4_acceptance_gate.example.json` içinde tutulur. Operatör terminal kullanamıyorsa `app/ui/static/tutym2_r4_acceptance_center.html` sayfasında bu dosyayı seçerek hızlı kontrol yapabilir.
