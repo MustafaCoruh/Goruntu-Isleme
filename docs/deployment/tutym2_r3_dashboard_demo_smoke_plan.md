@@ -68,6 +68,39 @@ Bu dosyalardan biri yoksa R3 sunuma geçmeden önce PR/sync kontrolü yapılmal�
 
 Bu kontrollerden biri “Hayır” ise demo durdurulur.
 
+
+
+## 3.1. Otomatik R3 Smoke Check
+
+R3 demo dosyalarının temel olarak hazır olup olmadığını kontrol etmek için şu script eklenmiştir:
+
+```text
+scripts/check_tutym2_r3_demo_smoke.py
+```
+
+Bu script kamera açmaz, RTSP bağlantısı kurmaz ve gerçek görüntü okumaz. Sadece statik dashboard HTML dosyasını ve güvenli örnek dashboard JSON dosyasını kontrol eder.
+
+Kontrol ettiği ana şeyler:
+
+```text
+Dashboard HTML var mı?
+Dashboard içinde beklenen güvenli demo metinleri var mı?
+Örnek dashboard_state JSON var mı?
+site = T.UTYM#2 mi?
+camera_id = TUTYM2-CAM-001 mi?
+14 masa var mı?
+Safety flag değerleri false mu?
+```
+
+Örnek kullanım:
+
+```powershell
+python scripts/check_tutym2_r3_demo_smoke.py `
+  --report-output C:\FTMC_FIELD_DATA\reports\r3_demo_smoke.json
+```
+
+`overall_status = pass` ise R3 dashboard demo dosyaları temel olarak sunuma hazırdır.
+
 ## 4. R3 Demo Açılış Sırası
 
 Terminal bilmeyen operatör için önerilen basit sıra:

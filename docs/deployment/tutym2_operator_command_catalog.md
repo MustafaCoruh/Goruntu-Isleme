@@ -289,6 +289,32 @@ safe_to_share = false
 Input raporlardan biri hassas veri içeriyor
 ```
 
+
+
+## 11.1. `check_tutym2_r3_demo_smoke.py`
+
+Amaç:
+
+```text
+R3 dashboard demo için statik dashboard ve güvenli örnek dashboard_state dosyalarının hazır olup olmadığını kontrol eder.
+```
+
+Örnek kullanım:
+
+```powershell
+python scripts/check_tutym2_r3_demo_smoke.py `
+  --report-output C:\FTMC_FIELD_DATA\reports\r3_demo_smoke.json
+```
+
+Durulması gereken durum:
+
+```text
+overall_status = fail
+14 masa yoksa
+safety flag true ise
+Dashboard HTML beklenen metinleri içermiyorsa
+```
+
 ## 12. Komutların Çalışma Sırası
 
 Önerilen güvenli sıra:
@@ -302,7 +328,8 @@ Input raporlardan biri hassas veri içeriyor
 6. validate_tutym2_table_accuracy_report.py
 7. build_tutym2_dashboard_state.py
 8. validate_tutym2_dashboard_state.py
-9. build_tutym2_field_handoff_summary.py
+9. check_tutym2_r3_demo_smoke.py
+10. build_tutym2_field_handoff_summary.py
 ```
 
 ## 13. Operatör İçin Son Karar Tablosu
