@@ -182,3 +182,14 @@ docs/deployment/tutym2_dashboard_operator_workflow.md
 ```
 
 Bu akış offline readiness, config doğrulama, RTSP bağlantı testi, dashboard state üretme, dashboard state doğrulama ve statik dashboard'a `dashboard_state.json` yükleme sırasını açıklar.
+
+
+## 16. Ana Operatör Runbook
+
+Tüm T.UTYM#2 saha akışını tek sırada görmek için şu ana çalışma kitabı kullanılmalıdır:
+
+```text
+docs/deployment/tutym2_operator_master_runbook.md
+```
+
+Bu dosya; offline paket, readiness, config validation, RTSP test, dashboard, saha checklist ve saha teslim özeti adımlarını tek akışta bağlar.

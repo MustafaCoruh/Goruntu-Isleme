@@ -14,6 +14,16 @@ Uyarılar ve kritikler not edildi mi?
 
 Bu liste gerçek görüntü, video, RTSP URL, IP adresi, kullanıcı adı/parola veya tam lokal path paylaşımı gerektirmez.
 
+
+
+## 0. Ana Runbook Bağlantısı
+
+Bu tek sayfalık checklist hızlı saha kullanımı içindir. Tüm akışın detaylı ve sıralı anlatımı için önce şu dosya referans alınmalıdır:
+
+```text
+docs/deployment/tutym2_operator_master_runbook.md
+```
+
 ## 1. PR / VS Code Kontrolü
 
 | Kontrol | Durum |
