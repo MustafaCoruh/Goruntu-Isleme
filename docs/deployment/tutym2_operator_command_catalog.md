@@ -358,3 +358,13 @@ Komutlardan hata alındığında veya `warning/critical/fail` sonucu görüldü�
 ```text
 docs/deployment/tutym2_operator_troubleshooting_guide.md
 ```
+
+## R4 Acceptance Gate
+
+R4 saha kabul kararını tek güvenli JSON raporunda toplamak için:
+
+```text
+python scripts/build_tutym2_r4_acceptance.py --dashboard-state dashboard_state.json --handoff-summary field_handoff_summary.json --table-accuracy table_accuracy_report.json --output r4_acceptance_gate.json
+```
+
+Beklenen çıktı `r4_acceptance_gate.json` dosyasıdır. Bu dosya `ready`, `ready_with_warnings` veya `blocked` durumunu gösterir ve hassas veri içermez.

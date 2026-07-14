@@ -248,3 +248,19 @@ Bu sayfa şu amaçlarla kullanılmalıdır:
 - Gerçek görüntü, RTSP URL, kamera IP, credential ve tam lokal path göstermeden saha kabul paketini kapatmak.
 
 Bu sayfa tek başına gerçek saha testinin yerine geçmez. R4'ün tamamlanması için gerçek saha makinesinde üretilmiş güvenli raporların bu merkezde ve Python validator'larında başarılı olması gerekir.
+
+## 15. R4 Acceptance Gate JSON
+
+R4 kapanışını tek dosyada özetlemek için güvenli acceptance gate raporu üretilebilir:
+
+```text
+scripts/build_tutym2_r4_acceptance.py
+```
+
+Bu araç şu üç güvenli JSON dosyasını birlikte değerlendirir:
+
+- `dashboard_state.json`
+- `field_handoff_summary.json`
+- `table_accuracy_report.json`
+
+Çıktı olarak `r4_acceptance_gate` raporu üretir. Bu raporda sadece güvenli özetler, durum, blocker/warning listeleri ve safety flag değerleri bulunur. Gerçek görüntü, RTSP URL, IP, credential veya tam lokal path yazılmaz.
