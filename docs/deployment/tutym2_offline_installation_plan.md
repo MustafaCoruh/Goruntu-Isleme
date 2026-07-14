@@ -99,3 +99,27 @@ pass -> İlk lokal/RTSP testlere geçilebilir.
 warn -> Eksik opsiyonel modül veya klasör olabilir; teknik kişi kontrol etmeli.
 fail -> Kurulum tamamlanmadan saha demosuna geçilmemeli.
 ```
+
+## 7. Offline Paket Manifesti
+
+Saha bilgisayarına dosya taşımadan önce paket içeriği ayrıca manifest ile kontrol edilmelidir.
+
+İlgili doküman:
+
+```text
+docs/deployment/tutym2_offline_package_manifest.md
+```
+
+İlgili güvenli template:
+
+```text
+configs/templates/tutym2_offline_package_manifest.template.json
+```
+
+İlgili validator:
+
+```text
+scripts/validate_tutym2_offline_package_manifest.py
+```
+
+Bu kontrol, offline pakette gerekli repo dosyalarının bulunduğunu ve manifest içinde gerçek RTSP URL, kamera IP, credential, gerçek medya veya tam lokal path yazılmadığını doğrulamak için kullanılır.
