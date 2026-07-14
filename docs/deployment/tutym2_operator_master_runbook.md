@@ -100,6 +100,18 @@ docs/deployment/tutym2_operator_troubleshooting_guide.md
 
 Bu rehber hata mesajını nasıl yorumlayacağını, ne zaman duracağını ve teknik kişiye hassas veri paylaşmadan ne söyleyeceğini açıklar.
 
+
+
+## 2.3. Release Readiness Checklist
+
+Sistemin sunuma, operatör demosuna veya kontrollü saha paketine hazır olup olmadığını değerlendirmek için şu checklist kullanılmalıdır:
+
+```text
+docs/deployment/tutym2_release_readiness_checklist.md
+```
+
+Bu checklist R3 dashboard demo ve R4 saha kabul adayı ayrımını netleştirir.
+
 ## 3. Offline Paket Kontrolü
 
 Saha bilgisayarına dosya taşımadan önce şu doküman okunur:

@@ -170,3 +170,12 @@ scripts/build_tutym2_field_handoff_summary.py
 ```
 
 Bu özet; RTSP URL, kamera IP, credential, gerçek görüntü/video veya tam lokal path paylaşmadan gün sonu durumunu tek JSON içinde toplamak için kullanılır.
+
+
+## 12. Release Readiness Bağlantısı
+
+Saha veya sunum öncesi sistemin hangi seviyede hazır olduğunu görmek için şu checklist kullanılmalıdır:
+
+```text
+docs/deployment/tutym2_release_readiness_checklist.md
+```
