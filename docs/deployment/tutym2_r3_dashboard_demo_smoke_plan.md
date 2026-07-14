@@ -163,6 +163,18 @@ Hata olursa operatör troubleshooting guide'a göre ilerler.
 Saha sonunda field handoff summary ile paylaşılabilir güvenli özet üretilir.
 ```
 
+
+
+## 5.1. Terminalsiz R3 Sunum Akışı Sayfası
+
+Sunum sırasında konuşma sırası, hangi ekranda ne gösterileceği ve beklenen sorulara kısa cevaplar için şu statik HTML sayfası kullanılabilir:
+
+```text
+app/ui/static/tutym2_r3_presentation.html
+```
+
+Bu sayfa terminal gerektirmez ve gerçek görüntü/RTSP/IP/credential göstermez. R3 demo başlatıcı sayfasından da açılabilir.
+
 ## 6. R3 Demo'da Beklenen Görsel Sonuç
 
 Dashboard açıldığında beklenenler:
