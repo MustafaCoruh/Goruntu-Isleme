@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>T.UTYM#2 Operatör Dashboard</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --navy: #102a43;
+      --blue: #0b69a3;
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --muted: #627d98;
+      --green: #137333;
+      --yellow: #b7791f;
+      --red: #b42318;
+      --gray: #6b7280;
+      font-family: Arial, sans-serif;
+    }
+    body { margin: 0; background: var(--bg); color: #172033; }
+    header { background: var(--navy); color: white; padding: 18px 24px; }
+    header h1 { margin: 0 0 6px; font-size: 24px; }
+    header p { margin: 0; color: #d9e2ec; }
+    main { padding: 16px; display: grid; gap: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .card { background: var(--card); border-radius: 14px; box-shadow: 0 2px 12px rgb(16 42 67 / 12%); padding: 16px; }
+    .status { display: inline-block; border-radius: 999px; padding: 6px 10px; color: white; font-weight: 700; text-transform: uppercase; font-size: 12px; }
+    .normal { background: var(--green); }
+    .warning { background: var(--yellow); }
+    .critical { background: var(--red); }
+    .not_ready, .unknown { background: var(--gray); }
+    .connected { color: var(--green); font-weight: 700; }
+    .disconnected { color: var(--red); font-weight: 700; }
+    .not_tested { color: var(--gray); font-weight: 700; }
+    .summary { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .summary div { background: #f8fbff; border: 1px solid #d9e2ec; border-radius: 10px; padding: 10px; text-align: center; }
+    .summary strong { display: block; font-size: 24px; }
+    .tables { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+    .table-card { border-radius: 12px; padding: 12px; border: 2px solid transparent; background: #f8fbff; }
+    .table-card.red_or_orange { border-color: var(--red); background: #fff5f5; }
+    .table-card.green { border-color: var(--green); background: #f0fff4; }
+    .table-card.yellow { border-color: var(--yellow); background: #fffaf0; }
+    .table-card.gray { border-color: var(--gray); background: #f3f4f6; }
+    .table-card h3 { margin: 0 0 8px; font-size: 16px; }
+    .table-card p { margin: 4px 0; color: #334e68; }
+    .panel-list { margin: 0; padding-left: 20px; }
+    .panel-list li { margin: 6px 0; }
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    input[type="file"], button { border: 1px solid #c9d6e2; border-radius: 8px; padding: 9px 10px; font: inherit; }
+    button { background: var(--blue); color: white; border: none; font-weight: 700; cursor: pointer; }
+    pre { max-height: 260px; overflow: auto; background: var(--navy); color: #d9e2ec; padding: 12px; border-radius: 8px; }
+    .hint { color: var(--muted); font-size: 13px; }
+
+    .demo-banner { background: #fff7ed; border: 1px solid #fed7aa; border-left: 6px solid var(--yellow); border-radius: 12px; padding: 12px 14px; }
+    .demo-banner strong { color: var(--yellow); }
+    .demo-banner a { color: var(--blue); font-weight: 700; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>T.UTYM#2 Operatör Dashboard</h1>
+    <p>Güvenli dashboard_state.json önizlemesi. Gerçek görüntü, RTSP URL, IP veya credential göstermez.</p>
+  </header>
+  <main>
+
+    <section class="demo-banner">
+      <strong>R3 Demo Modu:</strong> Bu ekran güvenli örnek dashboard verisiyle açılır; gerçek kamera görüntüsü, RTSP URL, kamera IP veya credential göstermez.
+      <a href="tutym2_r3_demo_launcher.html">R3 Demo Başlatıcıya dön</a>
+    </section>
+    <section class="card toolbar">
+      <label>dashboard_state.json yükle
+        <input id="stateFile" type="file" accept="application/json,.json" />
+      </label>
+      <button id="loadExample" type="button">Güvenli Örnek State Yükle</button>
+      <span class="hint">İlk sürüm statiktir; kamera açmaz ve RTSP bağlantısı kurmaz.</span>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>Genel Durum</h2>
+        <p><span id="overall" class="status unknown">not_ready</span></p>
+        <p><strong>UTYM:</strong> <span id="site">-</span></p>
+        <p><strong>Kamera:</strong> <span id="camera">-</span></p>
+      </div>
+      <div class="card">
+        <h2>Kamera Sağlığı</h2>
+        <p><strong>Bağlantı:</strong> <span id="connection" class="not_tested">not_tested</span></p>
+        <p><strong>Ortalama FPS:</strong> <span id="fps">-</span></p>
+      </div>
+      <div class="card">
+        <h2>Rapor Güvenliği</h2>
+        <p id="safetyText">State yüklenmedi.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Masa Özeti</h2>
+      <div class="summary">
+        <div><strong id="sumTotal">0</strong>Toplam</div>
+        <div><strong id="sumOccupied">0</strong>Dolu</div>
+        <div><strong id="sumEmpty">0</strong>Boş</div>
+        <div><strong id="sumUnknown">0</strong>Belirsiz</div>
+        <div><strong id="sumNoData">0</strong>Veri yok</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>14 Masa Kartı</h2>
+      <div id="tables" class="tables"></div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>Uyarılar</h2>
+        <ul id="warnings" class="panel-list"></ul>
+      </div>
+      <div class="card">
+        <h2>Kritikler</h2>
+        <ul id="criticals" class="panel-list"></ul>
+      </div>
+      <div class="card">
+        <h2>Kaynak Raporlar</h2>
+        <ul id="sources" class="panel-list"></ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Ham Güvenli State Önizleme</h2>
+      <pre id="rawState"></pre>
+    </section>
+  </main>
+
+<script>
+const SAFE_EXAMPLE_STATE = {
+  report_type: 'dashboard_state',
+  site: 'T.UTYM#2',
+  camera_id: 'TUTYM2-CAM-001',
+  overall_status: 'warning',
+  connection_status: 'connected',
+  average_fps: 8.3,
+  table_summary: { total: 14, occupied: 6, empty: 7, unknown: 1, no_data: 0 },
+  tables: Array.from({ length: 14 }, (_, index) => {
+    const id = String(index + 1).padStart(2, '0');
+    const unknown = index === 2;
+    const occupied = [0, 4, 5, 8, 10, 12].includes(index);
+    const state = unknown ? 'unknown' : occupied ? 'occupied' : 'empty';
+    return {
+      table_id: `table_${id}`,
+      display_name: `Masa ${id}`,
+      state,
+      confidence: unknown ? 0.42 : occupied ? 0.86 : 0.9,
+      label: unknown ? 'UNK' : occupied ? 'TP' : 'TN',
+      color: unknown ? 'yellow' : occupied ? 'red_or_orange' : 'green',
+      warning: unknown ? 'Belirsiz karar; kalibrasyon veya görüş açısı kontrol edilebilir.' : null,
+    };
+  }),
+  warnings: ['Masa 03 belirsiz. Kalibrasyon veya görüş açısı kontrol edilebilir.'],
+  criticals: [],
+  sources: {
+    offline_readiness: { status: 'loaded', name: 'offline_readiness.json' },
+    config_validation: { status: 'loaded', name: 'config_validation_summary.json' },
+    rtsp_connection: { status: 'loaded', name: 'rtsp_connection_test.json' },
+    table_accuracy: { status: 'loaded', name: 'tutym2_table_accuracy_report.json' },
+  },
+  safety: {
+    contains_rtsp_url: false,
+    contains_credentials: false,
+    contains_image_or_video: false,
+    contains_full_local_path: false,
+  },
+};
+
+const $ = (id) => document.getElementById(id);
+
+function renderState(state) {
+  $('site').textContent = state.site || '-';
+  $('camera').textContent = state.camera_id || '-';
+  const overall = state.overall_status || 'not_ready';
+  $('overall').textContent = overall;
+  $('overall').className = `status ${overall}`;
+  const connection = state.connection_status || 'not_tested';
+  $('connection').textContent = connection;
+  $('connection').className = connection;
+  $('fps').textContent = typeof state.average_fps === 'number' ? state.average_fps.toFixed(2) : '-';
+
+  const summary = state.table_summary || {};
+  $('sumTotal').textContent = summary.total ?? 0;
+  $('sumOccupied').textContent = summary.occupied ?? 0;
+  $('sumEmpty').textContent = summary.empty ?? 0;
+  $('sumUnknown').textContent = summary.unknown ?? 0;
+  $('sumNoData').textContent = summary.no_data ?? 0;
+
+  const safety = state.safety || {};
+  const safe = Object.values(safety).every((value) => value === false);
+  $('safetyText').textContent = safe ? 'Güvenli: RTSP URL, credential, görüntü/video ve tam lokal path yok.' : 'Kritik: Safety alanında true değer var. Paylaşmayın.';
+  $('safetyText').style.color = safe ? '#137333' : '#b42318';
+
+  renderTables(state.tables || []);
+  renderList('warnings', state.warnings || [], 'Uyarı yok.');
+  renderList('criticals', state.criticals || [], 'Kritik yok.');
+  renderSources(state.sources || {});
+  $('rawState').textContent = JSON.stringify(state, null, 2);
+}
+
+function renderTables(tables) {
+  $('tables').innerHTML = '';
+  tables.forEach((table) => {
+    const card = document.createElement('article');
+    card.className = `table-card ${table.color || 'gray'}`;
+    card.innerHTML = `
+      <h3>${escapeHtml(table.display_name || table.table_id || 'Masa')}</h3>
+      <p><strong>Durum:</strong> ${escapeHtml(table.state || 'no_data')}</p>
+      <p><strong>Güven:</strong> ${typeof table.confidence === 'number' ? table.confidence.toFixed(2) : '-'}</p>
+      <p><strong>Etiket:</strong> ${escapeHtml(table.label || '-')}</p>
+      ${table.warning ? `<p><strong>Uyarı:</strong> ${escapeHtml(table.warning)}</p>` : ''}
+    `;
+    $('tables').appendChild(card);
+  });
+}
+
+function renderList(id, items, emptyText) {
+  const list = $(id);
+  list.innerHTML = '';
+  if (!items.length) {
+    const item = document.createElement('li');
+    item.textContent = emptyText;
+    list.appendChild(item);
+    return;
+  }
+  items.forEach((text) => {
+    const item = document.createElement('li');
+    item.textContent = text;
+    list.appendChild(item);
+  });
+}
+
+function renderSources(sources) {
+  const items = Object.entries(sources).map(([key, value]) => `${key}: ${value.status} (${value.name})`);
+  renderList('sources', items, 'Kaynak rapor yok.');
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+}
+
+$('loadExample').addEventListener('click', () => renderState(SAFE_EXAMPLE_STATE));
+$('stateFile').addEventListener('change', async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const state = JSON.parse(await file.text());
+    renderState(state);
+  } catch (error) {
+    alert(`dashboard_state.json okunamadı: ${error.message}`);
+  }
+});
+
+renderState(SAFE_EXAMPLE_STATE);
+</script>
+</body>
+</html>
