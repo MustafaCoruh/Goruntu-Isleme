@@ -78,6 +78,16 @@ scripts/validate_tutym2_offline_package_manifest.py
 
 Eğer bu dosyalar görünüyorsa ana operatör araçları gelmiş demektir.
 
+
+
+## 2.1. Komut Kataloğu
+
+Scriptlerin tek tek ne işe yaradığını, hangi girdileri istediğini, hangi çıktıları ürettiğini ve hangi durumda durulması gerektiğini görmek için şu katalog kullanılmalıdır:
+
+```text
+docs/deployment/tutym2_operator_command_catalog.md
+```
+
 ## 3. Offline Paket Kontrolü
 
 Saha bilgisayarına dosya taşımadan önce şu doküman okunur:
