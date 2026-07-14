@@ -95,6 +95,31 @@
       <div id="operatorChecklistStatus" class="result">Kontrol listesi bekliyor.</div>
     </section>
 
+
+    <section class="card step">
+      <h2>Bu 3 Dosya Nedir?</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>1. Dashboard Durum Raporu</h3>
+          <p>Dashboard'un okuyacağı güvenli özet dosyadır. 14 masanın dolu/boş/belirsiz durumunu, genel sistem durumunu ve güvenlik bayraklarını içerir.</p>
+          <p><strong>Ne değildir?</strong> Kamera görüntüsü, RTSP adresi, IP, parola veya gerçek kişi bilgisi değildir.</p>
+          <p class="muted">Teknik içerik işareti: <code>report_type=dashboard_state</code></p>
+        </div>
+        <div class="card">
+          <h3>2. Saha Teslim Özeti</h3>
+          <p>Saha sonunda hangi güvenli raporların üretildiğini ve paylaşılabilir olup olmadığını özetleyen teslim dosyasıdır.</p>
+          <p><strong>Ne değildir?</strong> Ham veri paketi veya kamera bağlantı bilgisi değildir; sadece raporların güvenli özetidir.</p>
+          <p class="muted">Teknik içerik işareti: <code>report_type=field_handoff_summary</code></p>
+        </div>
+        <div class="card">
+          <h3>3. R4 Final Karar Raporu</h3>
+          <p>R4'ün kapatılıp kapatılamayacağını gösteren son karar dosyasıdır. Dashboard, handoff ve masa doğruluk sonuçlarından gelen blocker/warning durumlarını özetler.</p>
+          <p><strong>Ne değildir?</strong> Modelin kendisi veya gerçek saha videosu değildir; sadece kontrollü saha kabul karar özetidir.</p>
+          <p class="muted">Teknik içerik işareti: <code>report_type=r4_acceptance_gate</code></p>
+        </div>
+      </div>
+    </section>
+
     <section class="card">
       <h2>Terminalsiz JSON Hızlı Kontrol</h2>
       <p class="muted">Bu kontrol sadece seçtiğin JSON dosyalarının güvenli özet alanlarını tarar. Dosyayı sunucuya göndermez; tarayıcı içinde okur.</p>

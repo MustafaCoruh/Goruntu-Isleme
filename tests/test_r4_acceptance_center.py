@@ -19,6 +19,9 @@ def test_r4_acceptance_center_has_terminal_free_acceptance_flow():
     assert "R4 Bitince Söylenecek Kapanış" in html
     assert "3. R4 Final Karar Raporu seç" in html
     assert "Dosya adlarını bilmiyorsan" in html
+    assert "Bu 3 Dosya Nedir?" in html
+    assert "Dashboard'un okuyacağı güvenli özet dosyadır" in html
+    assert "R4'ün kapatılıp kapatılamayacağını gösteren son karar dosyasıdır" in html
     assert "report_type" in html
     assert "Merge Sonrası Senin Kontrol Listen" in html
     assert "tutym2_r4_operator_checklist" in html

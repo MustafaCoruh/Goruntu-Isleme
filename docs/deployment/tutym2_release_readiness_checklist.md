@@ -321,3 +321,17 @@ R4 ekranında teknik dosya adlarını ezberlemek gerekmez. Üç dosya şu anlaş
 | 3. R4 Final Karar Raporu | `report_type=r4_acceptance_gate` | `r4_acceptance_gate.json` |
 
 Dosya adları farklı olabilir. Doğru dosyayı anlamak için JSON içindeki `report_type` alanı kontrol edilir. Operatör için önemli olan ekranda görünen 1-2-3 sırasıdır.
+
+## 20. Üç R4 Dosyasının Basit Anlamı
+
+### 1. Dashboard Durum Raporu
+
+Dashboard'un okuyacağı güvenli özet dosyadır. 14 masanın durumunu, genel dashboard durumunu, uyarıları ve safety flag değerlerini içerir. Gerçek kamera görüntüsü, RTSP URL, IP, parola veya kişi bilgisi içermez. Teknik JSON işareti `report_type=dashboard_state` olmalıdır.
+
+### 2. Saha Teslim Özeti
+
+Saha sonunda hangi güvenli raporların üretildiğini ve paylaşılabilir olup olmadığını özetleyen dosyadır. Ham veri paketi değildir; sadece rapor adları, durumları ve güvenli paylaşım bilgisi gibi özetleri içerir. Teknik JSON işareti `report_type=field_handoff_summary` olmalıdır.
+
+### 3. R4 Final Karar Raporu
+
+R4'ün kapatılıp kapatılamayacağını gösteren son karar dosyasıdır. Dashboard durum raporu, saha teslim özeti ve masa doğruluk raporundan gelen sonuçları tek yerde toplar. `ready`, `ready_with_warnings` veya `blocked` gibi bir karar üretir. Teknik JSON işareti `report_type=r4_acceptance_gate` olmalıdır.
