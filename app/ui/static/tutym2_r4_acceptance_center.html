@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>T.UTYM#2 R4 Saha Kabul Merkezi</title>
+  <style>
+    :root { color-scheme: light; --navy:#102a43; --blue:#0b69a3; --green:#137333; --yellow:#b7791f; --red:#b42318; --gray:#627d98; --bg:#f5f7fb; --card:#fff; font-family:Arial, sans-serif; }
+    body { margin:0; background:var(--bg); color:#172033; }
+    header { background:var(--navy); color:#fff; padding:22px 26px; }
+    header h1 { margin:0 0 8px; font-size:26px; }
+    header p { margin:0; color:#d9e2ec; }
+    main { max-width:1180px; margin:0 auto; padding:18px; display:grid; gap:16px; }
+    .card { background:var(--card); border-radius:14px; box-shadow:0 2px 12px rgb(16 42 67 / 12%); padding:18px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px; }
+    .pill { display:inline-block; border-radius:999px; padding:7px 11px; color:#fff; font-weight:700; background:var(--yellow); }
+    .pill.ready { background:var(--green); }
+    .pill.blocked { background:var(--red); }
+    .step { border-left:6px solid var(--blue); }
+    .danger { border-left:6px solid var(--red); }
+    .success { border-left:6px solid var(--green); }
+    a.button { display:inline-block; border-radius:8px; background:var(--blue); color:#fff; padding:10px 12px; font-weight:700; text-decoration:none; margin:4px 6px 4px 0; }
+    a.button.secondary { background:#486581; }
+    label { display:block; font-weight:700; margin:10px 0 4px; }
+    input[type="file"] { width:100%; padding:8px; border:1px solid #bcccdc; border-radius:8px; background:#fff; }
+    .result { margin-top:10px; padding:10px; border-radius:8px; background:#f1f5f9; white-space:pre-wrap; }
+    .pass { color:var(--green); font-weight:700; }
+    .fail { color:var(--red); font-weight:700; }
+    .muted { color:var(--gray); }
+    ol li, ul li { margin:8px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>T.UTYM#2 R4 Saha Kabul Merkezi</h1>
+    <p>Terminal kullanmadan R4 saha kabul paketinin eksiklerini görmek ve güvenli JSON çıktıları hızlıca kontrol etmek için hazırlanmıştır.</p>
+  </header>
+
+  <main>
+    <section class="card success">
+      <h2>R4 Durumu</h2>
+      <p><span id="overall" class="pill">R4 KONTROL MODU</span></p>
+      <p>R4, R3 sunumu değildir. R4 için gerçek saha makinesinde üretilmiş güvenli raporlar gerekir; gerçek görüntü, RTSP URL, kamera IP, credential ve tam lokal path yine gösterilmez.</p>
+      <p>
+        <a class="button" href="tutym2_dashboard.html" target="_blank" rel="noopener">Dashboard Aç</a>
+        <a class="button secondary" href="tutym2_r3_demo_launcher.html" target="_blank" rel="noopener">R3 Başlatıcı</a>
+      </p>
+    </section>
+
+    <section class="grid">
+      <div class="card step">
+        <h2>1. R4 İçin Zorunlu Çıktılar</h2>
+        <ol>
+          <li>Offline readiness raporu</li>
+          <li>Config validation raporu</li>
+          <li>RTSP connection veya local demo raporu</li>
+          <li>Table accuracy raporu</li>
+          <li>Dashboard state JSON</li>
+          <li>Dashboard state validation sonucu</li>
+          <li>Field handoff summary</li>
+        </ol>
+      </div>
+      <div class="card step">
+        <h2>2. R4 Kabul Kuralı</h2>
+        <ul>
+          <li>Dashboard state içinde <strong>14 masa</strong> olmalı.</li>
+          <li>Safety flag değerleri <strong>false</strong> olmalı.</li>
+          <li>Overall status <strong>critical</strong> olmamalı.</li>
+          <li>Handoff summary <strong>safe_to_share=true</strong> olmalı.</li>
+        </ul>
+      </div>
+      <div class="card danger">
+        <h2>3. R4'te Bile Gösterilmeyecekler</h2>
+        <ul>
+          <li>Gerçek kamera görüntüsü/video</li>
+          <li>RTSP URL, kamera IP, kullanıcı adı/parola</li>
+          <li>Tam lokal Windows path</li>
+          <li>Katılımcı/yüz/kimlik bilgisi</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Terminalsiz JSON Hızlı Kontrol</h2>
+      <p class="muted">Bu kontrol sadece seçtiğin JSON dosyalarının güvenli özet alanlarını tarar. Dosyayı sunucuya göndermez; tarayıcı içinde okur.</p>
+      <label for="dashboardState">dashboard_state.json seç</label>
+      <input id="dashboardState" type="file" accept="application/json,.json" />
+      <div id="dashboardResult" class="result">Dashboard state dosyası bekleniyor.</div>
+
+      <label for="handoffSummary">field_handoff_summary.json seç</label>
+      <input id="handoffSummary" type="file" accept="application/json,.json" />
+      <div id="handoffResult" class="result">Handoff summary dosyası bekleniyor.</div>
+    </section>
+
+    <section class="card">
+      <h2>R4 Bitince Söylenecek Kapanış</h2>
+      <p><strong>“T.UTYM#2 R4 saha kabul paketi; readiness, config, RTSP/local demo, table accuracy, dashboard state validation ve handoff summary çıktılarıyla güvenli şekilde tamamlandı. Gerçek görüntü, RTSP/IP/credential ve tam lokal path paylaşılmadı.”</strong></p>
+    </section>
+  </main>
+
+  <script>
+    const requiredSafetyKeys = ["contains_rtsp_url", "contains_credentials", "contains_image_or_video", "contains_full_local_path"];
+
+    function render(target, lines, ok) {
+      target.innerHTML = lines.map((line) => `<div class="${ok ? 'pass' : 'fail'}">${line}</div>`).join('');
+    }
+
+    function hasUnsafeText(value) {
+      const text = JSON.stringify(value).toLowerCase();
+      return text.includes('rtsp://') || text.includes('password') || text.includes('credential') || /\b(?:\d{1,3}\.){3}\d{1,3}\b/.test(text);
+    }
+
+    async function readJson(file) {
+      return JSON.parse(await file.text());
+    }
+
+    document.getElementById('dashboardState').addEventListener('change', async (event) => {
+      const target = document.getElementById('dashboardResult');
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        const payload = await readJson(file);
+        const failures = [];
+        if (payload.report_type !== 'dashboard_state') failures.push('FAIL: report_type dashboard_state olmalı.');
+        if (payload.site !== 'T.UTYM#2') failures.push('FAIL: site T.UTYM#2 olmalı.');
+        if (payload.camera_id !== 'TUTYM2-CAM-001') failures.push('FAIL: camera_id TUTYM2-CAM-001 olmalı.');
+        if (!Array.isArray(payload.tables) || payload.tables.length !== 14) failures.push('FAIL: tables tam 14 kayıt olmalı.');
+        if (payload.overall_status === 'critical') failures.push('FAIL: overall_status critical olmamalı.');
+        const safety = payload.safety || {};
+        for (const key of requiredSafetyKeys) {
+          if (safety[key] !== false) failures.push(`FAIL: safety.${key} false olmalı.`);
+        }
+        if (hasUnsafeText(payload)) failures.push('FAIL: JSON içinde hassas metin paterni bulundu.');
+        render(target, failures.length ? failures : ['PASS: dashboard_state R4 hızlı kontrolünden geçti.'], failures.length === 0);
+      } catch (error) {
+        render(target, [`FAIL: JSON okunamadı: ${error.message}`], false);
+      }
+    });
+
+    document.getElementById('handoffSummary').addEventListener('change', async (event) => {
+      const target = document.getElementById('handoffResult');
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        const payload = await readJson(file);
+        const failures = [];
+        if (payload.report_type !== 'field_handoff_summary') failures.push('FAIL: report_type field_handoff_summary olmalı.');
+        if (payload.site !== 'T.UTYM#2') failures.push('FAIL: site T.UTYM#2 olmalı.');
+        if (payload.overall_status === 'critical') failures.push('FAIL: overall_status critical olmamalı.');
+        if (!payload.shareable_summary || payload.shareable_summary.safe_to_share !== true) failures.push('FAIL: shareable_summary.safe_to_share true olmalı.');
+        if (hasUnsafeText(payload)) failures.push('FAIL: JSON içinde hassas metin paterni bulundu.');
+        render(target, failures.length ? failures : ['PASS: field_handoff_summary R4 hızlı kontrolünden geçti.'], failures.length === 0);
+      } catch (error) {
+        render(target, [`FAIL: JSON okunamadı: ${error.message}`], false);
+      }
+    });
+  </script>
+</body>
+</html>
