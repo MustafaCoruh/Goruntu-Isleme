@@ -215,6 +215,15 @@ Lütfen gerçek kamera görüntüsü/video, RTSP URL, kamera IP, kullanıcı ad�
       <div id="r4AggregateResult" class="result">Henüz tüm R4 JSON kontrolleri tamamlanmadı.</div>
     </section>
 
+
+    <section class="card step">
+      <h2>Operatör Notu</h2>
+      <p class="muted">İstersen kendi kısa notunu buraya yazabilirsin. RTSP URL, IP, parola, gerçek kişi adı veya tam lokal path yazma.</p>
+      <textarea id="operatorNote" rows="4" style="width:100%; border:1px solid #bcccdc; border-radius:8px; padding:10px;" placeholder="Örn: R4 ekranı açıldı, güvenli örnek denendi, gerçek saha dosyaları bekleniyor."></textarea>
+      <p><button id="saveOperatorNote" type="button">Notu Kaydet</button> <button id="clearOperatorNote" type="button">Notu Temizle</button></p>
+      <div id="operatorNoteStatus" class="result">Not bekliyor. Bu not sadece bu tarayıcıda tutulur.</div>
+    </section>
+
     <section class="card">
       <h2 id="closing-text">R4 Bitince Söylenecek Kapanış</h2>
       <p><strong id="r4ClosingText">“T.UTYM#2 R4 saha kabul paketi; readiness, config, RTSP/local demo, table accuracy, dashboard state validation ve handoff summary çıktılarıyla güvenli şekilde tamamlandı. Gerçek görüntü, RTSP/IP/credential ve tam lokal path paylaşılmadı.”</strong></p>
@@ -286,6 +295,27 @@ Lütfen gerçek kamera görüntüsü/video, RTSP URL, kamera IP, kullanıcı ad�
       target.className = `result ${completed === checks.length ? 'pass' : ''}`;
       localStorage.setItem('tutym2_r4_operator_checklist', JSON.stringify(checks.map((item) => [item.dataset.check, item.checked])));
     }
+
+    const savedOperatorNote = localStorage.getItem('tutym2_r4_operator_note') || '';
+    document.getElementById('operatorNote').value = savedOperatorNote;
+    document.getElementById('saveOperatorNote').addEventListener('click', () => {
+      const value = document.getElementById('operatorNote').value;
+      const target = document.getElementById('operatorNoteStatus');
+      if (/rtsp:\/\//i.test(value) || /\b(?:\d{1,3}\.){3}\d{1,3}\b/.test(value) || /password|parola|credential/i.test(value) || /[A-Za-z]:\\/.test(value)) {
+        target.textContent = 'Not kaydedilmedi: Hassas bilgi gibi görünen ifade var.';
+        target.className = 'result fail';
+        return;
+      }
+      localStorage.setItem('tutym2_r4_operator_note', value);
+      target.textContent = 'PASS: Operatör notu bu tarayıcıda kaydedildi.';
+      target.className = 'result pass';
+    });
+    document.getElementById('clearOperatorNote').addEventListener('click', () => {
+      document.getElementById('operatorNote').value = '';
+      localStorage.removeItem('tutym2_r4_operator_note');
+      document.getElementById('operatorNoteStatus').textContent = 'Not temizlendi.';
+      document.getElementById('operatorNoteStatus').className = 'result';
+    });
 
     document.getElementById('copyR4ClosingText').addEventListener('click', async () => {
       const text = document.getElementById('r4ClosingText').innerText;

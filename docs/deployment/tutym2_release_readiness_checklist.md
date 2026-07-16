@@ -416,3 +416,7 @@ Resmi kapanış yalnızca gerçek saha dosyalarıyla yapılmalıdır.
 ## 29. R4 Kontrollerini Sıfırlama
 
 R4 acceptance center içinde `Kontrolleri Sıfırla` butonu bulunur. Bu buton seçilmiş/örnek kontrol sonuçlarını bekleme durumuna alır. Operatör güvenli örnekle deneme yaptıktan sonra gerçek saha dosyalarını seçmeden önce bu butonu kullanabilir.
+
+## 30. Operatör Notu
+
+R4 acceptance center içinde kısa operatör notu alanı bulunur. Bu not sadece tarayıcı localStorage içinde tutulur. Not alanına RTSP URL, IP, parola, credential, gerçek kişi adı veya tam lokal path yazılmamalıdır. Ekran hassas bilgiye benzeyen bazı ifadeleri yakalarsa notu kaydetmez.

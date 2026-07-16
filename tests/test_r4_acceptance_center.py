@@ -51,6 +51,9 @@ def test_r4_acceptance_center_has_terminal_free_acceptance_flow():
     assert "navigator.clipboard.writeText" in html
     assert "R4 Kapanış Cümlesini Kopyala" in html
     assert "copyR4ClosingText" in html
+    assert "Operatör Notu" in html
+    assert "tutym2_r4_operator_note" in html
+    assert "Not kaydedilmedi" in html
 
 
 def test_r4_acceptance_center_checks_safety_and_14_tables():
