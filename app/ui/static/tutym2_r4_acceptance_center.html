@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>T.UTYM#2 R4 Saha Kabul Merkezi</title>
+  <style>
+    :root { color-scheme: light; --navy:#102a43; --blue:#0b69a3; --green:#137333; --yellow:#b7791f; --red:#b42318; --gray:#627d98; --bg:#f5f7fb; --card:#fff; font-family:Arial, sans-serif; }
+    body { margin:0; background:var(--bg); color:#172033; }
+    header { background:var(--navy); color:#fff; padding:22px 26px; }
+    header h1 { margin:0 0 8px; font-size:26px; }
+    header p { margin:0; color:#d9e2ec; }
+    main { max-width:1180px; margin:0 auto; padding:18px; display:grid; gap:16px; }
+    .card { background:var(--card); border-radius:14px; box-shadow:0 2px 12px rgb(16 42 67 / 12%); padding:18px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px; }
+    .pill { display:inline-block; border-radius:999px; padding:7px 11px; color:#fff; font-weight:700; background:var(--yellow); }
+    .pill.ready { background:var(--green); }
+    .pill.blocked { background:var(--red); }
+    .step { border-left:6px solid var(--blue); }
+    .danger { border-left:6px solid var(--red); }
+    .success { border-left:6px solid var(--green); }
+    a.button { display:inline-block; border-radius:8px; background:var(--blue); color:#fff; padding:10px 12px; font-weight:700; text-decoration:none; margin:4px 6px 4px 0; }
+    a.button.secondary { background:#486581; }
+    label { display:block; font-weight:700; margin:10px 0 4px; }
+    input[type="file"] { width:100%; padding:8px; border:1px solid #bcccdc; border-radius:8px; background:#fff; }
+    .result { margin-top:10px; padding:10px; border-radius:8px; background:#f1f5f9; white-space:pre-wrap; }
+    .pass { color:var(--green); font-weight:700; }
+    .fail { color:var(--red); font-weight:700; }
+    .muted { color:var(--gray); }
+    ol li, ul li { margin:8px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>T.UTYM#2 R4 Saha Kabul Merkezi</h1>
+    <p>Terminal kullanmadan R4 saha kabul paketinin eksiklerini görmek ve güvenli JSON çıktıları hızlıca kontrol etmek için hazırlanmıştır.</p>
+  </header>
+
+  <main>
+    <section class="card success">
+      <h2>R4 Durumu</h2>
+      <p><span id="overall" class="pill">R4 KONTROL MODU</span></p>
+      <p>R4, R3 sunumu değildir. R4 için gerçek saha makinesinde üretilmiş güvenli raporlar gerekir; gerçek görüntü, RTSP URL, kamera IP, credential ve tam lokal path yine gösterilmez.</p>
+      <p>
+        <a class="button" href="tutym2_dashboard.html" target="_blank" rel="noopener">Dashboard Aç</a>
+        <a class="button secondary" href="tutym2_r3_demo_launcher.html" target="_blank" rel="noopener">R3 Başlatıcı</a>
+      </p>
+    </section>
+
+
+
+    <section class="card">
+      <h2>Hızlı Gezinme</h2>
+      <p class="muted">Sayfa uzun olduğu için ihtiyacın olan bölüme buradan atlayabilirsin.</p>
+      <p>
+        <a class="button secondary" href="#project-status">Proje Durumu</a>
+        <a class="button secondary" href="#report-meanings">3 Dosya Nedir?</a>
+        <a class="button secondary" href="#report-sources">Dosyalar Nereden Gelecek?</a>
+        <a class="button secondary" href="#missing-reports">Dosyalar Yoksa</a>
+        <a class="button secondary" href="#request-text">İstek Metni</a>
+        <a class="button secondary" href="#quick-check">JSON Kontrol</a>
+        <a class="button secondary" href="#closing-text">Kapanış</a>
+      </p>
+    </section>
+
+    <section class="card success">
+      <h2 id="project-status">Proje Bitiş Durumu</h2>
+      <p><span class="pill">Kod/UI/Doküman: Büyük Ölçüde Hazır</span></p>
+      <p>Bu ekrana göre yazılım tarafındaki R3/R4 akışı büyük ölçüde tamamlandı. Projeyi tamamen kapatmak için artık ana eksik, gerçek saha makinesinden gelecek güvenli R4 raporlarıdır.</p>
+      <ul>
+        <li><strong>Tamamlanan:</strong> Dashboard, R3 sunum/demo, R4 kabul ekranı, validators, templates, güvenli örnekler ve operatör dokümanları.</li>
+        <li><strong>Kalan:</strong> Gerçek sahada üretilmiş 1-2-3 R4 dosyalarının seçilmesi ve toplu sonucun PASS çıkması.</li>
+        <li><strong>Bitirme kriteri:</strong> Toplu R4 Görsel Sonuç alanında <strong>KONTROLLÜ SAHA KABULÜNE HAZIR</strong> yazması.</li>
+      </ul>
+    </section>
+
+    <section class="grid">
+      <div class="card step">
+        <h2>1. R4 İçin Zorunlu Çıktılar</h2>
+        <ol>
+          <li>Offline readiness raporu</li>
+          <li>Config validation raporu</li>
+          <li>RTSP connection veya local demo raporu</li>
+          <li>Table accuracy raporu</li>
+          <li>Dashboard state JSON</li>
+          <li>Dashboard state validation sonucu</li>
+          <li>Field handoff summary</li>
+        </ol>
+      </div>
+      <div class="card step">
+        <h2>2. R4 Kabul Kuralı</h2>
+        <ul>
+          <li>Dashboard state içinde <strong>14 masa</strong> olmalı.</li>
+          <li>Safety flag değerleri <strong>false</strong> olmalı.</li>
+          <li>Overall status <strong>critical</strong> olmamalı.</li>
+          <li>Handoff summary <strong>safe_to_share=true</strong> olmalı.</li>
+        </ul>
+      </div>
+      <div class="card danger">
+        <h2>3. R4'te Bile Gösterilmeyecekler</h2>
+        <ul>
+          <li>Gerçek kamera görüntüsü/video</li>
+          <li>RTSP URL, kamera IP, kullanıcı adı/parola</li>
+          <li>Tam lokal Windows path</li>
+          <li>Katılımcı/yüz/kimlik bilgisi</li>
+        </ul>
+      </div>
+    </section>
+
+
+    <section class="card step">
+      <h2>Merge Sonrası Senin Kontrol Listen</h2>
+      <p class="muted">Bu liste terminal gerektirmez. PR merge edildikten ve VS Code sync/pull yapıldıktan sonra sırayla işaretle.</p>
+      <ul class="operator-checklist" id="operatorChecklist">
+        <li><label><input type="checkbox" data-check="open-r4" /> Bu sayfa açılıyor: <code>tutym2_r4_acceptance_center.html</code></label></li>
+        <li><label><input type="checkbox" data-check="open-dashboard" /> <strong>Dashboard Aç</strong> butonu yeni sekmede dashboard'u açıyor.</label></li>
+        <li><label><input type="checkbox" data-check="dashboard-state-picker" /> <strong>1. Dashboard Durum Raporu seç</strong> alanı görünüyor.</label></li>
+        <li><label><input type="checkbox" data-check="handoff-picker" /> <strong>2. Saha Teslim Özeti seç</strong> alanı görünüyor.</label></li>
+        <li><label><input type="checkbox" data-check="r4-gate-picker" /> <strong>3. R4 Final Karar Raporu seç</strong> alanı görünüyor.</label></li>
+        <li><label><input type="checkbox" data-check="no-sensitive-data" /> Ekranda gerçek RTSP URL, kamera IP, parola veya gerçek görüntü yok.</label></li>
+      </ul>
+      <div id="operatorChecklistStatus" class="result">Kontrol listesi bekliyor.</div>
+    </section>
+
+
+    <section class="card step">
+      <h2 id="report-meanings">Bu 3 Dosya Nedir?</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>1. Dashboard Durum Raporu</h3>
+          <p>Dashboard'un okuyacağı güvenli özet dosyadır. 14 masanın dolu/boş/belirsiz durumunu, genel sistem durumunu ve güvenlik bayraklarını içerir.</p>
+          <p><strong>Ne değildir?</strong> Kamera görüntüsü, RTSP adresi, IP, parola veya gerçek kişi bilgisi değildir.</p>
+          <p class="muted">Teknik içerik işareti: <code>report_type=dashboard_state</code></p>
+        </div>
+        <div class="card">
+          <h3>2. Saha Teslim Özeti</h3>
+          <p>Saha sonunda hangi güvenli raporların üretildiğini ve paylaşılabilir olup olmadığını özetleyen teslim dosyasıdır.</p>
+          <p><strong>Ne değildir?</strong> Ham veri paketi veya kamera bağlantı bilgisi değildir; sadece raporların güvenli özetidir.</p>
+          <p class="muted">Teknik içerik işareti: <code>report_type=field_handoff_summary</code></p>
+        </div>
+        <div class="card">
+          <h3>3. R4 Final Karar Raporu</h3>
+          <p>R4'ün kapatılıp kapatılamayacağını gösteren son karar dosyasıdır. Dashboard, handoff ve masa doğruluk sonuçlarından gelen blocker/warning durumlarını özetler.</p>
+          <p><strong>Ne değildir?</strong> Modelin kendisi veya gerçek saha videosu değildir; sadece kontrollü saha kabul karar özetidir.</p>
+          <p class="muted">Teknik içerik işareti: <code>report_type=r4_acceptance_gate</code></p>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="card step">
+      <h2 id="report-sources">Bu Dosyalar Nereden Gelecek?</h2>
+      <ol>
+        <li><strong>Dashboard Durum Raporu</strong> sistem tarafından güvenli dashboard özeti üretildiğinde oluşur. Operatör bunu elle yazmaz.</li>
+        <li><strong>Saha Teslim Özeti</strong> saha sonunda güvenli raporlar bir araya getirildiğinde oluşur. Operatör bunu elle yazmaz.</li>
+        <li><strong>R4 Final Karar Raporu</strong> R4 kabul kapısı çalıştırıldığında oluşur. Bu, R4'ün kapanıp kapanamayacağını özetler.</li>
+      </ol>
+      <p><strong>Senin görevin:</strong> Bu dosyaları üretmek değil; sana verilen dosyaları doğru 1-2-3 alanlarına seçmek ve ekrandaki PASS/BLOKLU sonucunu kontrol etmek.</p>
+      <p class="muted">Dosyalar yoksa R4 henüz bitmemiş demektir; bu durumda sadece <strong>Güvenli Örnekle Dene</strong> ile ekranın davranışı görülebilir.</p>
+    </section>
+
+
+    <section class="card danger">
+      <h2 id="missing-reports">Dosyalar Yoksa Ne Anlama Gelir?</h2>
+      <ul>
+        <li><strong>1. Dashboard Durum Raporu yoksa:</strong> Dashboard için güvenli saha özeti henüz üretilmemiştir.</li>
+        <li><strong>2. Saha Teslim Özeti yoksa:</strong> Saha sonunda paylaşılabilir rapor paketi henüz toparlanmamıştır.</li>
+        <li><strong>3. R4 Final Karar Raporu yoksa:</strong> R4 kabul kapısı henüz çalışmamıştır; R4 kapatılamaz.</li>
+      </ul>
+      <p><strong>Sonuç:</strong> Bu üç dosyadan biri yoksa gerçek R4 tamamlandı denmemelidir. Sadece güvenli örnekle ekran demosu yapılabilir.</p>
+    </section>
+
+
+    <section class="card step">
+      <h2 id="request-text">Dosyaları İsterken Kullanılacak Kısa Metin</h2>
+      <p>R4 için dosya isteyen kişiye veya ekip mesajına aşağıdaki metni aynen gönderebilirsin.</p>
+      <pre id="r4RequestText">Merhaba, T.UTYM#2 R4 kontrolünü terminalsiz ekranda tamamlayabilmem için lütfen şu üç güvenli JSON çıktısını gönderin:
+1) Dashboard Durum Raporu (report_type=dashboard_state)
+2) Saha Teslim Özeti (report_type=field_handoff_summary)
+3) R4 Final Karar Raporu (report_type=r4_acceptance_gate)
+Lütfen gerçek kamera görüntüsü/video, RTSP URL, kamera IP, kullanıcı adı/parola veya tam lokal path göndermeyin.</pre>
+      <p><button id="copyR4RequestText" type="button">Bu İstek Metnini Kopyala</button></p>
+      <div id="copyR4RequestStatus" class="result">Kopyalama bekliyor.</div>
+    </section>
+
+    <section class="card">
+      <h2 id="quick-check">Terminalsiz JSON Hızlı Kontrol</h2>
+      <p class="muted">Bu kontrol sadece seçtiğin JSON dosyalarının güvenli özet alanlarını tarar. Dosyayı sunucuya göndermez; tarayıcı içinde okur.</p>
+      <div class="result">
+        <strong>Dosya adlarını bilmiyorsan:</strong> Dosyayı adına göre değil, içeriğine göre seçiyoruz. Sana verilen güvenli JSON dosyalarında genelde şu anlamlar olur:
+        <ul>
+          <li><strong>1. Dashboard Durum Raporu</strong> — eski teknik adı: <code>dashboard_state.json</code></li>
+          <li><strong>2. Saha Teslim Özeti</strong> — eski teknik adı: <code>field_handoff_summary.json</code></li>
+          <li><strong>3. R4 Final Karar Raporu</strong> — eski teknik adı: <code>r4_acceptance_gate.json</code></li>
+        </ul>
+        Dosya adı farklı olabilir; önemli olan JSON içindeki <code>report_type</code> alanıdır.
+      </div>
+
+      <label for="dashboardState">1. Dashboard Durum Raporu seç <span class="muted">(teknik ad: dashboard_state.json)</span></label>
+      <input id="dashboardState" type="file" accept="application/json,.json" />
+      <div id="dashboardResult" class="result">1. Dashboard Durum Raporu bekleniyor.</div>
+
+      <label for="handoffSummary">2. Saha Teslim Özeti seç <span class="muted">(teknik ad: field_handoff_summary.json)</span></label>
+      <input id="handoffSummary" type="file" accept="application/json,.json" />
+      <div id="handoffResult" class="result">2. Saha Teslim Özeti bekleniyor.</div>
+
+      <label for="r4Gate">3. R4 Final Karar Raporu seç <span class="muted">(teknik ad: r4_acceptance_gate.json)</span></label>
+      <input id="r4Gate" type="file" accept="application/json,.json" />
+      <div id="r4GateResult" class="result">3. R4 Final Karar Raporu bekleniyor.</div>
+      <p><button id="loadSafeR4Example" type="button">Güvenli Örnekle Dene</button></p>
+      <p class="muted">Bu buton sadece ekranın nasıl çalıştığını göstermek içindir; gerçek R4 kapanışı için saha dosyaları seçilmelidir.</p>
+      <h3>R4 Kontrol Modu</h3>
+      <div id="r4ModeResult" class="result">Mod: Beklemede. Henüz örnek veya gerçek saha dosyası seçilmedi.</div>
+      <h3>Toplu R4 Görsel Sonuç</h3>
+      <div id="r4AggregateResult" class="result">Henüz tüm R4 JSON kontrolleri tamamlanmadı.</div>
+    </section>
+
+    <section class="card">
+      <h2 id="closing-text">R4 Bitince Söylenecek Kapanış</h2>
+      <p><strong id="r4ClosingText">“T.UTYM#2 R4 saha kabul paketi; readiness, config, RTSP/local demo, table accuracy, dashboard state validation ve handoff summary çıktılarıyla güvenli şekilde tamamlandı. Gerçek görüntü, RTSP/IP/credential ve tam lokal path paylaşılmadı.”</strong></p>
+      <p><button id="copyR4ClosingText" type="button">R4 Kapanış Cümlesini Kopyala</button></p>
+      <div id="copyR4ClosingStatus" class="result">Kapanış metni kopyalama bekliyor.</div>
+    </section>
+  </main>
+
+  <script>
+    const requiredSafetyKeys = ["contains_rtsp_url", "contains_credentials", "contains_image_or_video", "contains_full_local_path"];
+    const requiredGateSafetyKeys = ["contains_rtsp_url", "contains_credentials", "contains_image_or_video", "contains_full_local_path", "contains_ip_address"];
+    const quickCheckState = { dashboard_state: null, handoff_summary: null, r4_gate: null };
+    let r4ControlMode = 'waiting';
+
+    function render(target, lines, ok) {
+      target.innerHTML = lines.map((line) => `<div class="${ok ? 'pass' : 'fail'}">${line}</div>`).join('');
+    }
+
+    function hasUnsafeText(value) {
+      const text = JSON.stringify(value).toLowerCase();
+      return text.includes('rtsp://') || text.includes('password') || text.includes('credential') || /\b(?:\d{1,3}\.){3}\d{1,3}\b/.test(text);
+    }
+
+    function updateR4Mode(mode) {
+      r4ControlMode = mode;
+      const target = document.getElementById('r4ModeResult');
+      if (mode === 'demo') {
+        target.textContent = 'Mod: GÜVENLİ ÖRNEK DEMO. Bu resmi R4 kapanışı değildir.';
+        target.className = 'result';
+        return;
+      }
+      if (mode === 'real') {
+        target.textContent = 'Mod: GERÇEK SAHA DOSYALARI. Sonuç R4 değerlendirmesi için kullanılabilir.';
+        target.className = 'result pass';
+        return;
+      }
+      target.textContent = 'Mod: Beklemede. Henüz örnek veya gerçek saha dosyası seçilmedi.';
+      target.className = 'result';
+    }
+
+    function updateAggregateResult() {
+      const target = document.getElementById('r4AggregateResult');
+      const entries = Object.entries(quickCheckState);
+      const passed = entries.filter(([, value]) => value === true).length;
+      const failed = entries.filter(([, value]) => value === false).length;
+      if (failed > 0) {
+        target.textContent = `R4 GÖRSEL SONUÇ: BLOKLU (${failed} kontrol başarısız).`;
+        target.className = 'result fail';
+        return;
+      }
+      if (passed === entries.length) {
+        target.textContent = 'R4 GÖRSEL SONUÇ: KONTROLLÜ SAHA KABULÜNE HAZIR.';
+        target.className = 'result pass';
+        return;
+      }
+      target.textContent = `R4 GÖRSEL SONUÇ: ${passed}/${entries.length} JSON kontrolü tamamlandı.`;
+      target.className = 'result';
+    }
+
+    async function readJson(file) {
+      return JSON.parse(await file.text());
+    }
+
+    function updateOperatorChecklist() {
+      const checks = [...document.querySelectorAll('#operatorChecklist input[type="checkbox"]')];
+      const completed = checks.filter((item) => item.checked).length;
+      const target = document.getElementById('operatorChecklistStatus');
+      target.textContent = `${completed}/${checks.length} terminalsiz kontrol tamamlandı.`;
+      target.className = `result ${completed === checks.length ? 'pass' : ''}`;
+      localStorage.setItem('tutym2_r4_operator_checklist', JSON.stringify(checks.map((item) => [item.dataset.check, item.checked])));
+    }
+
+    document.getElementById('copyR4ClosingText').addEventListener('click', async () => {
+      const text = document.getElementById('r4ClosingText').innerText;
+      const target = document.getElementById('copyR4ClosingStatus');
+      try {
+        await navigator.clipboard.writeText(text);
+        target.textContent = 'PASS: R4 kapanış cümlesi panoya kopyalandı.';
+        target.className = 'result pass';
+      } catch (error) {
+        target.textContent = 'Kopyalama otomatik yapılamadı; kapanış cümlesini elle seçip kopyalayabilirsin.';
+        target.className = 'result';
+      }
+    });
+
+    document.getElementById('copyR4RequestText').addEventListener('click', async () => {
+      const text = document.getElementById('r4RequestText').innerText;
+      const target = document.getElementById('copyR4RequestStatus');
+      try {
+        await navigator.clipboard.writeText(text);
+        target.textContent = 'PASS: R4 dosya istek metni panoya kopyalandı.';
+        target.className = 'result pass';
+      } catch (error) {
+        target.textContent = 'Kopyalama otomatik yapılamadı; metni elle seçip kopyalayabilirsin.';
+        target.className = 'result';
+      }
+    });
+
+    const savedChecklist = new Map(JSON.parse(localStorage.getItem('tutym2_r4_operator_checklist') || '[]'));
+    document.querySelectorAll('#operatorChecklist input[type="checkbox"]').forEach((item) => {
+      item.checked = savedChecklist.get(item.dataset.check) === true;
+      item.addEventListener('change', updateOperatorChecklist);
+    });
+    updateOperatorChecklist();
+    updateR4Mode('waiting');
+    updateAggregateResult();
+
+    document.getElementById('loadSafeR4Example').addEventListener('click', () => {
+      quickCheckState.dashboard_state = true;
+      quickCheckState.handoff_summary = true;
+      quickCheckState.r4_gate = true;
+      render(document.getElementById('dashboardResult'), ['PASS: Güvenli örnek Dashboard Durum Raporu yüklendi.'], true);
+      render(document.getElementById('handoffResult'), ['PASS: Güvenli örnek Saha Teslim Özeti yüklendi.'], true);
+      render(document.getElementById('r4GateResult'), ['PASS: Güvenli örnek R4 Final Karar Raporu yüklendi.'], true);
+      updateR4Mode('demo');
+      updateAggregateResult();
+    });
+
+    document.getElementById('dashboardState').addEventListener('change', async (event) => {
+      const target = document.getElementById('dashboardResult');
+      const file = event.target.files[0];
+      if (!file) return;
+      updateR4Mode('real');
+      try {
+        const payload = await readJson(file);
+        const failures = [];
+        if (payload.report_type !== 'dashboard_state') failures.push('FAIL: report_type dashboard_state olmalı.');
+        if (payload.site !== 'T.UTYM#2') failures.push('FAIL: site T.UTYM#2 olmalı.');
+        if (payload.camera_id !== 'TUTYM2-CAM-001') failures.push('FAIL: camera_id TUTYM2-CAM-001 olmalı.');
+        if (!Array.isArray(payload.tables) || payload.tables.length !== 14) failures.push('FAIL: tables tam 14 kayıt olmalı.');
+        if (payload.overall_status === 'critical') failures.push('FAIL: overall_status critical olmamalı.');
+        const safety = payload.safety || {};
+        for (const key of requiredSafetyKeys) {
+          if (safety[key] !== false) failures.push(`FAIL: safety.${key} false olmalı.`);
+        }
+        if (hasUnsafeText(payload)) failures.push('FAIL: JSON içinde hassas metin paterni bulundu.');
+        quickCheckState.dashboard_state = failures.length === 0;
+        render(target, failures.length ? failures : ['PASS: dashboard_state R4 hızlı kontrolünden geçti.'], failures.length === 0);
+        updateAggregateResult();
+      } catch (error) {
+        quickCheckState.dashboard_state = false;
+        render(target, [`FAIL: JSON okunamadı: ${error.message}`], false);
+        updateAggregateResult();
+      }
+    });
+
+    document.getElementById('handoffSummary').addEventListener('change', async (event) => {
+      const target = document.getElementById('handoffResult');
+      const file = event.target.files[0];
+      if (!file) return;
+      updateR4Mode('real');
+      try {
+        const payload = await readJson(file);
+        const failures = [];
+        if (payload.report_type !== 'field_handoff_summary') failures.push('FAIL: report_type field_handoff_summary olmalı.');
+        if (payload.site !== 'T.UTYM#2') failures.push('FAIL: site T.UTYM#2 olmalı.');
+        if (payload.overall_status === 'critical') failures.push('FAIL: overall_status critical olmamalı.');
+        if (!payload.shareable_summary || payload.shareable_summary.safe_to_share !== true) failures.push('FAIL: shareable_summary.safe_to_share true olmalı.');
+        if (hasUnsafeText(payload)) failures.push('FAIL: JSON içinde hassas metin paterni bulundu.');
+        quickCheckState.handoff_summary = failures.length === 0;
+        render(target, failures.length ? failures : ['PASS: field_handoff_summary R4 hızlı kontrolünden geçti.'], failures.length === 0);
+        updateAggregateResult();
+      } catch (error) {
+        quickCheckState.handoff_summary = false;
+        render(target, [`FAIL: JSON okunamadı: ${error.message}`], false);
+        updateAggregateResult();
+      }
+    });
+
+    document.getElementById('r4Gate').addEventListener('change', async (event) => {
+      const target = document.getElementById('r4GateResult');
+      const file = event.target.files[0];
+      if (!file) return;
+      updateR4Mode('real');
+      try {
+        const payload = await readJson(file);
+        const failures = [];
+        if (payload.report_type !== 'r4_acceptance_gate') failures.push('FAIL: report_type r4_acceptance_gate olmalı.');
+        if (payload.site !== 'T.UTYM#2') failures.push('FAIL: site T.UTYM#2 olmalı.');
+        if (payload.camera_id !== 'TUTYM2-CAM-001') failures.push('FAIL: camera_id TUTYM2-CAM-001 olmalı.');
+        if (!['ready', 'ready_with_warnings'].includes(payload.overall_status)) failures.push('FAIL: overall_status ready veya ready_with_warnings olmalı.');
+        if (payload.ready_for_controlled_field_acceptance !== true) failures.push('FAIL: ready_for_controlled_field_acceptance true olmalı.');
+        if (Array.isArray(payload.blockers) && payload.blockers.length > 0) failures.push('FAIL: blockers boş olmalı.');
+        const summary = payload.summary || {};
+        if (summary.table_count !== 14) failures.push('FAIL: summary.table_count 14 olmalı.');
+        const safety = payload.safety || {};
+        for (const key of requiredGateSafetyKeys) {
+          if (safety[key] !== false) failures.push(`FAIL: safety.${key} false olmalı.`);
+        }
+        if (hasUnsafeText(payload)) failures.push('FAIL: JSON içinde hassas metin paterni bulundu.');
+        quickCheckState.r4_gate = failures.length === 0;
+        render(target, failures.length ? failures : ['PASS: r4_acceptance_gate R4 kapanış kontrolünden geçti.'], failures.length === 0);
+        updateAggregateResult();
+      } catch (error) {
+        quickCheckState.r4_gate = false;
+        render(target, [`FAIL: JSON okunamadı: ${error.message}`], false);
+        updateAggregateResult();
+      }
+    });
+  </script>
+</body>
+</html>
