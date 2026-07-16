@@ -345,3 +345,13 @@ Bu butona basınca örnek PASS sonuçları gösterilir ve toplu sonuç `KONTROLL
 - 1. Dashboard Durum Raporu
 - 2. Saha Teslim Özeti
 - 3. R4 Final Karar Raporu
+
+## 22. R4 Dosyaları Kim Tarafından Üretilir?
+
+Operatörün bu üç JSON dosyasını elle yazması beklenmez:
+
+- Dashboard Durum Raporu sistemin dashboard state üretim akışından gelir.
+- Saha Teslim Özeti saha sonunda güvenli raporların bir araya getirilmesiyle gelir.
+- R4 Final Karar Raporu R4 acceptance gate çalıştırıldığında gelir.
+
+Terminal kullanamayan operatörün görevi bu dosyaları üretmek değil; kendisine verilen dosyaları R4 acceptance center içindeki doğru 1-2-3 alanlarına seçmek ve PASS/BLOKLU sonucunu kontrol etmektir.
