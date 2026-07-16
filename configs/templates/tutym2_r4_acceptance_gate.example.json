@@ -1,0 +1,32 @@
+{
+  "report_type": "r4_acceptance_gate",
+  "site": "T.UTYM#2",
+  "camera_id": "TUTYM2-CAM-001",
+  "overall_status": "ready_with_warnings",
+  "ready_for_controlled_field_acceptance": true,
+  "required_inputs": {
+    "dashboard_state": "dashboard_state.json",
+    "field_handoff_summary": "field_handoff_summary.json",
+    "table_accuracy": "table_accuracy_report.json"
+  },
+  "summary": {
+    "table_count": 14,
+    "dashboard_overall_status": "warning",
+    "handoff_overall_status": "normal",
+    "table_accuracy": 0.86,
+    "false_positive_count": 1,
+    "false_negative_count": 1,
+    "unknown_count": 0
+  },
+  "blockers": [],
+  "warnings": [
+    "table accuracy has false negatives; operator must review missed occupancy cases"
+  ],
+  "safety": {
+    "contains_rtsp_url": false,
+    "contains_credentials": false,
+    "contains_image_or_video": false,
+    "contains_full_local_path": false,
+    "contains_ip_address": false
+  }
+}
