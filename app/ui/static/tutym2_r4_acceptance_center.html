@@ -48,8 +48,23 @@
     </section>
 
 
+
+    <section class="card">
+      <h2>Hızlı Gezinme</h2>
+      <p class="muted">Sayfa uzun olduğu için ihtiyacın olan bölüme buradan atlayabilirsin.</p>
+      <p>
+        <a class="button secondary" href="#project-status">Proje Durumu</a>
+        <a class="button secondary" href="#report-meanings">3 Dosya Nedir?</a>
+        <a class="button secondary" href="#report-sources">Dosyalar Nereden Gelecek?</a>
+        <a class="button secondary" href="#missing-reports">Dosyalar Yoksa</a>
+        <a class="button secondary" href="#request-text">İstek Metni</a>
+        <a class="button secondary" href="#quick-check">JSON Kontrol</a>
+        <a class="button secondary" href="#closing-text">Kapanış</a>
+      </p>
+    </section>
+
     <section class="card success">
-      <h2>Proje Bitiş Durumu</h2>
+      <h2 id="project-status">Proje Bitiş Durumu</h2>
       <p><span class="pill">Kod/UI/Doküman: Büyük Ölçüde Hazır</span></p>
       <p>Bu ekrana göre yazılım tarafındaki R3/R4 akışı büyük ölçüde tamamlandı. Projeyi tamamen kapatmak için artık ana eksik, gerçek saha makinesinden gelecek güvenli R4 raporlarıdır.</p>
       <ul>
@@ -109,7 +124,7 @@
 
 
     <section class="card step">
-      <h2>Bu 3 Dosya Nedir?</h2>
+      <h2 id="report-meanings">Bu 3 Dosya Nedir?</h2>
       <div class="grid">
         <div class="card">
           <h3>1. Dashboard Durum Raporu</h3>
@@ -134,7 +149,7 @@
 
 
     <section class="card step">
-      <h2>Bu Dosyalar Nereden Gelecek?</h2>
+      <h2 id="report-sources">Bu Dosyalar Nereden Gelecek?</h2>
       <ol>
         <li><strong>Dashboard Durum Raporu</strong> sistem tarafından güvenli dashboard özeti üretildiğinde oluşur. Operatör bunu elle yazmaz.</li>
         <li><strong>Saha Teslim Özeti</strong> saha sonunda güvenli raporlar bir araya getirildiğinde oluşur. Operatör bunu elle yazmaz.</li>
@@ -146,7 +161,7 @@
 
 
     <section class="card danger">
-      <h2>Dosyalar Yoksa Ne Anlama Gelir?</h2>
+      <h2 id="missing-reports">Dosyalar Yoksa Ne Anlama Gelir?</h2>
       <ul>
         <li><strong>1. Dashboard Durum Raporu yoksa:</strong> Dashboard için güvenli saha özeti henüz üretilmemiştir.</li>
         <li><strong>2. Saha Teslim Özeti yoksa:</strong> Saha sonunda paylaşılabilir rapor paketi henüz toparlanmamıştır.</li>
@@ -157,7 +172,7 @@
 
 
     <section class="card step">
-      <h2>Dosyaları İsterken Kullanılacak Kısa Metin</h2>
+      <h2 id="request-text">Dosyaları İsterken Kullanılacak Kısa Metin</h2>
       <p>R4 için dosya isteyen kişiye veya ekip mesajına aşağıdaki metni aynen gönderebilirsin.</p>
       <pre id="r4RequestText">Merhaba, T.UTYM#2 R4 kontrolünü terminalsiz ekranda tamamlayabilmem için lütfen şu üç güvenli JSON çıktısını gönderin:
 1) Dashboard Durum Raporu (report_type=dashboard_state)
@@ -169,7 +184,7 @@ Lütfen gerçek kamera görüntüsü/video, RTSP URL, kamera IP, kullanıcı ad�
     </section>
 
     <section class="card">
-      <h2>Terminalsiz JSON Hızlı Kontrol</h2>
+      <h2 id="quick-check">Terminalsiz JSON Hızlı Kontrol</h2>
       <p class="muted">Bu kontrol sadece seçtiğin JSON dosyalarının güvenli özet alanlarını tarar. Dosyayı sunucuya göndermez; tarayıcı içinde okur.</p>
       <div class="result">
         <strong>Dosya adlarını bilmiyorsan:</strong> Dosyayı adına göre değil, içeriğine göre seçiyoruz. Sana verilen güvenli JSON dosyalarında genelde şu anlamlar olur:
@@ -199,7 +214,7 @@ Lütfen gerçek kamera görüntüsü/video, RTSP URL, kamera IP, kullanıcı ad�
     </section>
 
     <section class="card">
-      <h2>R4 Bitince Söylenecek Kapanış</h2>
+      <h2 id="closing-text">R4 Bitince Söylenecek Kapanış</h2>
       <p><strong id="r4ClosingText">“T.UTYM#2 R4 saha kabul paketi; readiness, config, RTSP/local demo, table accuracy, dashboard state validation ve handoff summary çıktılarıyla güvenli şekilde tamamlandı. Gerçek görüntü, RTSP/IP/credential ve tam lokal path paylaşılmadı.”</strong></p>
       <p><button id="copyR4ClosingText" type="button">R4 Kapanış Cümlesini Kopyala</button></p>
       <div id="copyR4ClosingStatus" class="result">Kapanış metni kopyalama bekliyor.</div>

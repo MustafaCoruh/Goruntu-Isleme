@@ -391,3 +391,15 @@ Bu sonuç görünmeden proje saha kabul açısından tamamen bitmiş sayılmamal
 ## 26. R4 Kapanış Cümlesini Kopyalama
 
 R4 acceptance center içinde R4 bitince kullanılacak kapanış cümlesi için `R4 Kapanış Cümlesini Kopyala` butonu bulunur. Bu metin yalnızca gerçek R4 dosyaları başarılı olduğunda kullanılmalıdır; güvenli örnek demo sonucuyla resmi kapanış yapılmamalıdır.
+
+## 27. R4 Sayfasında Hızlı Gezinme
+
+R4 acceptance center uzun olduğu için sayfanın üstünde hızlı gezinme bağlantıları bulunur. Operatör doğrudan şu bölümlere atlayabilir:
+
+- Proje Durumu
+- 3 Dosya Nedir?
+- Dosyalar Nereden Gelecek?
+- Dosyalar Yoksa
+- İstek Metni
+- JSON Kontrol
+- Kapanış
