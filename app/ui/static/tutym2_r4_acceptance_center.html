@@ -200,7 +200,9 @@ Lütfen gerçek kamera görüntüsü/video, RTSP URL, kamera IP, kullanıcı ad�
 
     <section class="card">
       <h2>R4 Bitince Söylenecek Kapanış</h2>
-      <p><strong>“T.UTYM#2 R4 saha kabul paketi; readiness, config, RTSP/local demo, table accuracy, dashboard state validation ve handoff summary çıktılarıyla güvenli şekilde tamamlandı. Gerçek görüntü, RTSP/IP/credential ve tam lokal path paylaşılmadı.”</strong></p>
+      <p><strong id="r4ClosingText">“T.UTYM#2 R4 saha kabul paketi; readiness, config, RTSP/local demo, table accuracy, dashboard state validation ve handoff summary çıktılarıyla güvenli şekilde tamamlandı. Gerçek görüntü, RTSP/IP/credential ve tam lokal path paylaşılmadı.”</strong></p>
+      <p><button id="copyR4ClosingText" type="button">R4 Kapanış Cümlesini Kopyala</button></p>
+      <div id="copyR4ClosingStatus" class="result">Kapanış metni kopyalama bekliyor.</div>
     </section>
   </main>
 
@@ -249,6 +251,19 @@ Lütfen gerçek kamera görüntüsü/video, RTSP URL, kamera IP, kullanıcı ad�
       target.className = `result ${completed === checks.length ? 'pass' : ''}`;
       localStorage.setItem('tutym2_r4_operator_checklist', JSON.stringify(checks.map((item) => [item.dataset.check, item.checked])));
     }
+
+    document.getElementById('copyR4ClosingText').addEventListener('click', async () => {
+      const text = document.getElementById('r4ClosingText').innerText;
+      const target = document.getElementById('copyR4ClosingStatus');
+      try {
+        await navigator.clipboard.writeText(text);
+        target.textContent = 'PASS: R4 kapanış cümlesi panoya kopyalandı.';
+        target.className = 'result pass';
+      } catch (error) {
+        target.textContent = 'Kopyalama otomatik yapılamadı; kapanış cümlesini elle seçip kopyalayabilirsin.';
+        target.className = 'result';
+      }
+    });
 
     document.getElementById('copyR4RequestText').addEventListener('click', async () => {
       const text = document.getElementById('r4RequestText').innerText;

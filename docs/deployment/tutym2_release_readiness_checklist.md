@@ -387,3 +387,7 @@ Toplu R4 Görsel Sonuç = KONTROLLÜ SAHA KABULÜNE HAZIR
 ```
 
 Bu sonuç görünmeden proje saha kabul açısından tamamen bitmiş sayılmamalıdır.
+
+## 26. R4 Kapanış Cümlesini Kopyalama
+
+R4 acceptance center içinde R4 bitince kullanılacak kapanış cümlesi için `R4 Kapanış Cümlesini Kopyala` butonu bulunur. Bu metin yalnızca gerçek R4 dosyaları başarılı olduğunda kullanılmalıdır; güvenli örnek demo sonucuyla resmi kapanış yapılmamalıdır.

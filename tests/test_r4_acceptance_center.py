@@ -41,6 +41,8 @@ def test_r4_acceptance_center_has_terminal_free_acceptance_flow():
     assert "Dosyaları İsterken Kullanılacak Kısa Metin" in html
     assert "Bu İstek Metnini Kopyala" in html
     assert "navigator.clipboard.writeText" in html
+    assert "R4 Kapanış Cümlesini Kopyala" in html
+    assert "copyR4ClosingText" in html
 
 
 def test_r4_acceptance_center_checks_safety_and_14_tables():
