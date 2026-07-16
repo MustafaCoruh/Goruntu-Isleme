@@ -207,7 +207,7 @@ Lütfen gerçek kamera görüntüsü/video, RTSP URL, kamera IP, kullanıcı ad�
       <label for="r4Gate">3. R4 Final Karar Raporu seç <span class="muted">(teknik ad: r4_acceptance_gate.json)</span></label>
       <input id="r4Gate" type="file" accept="application/json,.json" />
       <div id="r4GateResult" class="result">3. R4 Final Karar Raporu bekleniyor.</div>
-      <p><button id="loadSafeR4Example" type="button">Güvenli Örnekle Dene</button></p>
+      <p><button id="loadSafeR4Example" type="button">Güvenli Örnekle Dene</button> <button id="resetR4Checks" type="button">Kontrolleri Sıfırla</button></p>
       <p class="muted">Bu buton sadece ekranın nasıl çalıştığını göstermek içindir; gerçek R4 kapanışı için saha dosyaları seçilmelidir.</p>
       <h3>R4 Kontrol Modu</h3>
       <div id="r4ModeResult" class="result">Mod: Beklemede. Henüz örnek veya gerçek saha dosyası seçilmedi.</div>
@@ -321,6 +321,17 @@ Lütfen gerçek kamera görüntüsü/video, RTSP URL, kamera IP, kullanıcı ad�
     updateOperatorChecklist();
     updateR4Mode('waiting');
     updateAggregateResult();
+
+    document.getElementById('resetR4Checks').addEventListener('click', () => {
+      quickCheckState.dashboard_state = null;
+      quickCheckState.handoff_summary = null;
+      quickCheckState.r4_gate = null;
+      document.getElementById('dashboardResult').textContent = '1. Dashboard Durum Raporu bekleniyor.';
+      document.getElementById('handoffResult').textContent = '2. Saha Teslim Özeti bekleniyor.';
+      document.getElementById('r4GateResult').textContent = '3. R4 Final Karar Raporu bekleniyor.';
+      updateR4Mode('waiting');
+      updateAggregateResult();
+    });
 
     document.getElementById('loadSafeR4Example').addEventListener('click', () => {
       quickCheckState.dashboard_state = true;

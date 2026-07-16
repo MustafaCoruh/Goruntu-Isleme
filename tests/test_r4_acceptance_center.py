@@ -43,6 +43,8 @@ def test_r4_acceptance_center_has_terminal_free_acceptance_flow():
     assert "Toplu R4 Görsel Sonuç" in html
     assert "R4 GÖRSEL SONUÇ: KONTROLLÜ SAHA KABULÜNE HAZIR" in html
     assert "Güvenli Örnekle Dene" in html
+    assert "Kontrolleri Sıfırla" in html
+    assert "resetR4Checks" in html
     assert "gerçek R4 kapanışı için saha dosyaları seçilmelidir" in html
     assert "Dosyaları İsterken Kullanılacak Kısa Metin" in html
     assert "Bu İstek Metnini Kopyala" in html

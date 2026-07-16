@@ -412,3 +412,7 @@ R4 acceptance center iki modu ayırır:
 - `GERÇEK SAHA DOSYALARI`: Operatör gerçek saha JSON dosyalarını seçtiğinde görünür ve R4 değerlendirmesi için kullanılabilir.
 
 Resmi kapanış yalnızca gerçek saha dosyalarıyla yapılmalıdır.
+
+## 29. R4 Kontrollerini Sıfırlama
+
+R4 acceptance center içinde `Kontrolleri Sıfırla` butonu bulunur. Bu buton seçilmiş/örnek kontrol sonuçlarını bekleme durumuna alır. Operatör güvenli örnekle deneme yaptıktan sonra gerçek saha dosyalarını seçmeden önce bu butonu kullanabilir.
