@@ -184,3 +184,26 @@ button:hover {
 .legend-box--empty { background: #16a34a; }
 .legend-box--uncertain { background: #facc15; }
 .legend-box--person { background: #2563eb; }
+
+
+.quick-links {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.quick-links a {
+  background: #fff;
+  border: 1px solid #d9e2ec;
+  border-radius: 999px;
+  color: #174bd0;
+  font-weight: 700;
+  padding: 10px 14px;
+  text-decoration: none;
+}
+
+.quick-links a:hover {
+  background: #eef4ff;
+}
