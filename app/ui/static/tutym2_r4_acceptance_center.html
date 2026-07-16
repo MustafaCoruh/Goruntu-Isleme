@@ -336,6 +336,12 @@ Lütfen gerçek kamera görüntüsü/video, RTSP URL, kamera IP, kullanıcı ad�
     document.getElementById('copyR4ClosingText').addEventListener('click', async () => {
       const text = document.getElementById('r4ClosingText').innerText;
       const target = document.getElementById('copyR4ClosingStatus');
+      const allRealR4ChecksPassed = r4ControlMode === 'real' && Object.values(quickCheckState).every((value) => value === true);
+      if (!allRealR4ChecksPassed) {
+        target.textContent = 'Kapanış metni kopyalanmadı: Önce gerçek saha dosyalarıyla üç R4 kontrolü PASS olmalı.';
+        target.className = 'result fail';
+        return;
+      }
       try {
         await navigator.clipboard.writeText(text);
         target.textContent = 'PASS: R4 kapanış cümlesi panoya kopyalandı.';

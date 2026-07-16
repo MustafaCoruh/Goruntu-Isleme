@@ -425,3 +425,8 @@ R4 acceptance center içinde kısa operatör notu alanı bulunur. Bu not sadece 
 ## 31. Güvenli Örnek JSON Dosyaları
 
 R4 acceptance center içindeki `Güvenli Örnek JSON Dosyalarını İndir` butonu üç adet demo JSON indirir. Bu dosyalar yalnızca dosya seçme alanlarını denemek içindir; gerçek R4 kapanışı için kullanılmamalıdır. Gerçek kapanışta sahadan üretilen Dashboard Durum Raporu, Saha Teslim Özeti ve R4 Final Karar Raporu seçilmelidir.
+
+
+## 32. R4 Kapanış Metni Kilidi
+
+R4 acceptance center içindeki `R4 Kapanış Cümlesini Kopyala` butonu, güvenli örnek demo modunda resmi kapanış metnini kopyalamaz. Kopyalama için gerçek saha dosyaları seçilmiş olmalı ve üç R4 JSON kontrolü de PASS vermelidir.
