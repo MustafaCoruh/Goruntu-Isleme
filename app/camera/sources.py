@@ -7,8 +7,24 @@ from typing import Any
 
 from app.calibration.models import CameraConfig, UtymConfig
 
-import cv2
+import importlib
+
 import numpy as np
+
+
+class _LazyCv2:
+    """Import OpenCV only when video capture is used; tests can monkeypatch it."""
+
+    def VideoCapture(
+        self, *args: Any, **kwargs: Any
+    ) -> Any:  # noqa: N802 - OpenCV API name
+        return importlib.import_module("cv2").VideoCapture(*args, **kwargs)
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(importlib.import_module("cv2"), name)
+
+
+cv2 = _LazyCv2()
 
 
 class RtspCameraSourceError(RuntimeError):
