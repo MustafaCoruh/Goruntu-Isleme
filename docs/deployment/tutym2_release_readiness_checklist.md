@@ -335,3 +335,13 @@ Saha sonunda hangi güvenli raporların üretildiğini ve paylaşılabilir olup 
 ### 3. R4 Final Karar Raporu
 
 R4'ün kapatılıp kapatılamayacağını gösteren son karar dosyasıdır. Dashboard durum raporu, saha teslim özeti ve masa doğruluk raporundan gelen sonuçları tek yerde toplar. `ready`, `ready_with_warnings` veya `blocked` gibi bir karar üretir. Teknik JSON işareti `report_type=r4_acceptance_gate` olmalıdır.
+
+## 21. Güvenli Örnekle Deneme
+
+R4 kabul merkezindeki `Güvenli Örnekle Dene` butonu sadece ekranın çalışma mantığını göstermek içindir. Bu buton gerçek saha kabulünün yerine geçmez.
+
+Bu butona basınca örnek PASS sonuçları gösterilir ve toplu sonuç `KONTROLLÜ SAHA KABULÜNE HAZIR` gibi davranır. Gerçek R4 kapanışı için yine gerçek saha makinesinde üretilmiş şu dosyalar seçilmelidir:
+
+- 1. Dashboard Durum Raporu
+- 2. Saha Teslim Özeti
+- 3. R4 Final Karar Raporu
