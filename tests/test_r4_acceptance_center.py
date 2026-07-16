@@ -35,6 +35,9 @@ def test_r4_acceptance_center_has_terminal_free_acceptance_flow():
     assert "R4 GÖRSEL SONUÇ: KONTROLLÜ SAHA KABULÜNE HAZIR" in html
     assert "Güvenli Örnekle Dene" in html
     assert "gerçek R4 kapanışı için saha dosyaları seçilmelidir" in html
+    assert "Dosyaları İsterken Kullanılacak Kısa Metin" in html
+    assert "Bu İstek Metnini Kopyala" in html
+    assert "navigator.clipboard.writeText" in html
 
 
 def test_r4_acceptance_center_checks_safety_and_14_tables():

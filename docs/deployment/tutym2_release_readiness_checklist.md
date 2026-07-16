@@ -365,3 +365,13 @@ Terminal kullanamayan operatörün görevi bu dosyaları üretmek değil; kendis
 - R4 Final Karar Raporu yoksa R4 kabul kapısı henüz çalışmamıştır.
 
 Bu durumda operatör sadece `Güvenli Örnekle Dene` ile ekran demosu yapabilir; gerçek saha kabulü kapatılamaz.
+
+## 24. R4 Dosyalarını İstemek İçin Hazır Metin
+
+R4 acceptance center içinde dosyaları istemek için hazır bir metin bulunur. Operatör bu metni kopyalayıp ilgili kişiye gönderebilir. Metin şu üç güvenli JSON çıktısını ister:
+
+1. Dashboard Durum Raporu (`report_type=dashboard_state`)
+2. Saha Teslim Özeti (`report_type=field_handoff_summary`)
+3. R4 Final Karar Raporu (`report_type=r4_acceptance_gate`)
+
+Metin ayrıca gerçek kamera görüntüsü/video, RTSP URL, kamera IP, kullanıcı adı/parola veya tam lokal path gönderilmemesini belirtir.

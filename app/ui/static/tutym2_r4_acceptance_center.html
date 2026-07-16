@@ -143,6 +143,19 @@
       <p><strong>Sonuç:</strong> Bu üç dosyadan biri yoksa gerçek R4 tamamlandı denmemelidir. Sadece güvenli örnekle ekran demosu yapılabilir.</p>
     </section>
 
+
+    <section class="card step">
+      <h2>Dosyaları İsterken Kullanılacak Kısa Metin</h2>
+      <p>R4 için dosya isteyen kişiye veya ekip mesajına aşağıdaki metni aynen gönderebilirsin.</p>
+      <pre id="r4RequestText">Merhaba, T.UTYM#2 R4 kontrolünü terminalsiz ekranda tamamlayabilmem için lütfen şu üç güvenli JSON çıktısını gönderin:
+1) Dashboard Durum Raporu (report_type=dashboard_state)
+2) Saha Teslim Özeti (report_type=field_handoff_summary)
+3) R4 Final Karar Raporu (report_type=r4_acceptance_gate)
+Lütfen gerçek kamera görüntüsü/video, RTSP URL, kamera IP, kullanıcı adı/parola veya tam lokal path göndermeyin.</pre>
+      <p><button id="copyR4RequestText" type="button">Bu İstek Metnini Kopyala</button></p>
+      <div id="copyR4RequestStatus" class="result">Kopyalama bekliyor.</div>
+    </section>
+
     <section class="card">
       <h2>Terminalsiz JSON Hızlı Kontrol</h2>
       <p class="muted">Bu kontrol sadece seçtiğin JSON dosyalarının güvenli özet alanlarını tarar. Dosyayı sunucuya göndermez; tarayıcı içinde okur.</p>
@@ -224,6 +237,19 @@
       target.className = `result ${completed === checks.length ? 'pass' : ''}`;
       localStorage.setItem('tutym2_r4_operator_checklist', JSON.stringify(checks.map((item) => [item.dataset.check, item.checked])));
     }
+
+    document.getElementById('copyR4RequestText').addEventListener('click', async () => {
+      const text = document.getElementById('r4RequestText').innerText;
+      const target = document.getElementById('copyR4RequestStatus');
+      try {
+        await navigator.clipboard.writeText(text);
+        target.textContent = 'PASS: R4 dosya istek metni panoya kopyalandı.';
+        target.className = 'result pass';
+      } catch (error) {
+        target.textContent = 'Kopyalama otomatik yapılamadı; metni elle seçip kopyalayabilirsin.';
+        target.className = 'result';
+      }
+    });
 
     const savedChecklist = new Map(JSON.parse(localStorage.getItem('tutym2_r4_operator_checklist') || '[]'));
     document.querySelectorAll('#operatorChecklist input[type="checkbox"]').forEach((item) => {
