@@ -207,8 +207,8 @@ Lütfen gerçek kamera görüntüsü/video, RTSP URL, kamera IP, kullanıcı ad�
       <label for="r4Gate">3. R4 Final Karar Raporu seç <span class="muted">(teknik ad: r4_acceptance_gate.json)</span></label>
       <input id="r4Gate" type="file" accept="application/json,.json" />
       <div id="r4GateResult" class="result">3. R4 Final Karar Raporu bekleniyor.</div>
-      <p><button id="loadSafeR4Example" type="button">Güvenli Örnekle Dene</button> <button id="resetR4Checks" type="button">Kontrolleri Sıfırla</button></p>
-      <p class="muted">Bu buton sadece ekranın nasıl çalıştığını göstermek içindir; gerçek R4 kapanışı için saha dosyaları seçilmelidir.</p>
+      <p><button id="loadSafeR4Example" type="button">Güvenli Örnekle Dene</button> <button id="downloadSafeR4Examples" type="button">Güvenli Örnek JSON Dosyalarını İndir</button> <button id="resetR4Checks" type="button">Kontrolleri Sıfırla</button></p>
+      <p class="muted">Örnek butonları sadece ekranın nasıl çalıştığını göstermek içindir; gerçek R4 kapanışı için saha dosyaları seçilmelidir.</p>
       <h3>R4 Kontrol Modu</h3>
       <div id="r4ModeResult" class="result">Mod: Beklemede. Henüz örnek veya gerçek saha dosyası seçilmedi.</div>
       <h3>Toplu R4 Görsel Sonuç</h3>
@@ -236,6 +236,22 @@ Lütfen gerçek kamera görüntüsü/video, RTSP URL, kamera IP, kullanıcı ad�
     const requiredSafetyKeys = ["contains_rtsp_url", "contains_credentials", "contains_image_or_video", "contains_full_local_path"];
     const requiredGateSafetyKeys = ["contains_rtsp_url", "contains_credentials", "contains_image_or_video", "contains_full_local_path", "contains_ip_address"];
     const quickCheckState = { dashboard_state: null, handoff_summary: null, r4_gate: null };
+    const safeExampleFiles = {
+      'ornek_dashboard_durum_raporu.json': {
+        report_type: 'dashboard_state', site: 'T.UTYM#2', camera_id: 'TUTYM2-CAM-001', overall_status: 'ready',
+        tables: Array.from({ length: 14 }, (_, index) => ({ table_id: `T${String(index + 1).padStart(2, '0')}`, status: 'empty', confidence: 0.99 })),
+        safety: { contains_rtsp_url: false, contains_credentials: false, contains_image_or_video: false, contains_full_local_path: false }
+      },
+      'ornek_saha_teslim_ozeti.json': {
+        report_type: 'field_handoff_summary', site: 'T.UTYM#2', overall_status: 'ready',
+        shareable_summary: { safe_to_share: true, generated_reports: 3, note: 'Güvenli örnek teslim özeti' }
+      },
+      'ornek_r4_final_karar_raporu.json': {
+        report_type: 'r4_acceptance_gate', site: 'T.UTYM#2', camera_id: 'TUTYM2-CAM-001', overall_status: 'ready',
+        ready_for_controlled_field_acceptance: true, blockers: [], summary: { table_count: 14, warning_count: 0 },
+        safety: { contains_rtsp_url: false, contains_credentials: false, contains_image_or_video: false, contains_full_local_path: false, contains_ip_address: false }
+      }
+    };
     let r4ControlMode = 'waiting';
 
     function render(target, lines, ok) {
@@ -370,6 +386,23 @@ Lütfen gerçek kamera görüntüsü/video, RTSP URL, kamera IP, kullanıcı ad�
       render(document.getElementById('dashboardResult'), ['PASS: Güvenli örnek Dashboard Durum Raporu yüklendi.'], true);
       render(document.getElementById('handoffResult'), ['PASS: Güvenli örnek Saha Teslim Özeti yüklendi.'], true);
       render(document.getElementById('r4GateResult'), ['PASS: Güvenli örnek R4 Final Karar Raporu yüklendi.'], true);
+      updateR4Mode('demo');
+      updateAggregateResult();
+    });
+
+    document.getElementById('downloadSafeR4Examples').addEventListener('click', () => {
+      for (const [filename, payload] of Object.entries(safeExampleFiles)) {
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+      render(document.getElementById('dashboardResult'), ['PASS: Güvenli örnek JSON dosyaları indirildi. Bunlar sadece deneme içindir.'], true);
       updateR4Mode('demo');
       updateAggregateResult();
     });

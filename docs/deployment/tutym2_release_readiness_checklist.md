@@ -420,3 +420,8 @@ R4 acceptance center içinde `Kontrolleri Sıfırla` butonu bulunur. Bu buton se
 ## 30. Operatör Notu
 
 R4 acceptance center içinde kısa operatör notu alanı bulunur. Bu not sadece tarayıcı localStorage içinde tutulur. Not alanına RTSP URL, IP, parola, credential, gerçek kişi adı veya tam lokal path yazılmamalıdır. Ekran hassas bilgiye benzeyen bazı ifadeleri yakalarsa notu kaydetmez.
+
+
+## 31. Güvenli Örnek JSON Dosyaları
+
+R4 acceptance center içindeki `Güvenli Örnek JSON Dosyalarını İndir` butonu üç adet demo JSON indirir. Bu dosyalar yalnızca dosya seçme alanlarını denemek içindir; gerçek R4 kapanışı için kullanılmamalıdır. Gerçek kapanışta sahadan üretilen Dashboard Durum Raporu, Saha Teslim Özeti ve R4 Final Karar Raporu seçilmelidir.
