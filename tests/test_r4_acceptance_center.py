@@ -19,6 +19,8 @@ def test_r4_acceptance_center_has_terminal_free_acceptance_flow():
     assert "#closing-text" in html
     assert "Proje Bitiş Durumu" in html
     assert "Kod/UI/Doküman: Büyük Ölçüde Hazır" in html
+    assert "Ne Kadar Kaldı?" in html
+    assert "yaklaşık %90+ hazır" in html
     assert "Gerçek sahada üretilmiş 1-2-3 R4 dosyalarının seçilmesi" in html
     assert "1. Dashboard Durum Raporu seç" in html
     assert "2. Saha Teslim Özeti seç" in html

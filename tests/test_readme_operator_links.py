@@ -15,4 +15,6 @@ def test_readme_explains_terminal_free_tutym2_r4_flow():
     assert "Saha Teslim Özeti" in text
     assert "R4 Final Karar Raporu" in text
     assert "KONTROLLÜ SAHA KABULÜNE HAZIR" in text
+    assert "Ne kadar kaldı?" in text
+    assert "yaklaşık %90+ hazır" in text
     assert "Güvenli örnek dosyalar resmi kapanış değildir" in text
