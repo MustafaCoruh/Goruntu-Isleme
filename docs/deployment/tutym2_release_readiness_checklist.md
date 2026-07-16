@@ -375,3 +375,15 @@ R4 acceptance center içinde dosyaları istemek için hazır bir metin bulunur. 
 3. R4 Final Karar Raporu (`report_type=r4_acceptance_gate`)
 
 Metin ayrıca gerçek kamera görüntüsü/video, RTSP URL, kamera IP, kullanıcı adı/parola veya tam lokal path gönderilmemesini belirtir.
+
+## 25. Proje Bitiş Durumu Özeti
+
+Yazılım tarafında R3/R4 akışı büyük ölçüde hazırdır: dashboard, R3 demo/sunum sayfaları, R4 acceptance center, validators, templates, örnek dosyalar ve operatör dokümanları tamamlanmıştır.
+
+Projeyi tamamen kapatmak için kalan ana iş gerçek saha makinesinden üretilecek güvenli R4 raporlarıdır. Kapanış kriteri:
+
+```text
+Toplu R4 Görsel Sonuç = KONTROLLÜ SAHA KABULÜNE HAZIR
+```
+
+Bu sonuç görünmeden proje saha kabul açısından tamamen bitmiş sayılmamalıdır.

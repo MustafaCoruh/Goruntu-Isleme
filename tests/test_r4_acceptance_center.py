@@ -14,6 +14,9 @@ def test_r4_acceptance_center_has_terminal_free_acceptance_flow():
 
     assert "T.UTYM#2 R4 Saha Kabul Merkezi" in html
     assert "Terminalsiz JSON Hızlı Kontrol" in html
+    assert "Proje Bitiş Durumu" in html
+    assert "Kod/UI/Doküman: Büyük Ölçüde Hazır" in html
+    assert "Gerçek sahada üretilmiş 1-2-3 R4 dosyalarının seçilmesi" in html
     assert "1. Dashboard Durum Raporu seç" in html
     assert "2. Saha Teslim Özeti seç" in html
     assert "R4 Bitince Söylenecek Kapanış" in html
