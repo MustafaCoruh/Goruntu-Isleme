@@ -1,0 +1,47 @@
+{
+  "package_name": "tutym2_offline_field_package",
+  "site": "T.UTYM#2",
+  "purpose": "Safe manifest for preparing the offline Windows field package without storing sensitive values or real media.",
+  "repo_items": [
+    { "path": "app/field_demo.py", "purpose": "Local photo/video field demo runner." },
+    { "path": "app/rtsp_field_demo.py", "purpose": "RTSP-safe field demo and connection-test runner." },
+    { "path": "app/offline_readiness.py", "purpose": "Offline machine readiness checks." },
+    { "path": "app/dashboard_state.py", "purpose": "Builds the safe dashboard_state.json file." },
+    { "path": "app/dashboard_state_validator.py", "purpose": "Validates dashboard_state.json before display/share." },
+    { "path": "configs/templates/tutym2_cam_001.template.json", "purpose": "Safe local camera calibration template." },
+    { "path": "configs/templates/tutym2_cam_001.rtsp.template.json", "purpose": "Safe RTSP config template with placeholder stream value." },
+    { "path": "configs/templates/tutym2_dashboard_state.example.json", "purpose": "Safe example dashboard state for UI checks." },
+    { "path": "scripts/check_tutym2_offline_readiness.py", "purpose": "Operator wrapper for offline readiness checks." },
+    { "path": "scripts/run_tutym2_local_demo.py", "purpose": "Operator wrapper for local photo/video demo." },
+    { "path": "scripts/run_tutym2_rtsp_demo.py", "purpose": "Operator wrapper for RTSP demo and connection test." },
+    { "path": "scripts/build_tutym2_dashboard_state.py", "purpose": "Operator wrapper to build dashboard state." },
+    { "path": "scripts/validate_tutym2_dashboard_state.py", "purpose": "Operator wrapper to validate dashboard state." },
+    { "path": "app/ui/static/tutym2_dashboard.html", "purpose": "Static operator dashboard page." },
+    { "path": "docs/deployment/tutym2_field_day_one_page_checklist.md", "purpose": "One-page field-day checklist." }
+  ],
+  "local_only_items": [
+    { "label": "local_config", "safe_name": "tutym2_cam_001.local.json", "repo_allowed": false },
+    { "label": "local_model", "safe_name": "person_detector.onnx", "repo_allowed": false },
+    { "label": "local_input_media", "safe_name": "operator-selected image or video", "repo_allowed": false },
+    { "label": "local_reports", "safe_name": "offline readiness, RTSP, demo and dashboard reports", "repo_allowed": false }
+  ],
+  "forbidden_items": [
+    "real camera stream URL",
+    "camera network address",
+    "camera username or passphrase",
+    "real room photo",
+    "real room video",
+    "full local machine path",
+    "participant identity data"
+  ],
+  "handoff_checks": [
+    "Repo files are synced in VS Code before field packaging.",
+    "Local field data folder exists outside the repository.",
+    "Local config is created from the safe template and is not copied back to the repository.",
+    "Model file is placed only in the local field folder unless policy explicitly permits otherwise.",
+    "Offline readiness report is produced before camera tests.",
+    "Dashboard state is built only from safe JSON reports.",
+    "Dashboard state validator passes before the static dashboard is used for decisions.",
+    "Only safe summary values are shared after the field run."
+  ]
+}
