@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
@@ -10,7 +11,11 @@ from typing import Any, Protocol
 import cv2
 
 from app.calibration.models import CameraConfig, TablePolygon, UtymConfig
-from app.camera.capture import ImageFileSource, SUPPORTED_IMAGE_EXTENSIONS
+from app.camera.capture import (
+    ImageFileSource,
+    ImageFileSourceError,
+    SUPPORTED_IMAGE_EXTENSIONS,
+)
 from app.config import load_camera_config
 from app.vision.detector import PersonDetector
 from app.vision.occupancy import (
@@ -24,8 +29,14 @@ SUPPORTED_VIDEO_EXTENSIONS = frozenset({".avi", ".m4v", ".mkv", ".mov", ".mp4"})
 DEFAULT_WINDOW_NAME = "UTYM Table Occupancy Demo"
 
 
+class DemoRunnerError(RuntimeError):
+    """Raised when the local photo/video demo cannot continue."""
+
+
 class FrameSource(Protocol):
     """Minimal frame-source interface used by the demo loop."""
+
+    path: Path
 
     def open(self) -> None: ...
 
@@ -87,19 +98,49 @@ class VideoFileSource:
 
 
 def build_argument_parser() -> argparse.ArgumentParser:
-    """Create the command-line argument parser for the demo app."""
+    """Create the command-line argument parser for the local demo app."""
 
-    parser = argparse.ArgumentParser(description="Run the UTYM occupancy demo flow.")
-    parser.add_argument(
-        "--config", required=True, help="Path to camera calibration JSON."
+    parser = argparse.ArgumentParser(
+        description=(
+            "Run the T.UTYM#2 local field demo with a photo or video file. "
+            "Keep real images, videos, RTSP URLs, and local configs outside the repo."
+        )
     )
     parser.add_argument(
-        "--source", required=True, help="Path to an image or video source."
+        "--config",
+        required=True,
+        help=(
+            "Path to local camera calibration JSON, for example "
+            r"C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json"
+        ),
+    )
+    parser.add_argument(
+        "--source",
+        required=True,
+        help=(
+            "Path to a local image or video file, for example "
+            r"C:\FTMC_FIELD_DATA\input\photos\sample.jpg"
+        ),
     )
     parser.add_argument(
         "--model",
         default="models/person_detector.onnx",
-        help="Path to an ONNX person detection model.",
+        help=(
+            "Path to an ONNX person detection model, for example "
+            r"C:\FTMC_FIELD_DATA\models\person_detector.onnx"
+        ),
+    )
+    parser.add_argument(
+        "--output",
+        help=(
+            "Optional path for writing the latest overlay frame/image. Use a local "
+            "field-data folder; do not commit outputs with real imagery."
+        ),
+    )
+    parser.add_argument(
+        "--no-display",
+        action="store_true",
+        help="Process the source without opening an OpenCV preview window.",
     )
     parser.add_argument(
         "--confidence-threshold",
@@ -118,6 +159,12 @@ def build_argument_parser() -> argparse.ArgumentParser:
         default=DEFAULT_WINDOW_NAME,
         help="OpenCV window title for the debug overlay.",
     )
+    parser.add_argument(
+        "--wait-ms",
+        type=int,
+        default=1,
+        help="OpenCV preview delay per frame. Use 0 to hold a photo preview open.",
+    )
     return parser
 
 
@@ -125,21 +172,47 @@ def main(argv: list[str] | None = None) -> int:
     """Run the demo and exit with a process-style status code."""
 
     args = build_argument_parser().parse_args(argv)
-    camera_config = _select_demo_camera(load_camera_config(args.config))
-    detector = _load_person_detector(args)
-    source = _build_source(args.source)
 
     try:
+        _validate_local_paths(args)
+        camera_config = _select_demo_camera(load_camera_config(args.config))
+        detector = _load_person_detector(args)
+        source = _build_source(args.source)
         _run_demo_loop(
             camera_config=camera_config,
             source=source,
             detector=detector,
             window_name=args.window_name,
+            output_path=args.output,
+            show_window=not args.no_display,
+            wait_ms=args.wait_ms,
         )
+    except (
+        Exception
+    ) as exc:  # noqa: BLE001 - CLI boundary should translate all failures.
+        print(_field_error_message(exc), file=sys.stderr)
+        return 2
     finally:
         cv2.destroyAllWindows()
 
     return 0
+
+
+def _validate_local_paths(args: argparse.Namespace) -> None:
+    for label, value in (
+        ("Config", args.config),
+        ("Source", args.source),
+        ("Model", args.model),
+    ):
+        path = Path(value)
+        if not path.exists():
+            raise DemoRunnerError(
+                f"{label} path was not found: {path}\n"
+                "Check the Windows path and keep real field files under "
+                r"C:\FTMC_FIELD_DATA or another local, non-repository folder."
+            )
+        if label != "Source" and not path.is_file():
+            raise DemoRunnerError(f"{label} path must be a file: {path}")
 
 
 def _select_demo_camera(config: UtymConfig | CameraConfig) -> CameraConfig:
@@ -148,7 +221,9 @@ def _select_demo_camera(config: UtymConfig | CameraConfig) -> CameraConfig:
     if isinstance(config, CameraConfig):
         return config
     if not config.cameras:
-        raise ValueError(f"UTYM config {config.utym_id} does not contain any cameras")
+        raise DemoRunnerError(
+            f"UTYM config {config.utym_id} does not contain any cameras"
+        )
     return config.cameras[0]
 
 
@@ -172,10 +247,10 @@ def _build_source(source_path: str | Path) -> FrameSource:
         return ImageFileSource(path)
     if suffix in SUPPORTED_VIDEO_EXTENSIONS:
         return VideoFileSource(path)
-    raise ValueError(
-        f"Unsupported source extension for {path}. "
+    raise DemoRunnerError(
+        f"Unsupported source file type: {path}\n"
         f"Supported image extensions: {', '.join(sorted(SUPPORTED_IMAGE_EXTENSIONS))}; "
-        f"supported video extensions: {', '.join(sorted(SUPPORTED_VIDEO_EXTENSIONS))}"
+        f"supported video extensions: {', '.join(sorted(SUPPORTED_VIDEO_EXTENSIONS))}."
     )
 
 
@@ -185,15 +260,19 @@ def _run_demo_loop(
     source: FrameSource,
     detector: PersonDetector,
     window_name: str,
+    output_path: str | Path | None = None,
+    show_window: bool = True,
+    wait_ms: int = 1,
 ) -> None:
     smoother = OccupancySmoother()
+    latest_overlay = None
 
     source.open()
     try:
         while True:
             try:
                 frame = source.read_frame()
-            except EOFError:
+            except (EOFError, ImageFileSourceError):
                 break
 
             detections = detector.detect(frame)
@@ -205,13 +284,27 @@ def _run_demo_loop(
             debug_occupancies = _attach_table_geometry(
                 camera_config.tables, occupancies
             )
-            overlay = draw_debug_overlay(frame, detections, debug_occupancies)
+            latest_overlay = draw_debug_overlay(frame, detections, debug_occupancies)
 
-            cv2.imshow(window_name, overlay)
-            if cv2.waitKey(1) & 0xFF == ord("q"):
-                break
+            if output_path is not None:
+                _write_overlay(output_path, latest_overlay)
+
+            if show_window:
+                cv2.imshow(window_name, latest_overlay)
+                if cv2.waitKey(max(0, wait_ms)) & 0xFF == ord("q"):
+                    break
     finally:
         source.close()
+
+    if latest_overlay is None:
+        raise DemoRunnerError(f"No frames could be read from source: {source.path}")
+
+
+def _write_overlay(output_path: str | Path, overlay: Any) -> None:
+    path = Path(output_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if not cv2.imwrite(str(path), overlay):
+        raise DemoRunnerError(f"Overlay output could not be written: {path}")
 
 
 def _attach_table_geometry(
@@ -228,6 +321,21 @@ def _attach_table_geometry(
         for occupancy in occupancies
         if occupancy.table_id in tables_by_id
     ]
+
+
+def _field_error_message(exc: Exception) -> str:
+    return (
+        "Demo could not be started.\n"
+        f"Reason: {exc}\n\n"
+        "Please verify these local Windows inputs:\n"
+        r"  --config C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json"
+        "\n"
+        r"  --source C:\FTMC_FIELD_DATA\input\photos\sample.jpg"
+        "\n"
+        r"  --model C:\FTMC_FIELD_DATA\models\person_detector.onnx"
+        "\n"
+        "Do not paste real RTSP URLs, credentials, photos, or videos into the repository."
+    )
 
 
 if __name__ == "__main__":
