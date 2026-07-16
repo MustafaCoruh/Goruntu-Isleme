@@ -25,6 +25,9 @@ def test_r4_acceptance_center_has_terminal_free_acceptance_flow():
     assert "Bu Dosyalar Nereden Gelecek?" in html
     assert "Senin görevin" in html
     assert "Operatör bunu elle yazmaz" in html
+    assert "Dosyalar Yoksa Ne Anlama Gelir?" in html
+    assert "R4 kapatılamaz" in html
+    assert "gerçek R4 tamamlandı denmemelidir" in html
     assert "report_type" in html
     assert "Merge Sonrası Senin Kontrol Listen" in html
     assert "tutym2_r4_operator_checklist" in html

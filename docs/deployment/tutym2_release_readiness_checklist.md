@@ -355,3 +355,13 @@ Operatörün bu üç JSON dosyasını elle yazması beklenmez:
 - R4 Final Karar Raporu R4 acceptance gate çalıştırıldığında gelir.
 
 Terminal kullanamayan operatörün görevi bu dosyaları üretmek değil; kendisine verilen dosyaları R4 acceptance center içindeki doğru 1-2-3 alanlarına seçmek ve PASS/BLOKLU sonucunu kontrol etmektir.
+
+## 23. R4 Dosyaları Yoksa Durum
+
+Üç R4 dosyasından biri yoksa gerçek R4 tamamlandı denmemelidir:
+
+- Dashboard Durum Raporu yoksa dashboard için güvenli saha özeti henüz yoktur.
+- Saha Teslim Özeti yoksa paylaşılabilir saha kapanış paketi henüz yoktur.
+- R4 Final Karar Raporu yoksa R4 kabul kapısı henüz çalışmamıştır.
+
+Bu durumda operatör sadece `Güvenli Örnekle Dene` ile ekran demosu yapabilir; gerçek saha kabulü kapatılamaz.
