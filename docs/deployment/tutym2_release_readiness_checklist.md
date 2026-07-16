@@ -403,3 +403,12 @@ R4 acceptance center uzun olduğu için sayfanın üstünde hızlı gezinme bağ
 - İstek Metni
 - JSON Kontrol
 - Kapanış
+
+## 28. R4 Kontrol Modu
+
+R4 acceptance center iki modu ayırır:
+
+- `GÜVENLİ ÖRNEK DEMO`: Sadece ekranın nasıl çalıştığını gösterir, resmi R4 kapanışı değildir.
+- `GERÇEK SAHA DOSYALARI`: Operatör gerçek saha JSON dosyalarını seçtiğinde görünür ve R4 değerlendirmesi için kullanılabilir.
+
+Resmi kapanış yalnızca gerçek saha dosyalarıyla yapılmalıdır.

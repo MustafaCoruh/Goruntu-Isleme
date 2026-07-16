@@ -37,6 +37,9 @@ def test_r4_acceptance_center_has_terminal_free_acceptance_flow():
     assert "report_type" in html
     assert "Merge Sonrası Senin Kontrol Listen" in html
     assert "tutym2_r4_operator_checklist" in html
+    assert "R4 Kontrol Modu" in html
+    assert "Mod: GÜVENLİ ÖRNEK DEMO" in html
+    assert "Mod: GERÇEK SAHA DOSYALARI" in html
     assert "Toplu R4 Görsel Sonuç" in html
     assert "R4 GÖRSEL SONUÇ: KONTROLLÜ SAHA KABULÜNE HAZIR" in html
     assert "Güvenli Örnekle Dene" in html
