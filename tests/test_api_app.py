@@ -73,7 +73,34 @@ def _seed_api_data(session_factory):
 def test_app_registers_expected_routes() -> None:
     route_paths = set(app.openapi()["paths"])
 
-    assert {"/health", "/tables", "/occupancy/current", "/occupancy/events"}.issubset(route_paths)
+    assert {
+        "/health",
+        "/tables",
+        "/occupancy/current",
+        "/occupancy/events",
+        "/product/readiness",
+    }.issubset(route_paths)
+
+
+def test_product_readiness_endpoint_returns_safe_result(monkeypatch) -> None:
+    from app.api import routes_product
+
+    monkeypatch.setattr(
+        routes_product,
+        "check_product_assets",
+        lambda config, model: {
+            "ready_for_video_test": False,
+            "status": "NOT_READY",
+            "checks": [{"name": "person_model", "status": "fail", "message": "Model eksik."}],
+            "next_step": "Modeli yükleyin.",
+        },
+    )
+
+    response = routes_product.get_product_readiness()
+
+    assert response["status"] == "NOT_READY"
+    assert response["checks"][0]["message"] == "Model eksik."
+    assert "path" not in str(response).lower()
 
 
 def test_health_endpoint_returns_ok() -> None:
