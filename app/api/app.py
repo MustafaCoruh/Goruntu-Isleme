@@ -27,6 +27,7 @@ def create_app() -> FastAPI:
     from app.api.routes_health import router as health_router
     from app.api.routes_import import router as import_router
     from app.api.routes_occupancy import router as occupancy_router
+    from app.api.routes_product import router as product_router
     from app.api.routes_reports import router as reports_router
     from app.api.routes_sessions import router as sessions_router
     from app.api.routes_tables import router as tables_router
@@ -36,6 +37,7 @@ def create_app() -> FastAPI:
     api_app.include_router(debug_router)
     api_app.include_router(tables_router)
     api_app.include_router(occupancy_router)
+    api_app.include_router(product_router)
     api_app.include_router(sessions_router)
     api_app.include_router(reports_router)
 

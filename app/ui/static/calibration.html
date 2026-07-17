@@ -185,6 +185,22 @@ $('videoInput').addEventListener('change', (event) => {
   };
 });
 
+$('cameraButton').addEventListener('click', async () => {
+  try {
+    state.stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    $('video').srcObject = state.stream; await $('video').play();
+    $('video').hidden = false; $('photo').hidden = true; $('snapshotButton').disabled = false;
+    state.width = $('video').videoWidth || 1280; state.height = $('video').videoHeight || 720; state.source = 'camera';
+    fitCanvas(); render();
+  } catch (error) { $('status').textContent = `Kamera açılamadı: ${error.message}`; }
+});
+
+$('snapshotButton').addEventListener('click', () => {
+  const snap = document.createElement('canvas'); snap.width = state.width; snap.height = state.height;
+  snap.getContext('2d').drawImage($('video'), 0, 0, state.width, state.height);
+  $('photo').src = snap.toDataURL('image/jpeg'); $('photo').hidden = false; $('video').hidden = true;
+});
+
 $('undoButton').addEventListener('click', () => { state.points.pop(); render(); });
 $('clearButton').addEventListener('click', () => { state.points = []; render(); });
 $('addTableButton').addEventListener('click', () => {

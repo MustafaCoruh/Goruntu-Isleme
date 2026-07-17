@@ -52,3 +52,6 @@ temp/
 # Keep project skeleton directories
 !models/.gitkeep
 !models/README.md
+
+# Local runtime database
+data/*.sqlite
