@@ -13,12 +13,25 @@
           <p class="eyebrow">Canlı durum</p>
           <h1>Masa Doluluk Paneli</h1>
         </div>
-        <button id="refresh-button" type="button">Yenile</button>
+        <nav class="quick-links" aria-label="Hızlı bağlantılar">
+          <a href="calibration.html">Kalibrasyon</a>
+          <a href="debug.html">Teknik Görünüm</a>
+          <button id="refresh-button" type="button">Yenile</button>
+        </nav>
       </header>
 
       <section class="summary" aria-live="polite">
         <span>Son güncelleme:</span>
         <time id="last-updated" datetime="">Yükleniyor...</time>
+      </section>
+
+      <section id="readiness-panel" class="readiness-panel" aria-labelledby="readiness-title">
+        <div>
+          <p class="eyebrow">Video testi hazırlığı</p>
+          <h2 id="readiness-title">Ürün kontrol ediliyor…</h2>
+          <p id="readiness-next-step">Yapılandırma, kalibrasyon ve model denetleniyor.</p>
+        </div>
+        <ul id="readiness-checks" class="readiness-checks"></ul>
       </section>
 
       <section id="status-message" class="status-message" role="status"></section>
@@ -42,5 +55,5 @@
     </template>
 
     <script src="app.js" defer></script>
-  </body>
+</body>
 </html>
