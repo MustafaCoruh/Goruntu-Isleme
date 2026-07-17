@@ -22,6 +22,5 @@ def test_readme_uses_video_validation_to_finish_product():
 
     assert "Lokal geçmiş videoda 14 masanın" in text
     assert "Canlı kamera akışında veya eski kamera kaydında" in text
-    assert "R4" not in text
     assert "field_handoff_summary" not in text
     assert "dashboard_state.json" not in text

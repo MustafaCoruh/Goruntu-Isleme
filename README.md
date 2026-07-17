@@ -21,6 +21,19 @@ Desteklenen lokal video uzantıları: `.avi`, `.m4v`, `.mkv`, `.mov`, `.mp4`.
 - Masa bölgelerini tanımlama/düzeltme: `app/ui/static/calibration.html`
 - Teknik hata ayıklama: `app/ui/static/debug.html`
 
+## Her PR sonrasında ürünü kontrol etme
+
+Windows bilgisayarda repository içindeki `TUTYM2_KONTROL.bat` dosyasına çift tıklayın. Dosya uygulamayı başlatır ve ana kontrol ekranını tarayıcıda açar. Terminal komutu yazmanız gerekmez.
+
+Ekranda şunları kontrol edin:
+
+1. **Video testi hazırlığı** kartında hangi girdilerin hazır veya eksik olduğu.
+2. 14 masa kartının dolu, boş veya belirsiz sonuçları.
+3. **Kalibrasyon** bağlantısında video seçme ve masa poligonu çizme akışı.
+4. **Teknik Görünüm** bağlantısında kamera/masa çizimleri.
+
+Uygulamayı kapatmak için açılan `T.UTYM#2 Sunucu` penceresini kapatın.
+
 ## Geliştirme videosunu çalıştırma
 
 Terminal kullanabilen geliştirici, video dosyasını repo dışında tutarak aşağıdaki giriş noktasını kullanır:

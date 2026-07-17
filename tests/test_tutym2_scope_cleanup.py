@@ -4,18 +4,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_removed_acceptance_workflow_files_do_not_return():
-    removed_paths = [
-        "app/r3_demo_smoke.py",
-        "app/r4_acceptance.py",
-        "app/field_handoff_summary.py",
-        "app/tutym2_project_status.py",
-        "app/ui/static/tutym2_r3_demo_launcher.html",
-        "app/ui/static/tutym2_r3_presentation.html",
-        "app/ui/static/tutym2_r4_acceptance_center.html",
+def test_active_product_has_no_legacy_release_stage_labels():
+    active_files = [
+        ROOT / "README.md",
+        *sorted((ROOT / "app").rglob("*.py")),
+        *sorted((ROOT / "app" / "ui" / "static").glob("*.html")),
+        *sorted((ROOT / "app" / "ui" / "static").glob("*.js")),
     ]
+    combined = "\n".join(path.read_text(encoding="utf-8") for path in active_files)
 
-    assert all(not (ROOT / path).exists() for path in removed_paths)
+    for stage in (2, 3, 4):
+        assert f"R{stage}" not in combined
 
 
 def test_main_navigation_contains_only_product_screens():
@@ -25,6 +24,4 @@ def test_main_navigation_contains_only_product_screens():
 
     assert "calibration.html" in combined
     assert "debug.html" in index
-    assert "R3" not in combined
-    assert "R4" not in combined
     assert "Saha Kabul" not in combined
