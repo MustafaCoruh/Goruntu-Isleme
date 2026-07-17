@@ -77,6 +77,15 @@ button:hover {
   display: none;
 }
 
+.scope-note {
+  border-left: 6px solid #1f5eff;
+  border-radius: 14px;
+  background: #eff6ff;
+  color: #1e3a8a;
+  margin-bottom: 20px;
+  padding: 14px 18px;
+}
+
 .readiness-panel {
   border: 2px solid #cbd5e1;
   border-radius: 22px;

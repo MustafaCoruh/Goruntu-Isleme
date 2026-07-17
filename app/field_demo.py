@@ -241,7 +241,7 @@ def _utc_now() -> str:
 def _report_safety_note() -> str:
     return (
         "This report must not contain real videos, RTSP URLs, IP addresses, "
-        "credentials, or participant information."
+        "credentials, or personal information."
     )
 
 

@@ -25,3 +25,15 @@ def test_main_navigation_contains_only_product_screens():
     assert "calibration.html" in combined
     assert "debug.html" in index
     assert "Saha Kabul" not in combined
+
+
+def test_removed_non_occupancy_features_do_not_return():
+    removed_paths = [
+        ROOT / "app" / "database" / "importers.py",
+        ROOT / "app" / "api" / "routes_import.py",
+        ROOT / "app" / "api" / "routes_reports.py",
+        ROOT / "app" / "api" / "routes_sessions.py",
+        ROOT / "app" / "ui" / "static" / "session_assignment.html",
+    ]
+
+    assert all(not path.exists() for path in removed_paths)

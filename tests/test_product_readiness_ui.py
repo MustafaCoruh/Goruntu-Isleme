@@ -14,3 +14,5 @@ def test_dashboard_displays_product_readiness():
     assert 'fetch("/product/readiness"' in script
     assert "Video testine hazır" in script
     assert "Video testi için eksikler var" in script
+    assert "Videodan yalnızca 14 masanın" in html
+    assert "Kişi kimliği ve manuel masa ataması yapılmaz" in html

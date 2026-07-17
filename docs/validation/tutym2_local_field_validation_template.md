@@ -25,7 +25,7 @@ Bu rapora şu bilgiler eklenmemelidir:
 - RTSP URL.
 - Kamera IP adresi.
 - Kamera kullanıcı adı/parolası.
-- Katılımcı adı veya kişi bilgisi.
+- Kişi adı veya kimlik bilgisi.
 - Ekran görüntüsü içinde hassas veri varsa ekran görüntüsü.
 
 Sadece sayısal sonuçlar, genel gözlemler ve masa numarası bazlı hata türleri yazılmalıdır.

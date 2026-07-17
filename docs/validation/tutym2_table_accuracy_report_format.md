@@ -36,7 +36,7 @@ Gerçek görüntü veya video
 Tam lokal dosya path'i
 Kişi adı
 Yüz görüntüsü veya yüz tanımlayıcı bilgi
-Hava aracı veya uçuş testine ait yetkisiz hassas bilgi
+Test ortamına ait yetkisiz hassas bilgi
 ```
 
 Raporda sadece aşağıdaki güvenli bilgiler yer almalıdır:

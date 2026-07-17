@@ -29,7 +29,7 @@ Kalibrasyon sırasında aşağıdaki verileri GitHub'a, PR'a veya chat ortamına
 - Gerçek RTSP URL.
 - Kamera IP adresi.
 - Kamera kullanıcı adı/parolası.
-- Katılımcı veya ekran bilgisi içeren görüntüler.
+- Kişi veya ekran bilgisi içeren görüntüler.
 - Lokal üretilen `tutym2_cam_001.local.json` dosyası kurum politikası hassas kabul ediyorsa.
 
 Kalibrasyon gerçek görüntü üzerinde lokal Windows makinede yapılmalıdır.

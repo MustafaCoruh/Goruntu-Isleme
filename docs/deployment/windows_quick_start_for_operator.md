@@ -20,7 +20,7 @@ Aşağıdaki veriler repository'ye, GitHub'a, PR'a veya chat ortamına eklenmeme
 - Gerçek RTSP URL.
 - Kamera IP adresi.
 - Kamera kullanıcı adı/parolası.
-- Katılımcıları veya ekranları tanımlayabilecek görüntüler.
+- Kişileri veya ekranları tanımlayabilecek görüntüler.
 - Gerçek model dosyası kurum politikası izin vermiyorsa.
 
 Repository'de yalnızca kod, dokümantasyon, sentetik örnekler ve güvenli template dosyaları tutulmalıdır.

@@ -35,7 +35,7 @@ Bu dosya bir rapor şablonudur. Gerçek görüntü veya video eklenmemelidir.
 | Koşul | Seçenek / Açıklama |
 | --- | --- |
 | Işık durumu | `Normal / Loş / Parlak / Karışık` |
-| Katılımcı yoğunluğu | `Boş / Az / Orta / Yoğun` |
+| Kişi yoğunluğu | `Boş / Az / Orta / Yoğun` |
 | Sandalyeler görünür mü? | `Evet / Hayır / Kısmen` |
 | Masalar net görünür mü? | `Evet / Hayır / Kısmen` |
 | Kamera açısı değişti mi? | `Hayır / Evet` |

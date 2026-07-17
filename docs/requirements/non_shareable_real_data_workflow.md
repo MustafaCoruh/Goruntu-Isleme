@@ -31,7 +31,7 @@ Aşağıdakiler repository'ye eklenmemelidir:
 - Gerçek kamera görüntüleri.
 - Gerçek kamera videoları.
 - RTSP URL, kullanıcı adı, parola veya IP adresi gibi bağlantı sırları.
-- Katılımcıları tanımlayabilecek kişi bilgileri.
+- Kişileri tanımlayabilecek kimlik bilgileri.
 - Yüz, badge, ekran, belge veya hassas operasyon görüntüsü içeren dosyalar.
 
 ## 5. Saha Doğrulama Raporu Formatı
