@@ -49,5 +49,8 @@ temp/
 .idea/
 .vscode/
 
-# Keep project skeleton directories
-!models/.gitkeep
+# Keep model documentation
+!models/README.md
+
+# Local runtime database
+data/*.sqlite
