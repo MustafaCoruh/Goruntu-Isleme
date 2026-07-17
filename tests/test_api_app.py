@@ -122,6 +122,10 @@ def test_current_occupancy_endpoint_returns_in_memory_snapshot() -> None:
     response = get_current_occupancy()
 
     assert response == CURRENT_OCCUPANCY_SNAPSHOT
+    assert response["utym_id"] == "T.UTYM#2"
+    assert response["camera_id"] == "TUTYM2-CAM-001"
+    assert len(response["tables"]) == 14
+    assert all(table["status"] == "uncertain" for table in response["tables"])
     assert response is not CURRENT_OCCUPANCY_SNAPSHOT
     assert response["tables"] is not CURRENT_OCCUPANCY_SNAPSHOT["tables"]
 
@@ -187,8 +191,9 @@ def test_debug_state_returns_overlay_payload(monkeypatch) -> None:
     assert response["enabled"] is True
     assert response["frame_url"] == "/debug/frame.jpg"
     assert response["detections"][0]["class_name"] == "person"
-    assert response["tables"][0]["polygon"] == [[100, 200], [300, 200], [320, 420], [80, 420]]
-    assert response["tables"][0]["status"] == "occupied"
+    assert len(response["tables"]) == 14
+    assert response["tables"][0]["polygon"] == [[80, 120], [240, 120], [240, 210], [80, 210]]
+    assert response["tables"][0]["status"] == "uncertain"
 
 
 def test_debug_state_can_be_disabled_for_operation_mode(monkeypatch) -> None:

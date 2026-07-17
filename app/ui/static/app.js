@@ -7,6 +7,9 @@ const readinessPanel = document.querySelector("#readiness-panel");
 const readinessTitle = document.querySelector("#readiness-title");
 const readinessNextStep = document.querySelector("#readiness-next-step");
 const readinessChecks = document.querySelector("#readiness-checks");
+const occupiedCount = document.querySelector("#occupied-count");
+const emptyCount = document.querySelector("#empty-count");
+const uncertainCount = document.querySelector("#uncertain-count");
 
 const statusLabels = {
   occupied: "Dolu",
@@ -36,6 +39,14 @@ function normalizeStatus(status) {
 
 function renderTables(tables = []) {
   tableList.replaceChildren();
+
+  const totals = { occupied: 0, empty: 0, uncertain: 0 };
+  tables.forEach((table) => {
+    totals[normalizeStatus(table.status)] += 1;
+  });
+  occupiedCount.textContent = totals.occupied;
+  emptyCount.textContent = totals.empty;
+  uncertainCount.textContent = totals.uncertain;
 
   if (tables.length === 0) {
     statusMessage.textContent = "Gösterilecek masa bulunamadı.";

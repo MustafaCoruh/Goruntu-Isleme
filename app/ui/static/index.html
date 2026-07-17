@@ -21,8 +21,26 @@
       </header>
 
       <section class="summary" aria-live="polite">
-        <span>Son güncelleme:</span>
-        <time id="last-updated" datetime="">Yükleniyor...</time>
+        <div><span>Son güncelleme:</span><time id="last-updated" datetime="">Yükleniyor...</time></div>
+        <div class="occupancy-totals" aria-label="Doluluk özeti">
+          <strong class="total total--occupied"><span id="occupied-count">0</span> Dolu</strong>
+          <strong class="total total--empty"><span id="empty-count">0</span> Boş</strong>
+          <strong class="total total--uncertain"><span id="uncertain-count">14</span> Belirsiz</strong>
+        </div>
+      </section>
+
+      <aside class="scope-note">
+        <strong>Ürün kapsamı:</strong>
+        Videodan yalnızca 14 masanın dolu, boş veya belirsiz durumu ölçülür. Kişi kimliği ve manuel masa ataması yapılmaz.
+      </aside>
+
+      <section id="readiness-panel" class="readiness-panel" aria-labelledby="readiness-title">
+        <div>
+          <p class="eyebrow">Video testi hazırlığı</p>
+          <h2 id="readiness-title">Ürün kontrol ediliyor…</h2>
+          <p id="readiness-next-step">Yapılandırma, kalibrasyon ve model denetleniyor.</p>
+        </div>
+        <ul id="readiness-checks" class="readiness-checks"></ul>
       </section>
 
       <aside class="scope-note">

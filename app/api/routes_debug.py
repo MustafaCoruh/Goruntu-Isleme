@@ -18,7 +18,10 @@ from app.vision.visualization import draw_debug_overlay
 router = APIRouter(prefix="/debug", tags=["debug"])
 
 _DEFAULT_CONFIG_PATH = (
-    Path(__file__).resolve().parents[2] / "configs" / "utym_001_cam_001.json"
+    Path(__file__).resolve().parents[2]
+    / "configs"
+    / "templates"
+    / "tutym2_cam_001.template.json"
 )
 _DEBUG_ENABLED_ENV = "FTMC_DEBUG_UI_ENABLED"
 

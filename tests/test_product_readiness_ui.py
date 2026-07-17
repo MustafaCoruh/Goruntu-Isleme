@@ -16,3 +16,7 @@ def test_dashboard_displays_product_readiness():
     assert "Video testi için eksikler var" in script
     assert "Videodan yalnızca 14 masanın" in html
     assert "Kişi kimliği ve manuel masa ataması yapılmaz" in html
+    assert 'id="occupied-count"' in html
+    assert 'id="empty-count"' in html
+    assert 'id="uncertain-count"' in html
+    assert "totals[normalizeStatus(table.status)] += 1" in script

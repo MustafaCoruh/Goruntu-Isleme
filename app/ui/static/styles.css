@@ -73,6 +73,40 @@ button:hover {
   margin-right: 8px;
 }
 
+.summary {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.occupancy-totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.total {
+  border-radius: 999px;
+  padding: 7px 11px;
+}
+
+.total--occupied {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.total--empty {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.total--uncertain {
+  background: #fef3c7;
+  color: #92400e;
+}
+
 .status-message:empty {
   display: none;
 }
