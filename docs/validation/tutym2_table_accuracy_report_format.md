@@ -93,7 +93,7 @@ Bu alan test koşullarını açıklar.
 
 | Alan | Açıklama |
 | --- | --- |
-| `test_type` | `local_photo`, `local_video` veya `rtsp_live` |
+| `test_type` | `local_video` veya `rtsp_live` |
 | `lighting` | `normal`, `dim`, `bright`, `mixed` |
 | `occupancy_level` | `empty`, `low`, `medium`, `high` |
 | `camera_angle_changed` | Kamera açısı değiştiyse `true` |

@@ -54,7 +54,7 @@ Bu doküman, ilk prototipin çalışacağı UTYM ortamı ve görüntü işleme k
 | Toplam kamera sayısı | Karar bekliyor | Çoklu kamera birleştirme kapsamını etkiler |
 | İlk kamera ID / RTSP URL | RTSP var; gerçek URL saha kurulumunda lokal secret/config olarak girilecek | Canlı IP video bağlantı testini etkiler |
 | FPS | Karar bekliyor | Performans kabul kriterini etkiler |
-| İlk test kaynağı | Lokal geçmiş video veya fotoğraf | Gerçek görüntü paylaşılmadan ilk saha denemesini mümkün kılar |
+| İlk test kaynağı | Lokal geçmiş video | Gerçek görüntü paylaşılmadan ilk saha denemesini mümkün kılar |
 | Geliştirme donanımı | Intel Xeon Gold 6284R CPU; GPU yok | CPU baseline performansını belirler |
 | Operasyon donanımı | GPU bulunan Windows bilgisayarlar | Son saha performansı GPU ile ayrıca ölçülmelidir |
 | Masaların sabitliği | Karar bekliyor | Kalibrasyon yenileme sıklığını etkiler |
@@ -64,4 +64,4 @@ Bu doküman, ilk prototipin çalışacağı UTYM ortamı ve görüntü işleme k
 - İlk prototipte T.UTYM#2 için 14 masa ve masa başına 1 sandalye üzerinden masa doluluk tespiti yapılacaktır.
 - Gerçek veri paylaşılmayacağı için bir sonraki geliştirme aşaması, gerçek görüntü gerektirmeyen Windows offline kurulum, kalibrasyon ve saha doğrulama prosedürlerine odaklanmalıdır.
 - Kamera tipi RTSP destekli IP video olduğundan ilk canlı bağlantı testi gerçek RTSP URL repo’ya yazılmadan lokal ortamda yapılmalıdır.
-- İlk algoritma denemesi canlı kamera yerine lokal geçmiş video veya fotoğraf üzerinden yapılabilir; gerçek dosya repo’ya eklenmemelidir.
+- İlk algoritma denemesi canlı kamera yerine lokal geçmiş video üzerinden yapılabilir; gerçek dosya repo’ya eklenmemelidir.

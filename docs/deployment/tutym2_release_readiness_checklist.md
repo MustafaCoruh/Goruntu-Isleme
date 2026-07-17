@@ -13,7 +13,7 @@ Bu noktada sistemi kullanabilir miyiz, sunabilir miyiz, yoksa hangi eksikler tam
 | Seviye | Anlam | Kullanım durumu |
 | --- | --- | --- |
 | R0 - Dokümantasyon hazır | Akış, komutlar ve güvenlik kuralları yazılı | Teknik/operatör incelemesi |
-| R1 - Lokal demo hazır | Lokal fotoğraf/video ile güvenli demo çalışabilir | Kontrollü iç demo |
+| R1 - Lokal demo hazır | Lokal video ile güvenli demo çalışabilir | Kontrollü iç demo |
 | R2 - RTSP bağlantı testi hazır | Canlı kameradan güvenli bağlantı raporu üretilebilir | Saha teknik doğrulama |
 | R3 - Dashboard demo hazır | Güvenli dashboard_state ile statik dashboard gösterilebilir | Yönetici/operatör sunumu |
 | R4 - Saha kabul adayı | Readiness, config, RTSP, doğruluk, dashboard ve handoff raporları tamam | Kontrollü saha kabul denemesi |

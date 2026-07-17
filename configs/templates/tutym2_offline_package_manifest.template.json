@@ -3,7 +3,7 @@
   "site": "T.UTYM#2",
   "purpose": "Safe manifest for preparing the offline Windows field package without storing sensitive values or real media.",
   "repo_items": [
-    { "path": "app/field_demo.py", "purpose": "Local photo/video field demo runner." },
+    { "path": "app/field_demo.py", "purpose": "Local video field demo runner." },
     { "path": "app/rtsp_field_demo.py", "purpose": "RTSP-safe field demo and connection-test runner." },
     { "path": "app/offline_readiness.py", "purpose": "Offline machine readiness checks." },
     { "path": "app/dashboard_state.py", "purpose": "Builds the safe dashboard_state.json file." },
@@ -12,7 +12,7 @@
     { "path": "configs/templates/tutym2_cam_001.rtsp.template.json", "purpose": "Safe RTSP config template with placeholder stream value." },
     { "path": "configs/templates/tutym2_dashboard_state.example.json", "purpose": "Safe example dashboard state for UI checks." },
     { "path": "scripts/check_tutym2_offline_readiness.py", "purpose": "Operator wrapper for offline readiness checks." },
-    { "path": "scripts/run_tutym2_local_demo.py", "purpose": "Operator wrapper for local photo/video demo." },
+    { "path": "scripts/run_tutym2_local_demo.py", "purpose": "Operator wrapper for local video demo." },
     { "path": "scripts/run_tutym2_rtsp_demo.py", "purpose": "Operator wrapper for RTSP demo and connection test." },
     { "path": "scripts/build_tutym2_dashboard_state.py", "purpose": "Operator wrapper to build dashboard state." },
     { "path": "scripts/validate_tutym2_dashboard_state.py", "purpose": "Operator wrapper to validate dashboard state." },
@@ -29,7 +29,6 @@
     "real camera stream URL",
     "camera network address",
     "camera username or passphrase",
-    "real room photo",
     "real room video",
     "full local machine path",
     "participant identity data"

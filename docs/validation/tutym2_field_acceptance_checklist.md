@@ -35,7 +35,7 @@ Aşağıdaki dosyaların VS Code içinde göründüğünü kontrol edin.
 
 | Dosya | Ne işe yarar? | Durum |
 | --- | --- | --- |
-| `app/field_demo.py` | Lokal foto/video demo runner | `[ ] Var` `[ ] Yok` |
+| `app/field_demo.py` | Lokal video demo runner | `[ ] Var` `[ ] Yok` |
 | `app/rtsp_field_demo.py` | RTSP canlı/bağlantı testi runner | `[ ] Var` `[ ] Yok` |
 | `scripts/run_tutym2_local_demo.py` | Lokal demo kısa çalıştırma scripti | `[ ] Var` `[ ] Yok` |
 | `scripts/run_tutym2_rtsp_demo.py` | RTSP demo kısa çalıştırma scripti | `[ ] Var` `[ ] Yok` |
@@ -78,7 +78,7 @@ C:\FTMC_FIELD_DATA\reports\
 | Klasör | İçerik | Durum |
 | --- | --- | --- |
 | `configs` | Lokal `.local.json` config dosyaları | `[ ] Hazır` `[ ] Eksik` |
-| `inputs` | Lokal test foto/video dosyaları | `[ ] Hazır` `[ ] Eksik` |
+| `inputs` | Lokal test video dosyaları | `[ ] Hazır` `[ ] Eksik` |
 | `models` | Lokal ONNX model dosyası | `[ ] Hazır` `[ ] Eksik` |
 | `reports` | Güvenli JSON test raporları | `[ ] Hazır` `[ ] Eksik` |
 
@@ -100,14 +100,14 @@ Kalibrasyonun amacı kamera görüntüsü üzerinde 14 masanın bölgelerini do�
 
 Kalibrasyon dosyasında gerçek RTSP URL veya gizli bilgi bulunmamalıdır.
 
-## 6. Lokal Foto/Video Demo Kabul Kontrolü
+## 6. Lokal Video Demo Kabul Kontrolü
 
-Bu test gerçek RTSP canlı yayına geçmeden önce geçmiş fotoğraf veya video üzerinde yapılır.
+Bu test gerçek RTSP canlı yayına geçmeden önce geçmiş video üzerinde yapılır.
 
 | Kontrol | Beklenen | Durum |
 | --- | --- | --- |
 | Lokal config dosyası var mı? | Evet | `[ ] Evet` `[ ] Hayır` |
-| Lokal test foto/video dosyası var mı? | Evet | `[ ] Evet` `[ ] Hayır` |
+| Lokal test video dosyası var mı? | Evet | `[ ] Evet` `[ ] Hayır` |
 | Model dosyası lokal `models` klasöründe mi? | Evet | `[ ] Evet` `[ ] Hayır` |
 | Demo runner hata vermeden başlıyor mu? | Evet | `[ ] Evet` `[ ] Hayır` |
 | Güvenli rapor üretiliyor mu? | Evet | `[ ] Evet` `[ ] Hayır` |
@@ -154,7 +154,7 @@ Canlı demo sonucu kötü çıkarsa önce kalibrasyon, sonra kamera açısı/ç�
 ```text
 [ ] 14 masa config içinde tanımlı.
 [ ] Her masanın kapasitesi 1.
-[ ] Lokal foto/video demo çalışıyor.
+[ ] Lokal video demo çalışıyor.
 [ ] RTSP bağlantı testi başarılı.
 [ ] RTSP bağlantı raporunda URL/IP/parola yok.
 [ ] Canlı RTSP demo başlıyor.
@@ -196,7 +196,7 @@ Masa sayısı: 14
 Kamera tipi: RTSP IP kamera
 Çözünürlük: 1920x1080
 Kalibrasyon: Tamam/Eksik
-Lokal foto/video demo: Başarılı/Başarısız
+Lokal video demo: Başarılı/Başarısız
 RTSP bağlantı testi: Başarılı/Başarısız
 frames_read/requested_frames: ... / ...
 average_fps: ...

@@ -16,7 +16,7 @@ Bu repo artık T.UTYM#2 saha demo ve R4 kabul akışı için terminal kullanmada
 
 **Ne kadar kaldı?** Yazılım/UI/doküman tarafı yaklaşık %90+ hazır kabul edilebilir. Kalan ana iş, gerçek saha makinesinden üretilecek üç güvenli R4 JSON dosyasının gelmesi ve R4 ekranında PASS vermesidir. Bu dosyalar hazırsa kontrol aynı gün içinde kapanabilir; dosyalar yoksa süre saha ekibinin üretimine bağlıdır.
 
-> Güvenli örnek dosyalar resmi kapanış değildir. Gerçek kamera görüntüsü, RTSP URL, kamera IP, parola veya tam lokal path bu repoya eklenmemeli ve R4 ekranına not olarak yazılmamalıdır.
+> Güvenli örnek dosyalar resmi kapanış değildir. Gerçek video dosyası, RTSP URL, kamera IP, parola veya tam lokal path bu repoya eklenmemeli ve R4 ekranına not olarak yazılmamalıdır.
 
 ## Operatörün kontrol edeceği ana ekranlar
 

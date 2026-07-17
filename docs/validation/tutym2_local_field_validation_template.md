@@ -1,6 +1,6 @@
 # T.UTYM#2 Lokal Saha Doğrulama Raporu Şablonu
 
-Bu şablon, T.UTYM#2 lokal fotoğraf/video demosu çalıştırıldıktan sonra gerçek görüntü veya video paylaşmadan sonuçları raporlamak için kullanılır. Rapor, teknik olmayan operatörün doldurabileceği şekilde hazırlanmıştır.
+Bu şablon, T.UTYM#2 lokal video demosu çalıştırıldıktan sonra gerçek görüntü veya video paylaşmadan sonuçları raporlamak için kullanılır. Rapor, teknik olmayan operatörün doldurabileceği şekilde hazırlanmıştır.
 
 ## 1. Raporun Amacı
 
@@ -21,7 +21,6 @@ Sistem yeterince hızlı mı?
 
 Bu rapora şu bilgiler eklenmemelidir:
 
-- Gerçek fotoğraf.
 - Gerçek video.
 - RTSP URL.
 - Kamera IP adresi.
@@ -39,7 +38,7 @@ Sadece sayısal sonuçlar, genel gözlemler ve masa numarası bazlı hata türle
 | Testi yapan kişi/ekip | Kurum içi ekip adı; kişi adı gerekiyorsa kurum politikasına göre yazın |
 | UTYM | T.UTYM#2 |
 | Kamera | TUTYM2-CAM-001 |
-| Test tipi | Lokal fotoğraf / Lokal video / RTSP canlı |
+| Test tipi | Lokal video / RTSP canlı |
 | Görüntü çözünürlüğü | 1920x1080 |
 | Masa sayısı | 14 |
 | Masa başına sandalye | 1 |
@@ -66,7 +65,7 @@ Aşağıdaki tablodan yalnızca kullanılan test tiplerini doldurun.
 
 | Test tipi | Adet / Süre | Açıklama |
 | --- | ---: | --- |
-| Lokal fotoğraf |  | Örn. 10 fotoğraf |
+| Lokal video |  | Örn. 1 video |
 | Lokal video |  | Örn. 2 dakika |
 | RTSP canlı |  | Örn. 5 dakika |
 
@@ -137,7 +136,7 @@ Kalibrasyon noktaları doğru mu?
 Test sonunda bir karar seçin:
 
 ```text
-[ ] Devam edilebilir: Lokal foto/video test sonucu yeterli.
+[ ] Devam edilebilir: Lokal video test sonucu yeterli.
 [ ] Kalibrasyon düzeltilmeli: Masa poligonlarında hata var.
 [ ] Model iyileştirilmeli: İnsan tespiti zayıf.
 [ ] Kamera açısı/ışık iyileştirilmeli.

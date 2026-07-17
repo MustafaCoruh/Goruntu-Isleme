@@ -1,6 +1,6 @@
 # T.UTYM#2 Windows Lokal Saha Demo Akışı
 
-Bu doküman, gerçek T.UTYM#2 görüntüleri paylaşılmadan Windows üzerinde lokal geçmiş video, fotoğraf veya RTSP destekli IP kamera ile masa doluluk demosu çalıştırma akışını tanımlar.
+Bu doküman, gerçek T.UTYM#2 görüntüleri paylaşılmadan Windows üzerinde lokal geçmiş video veya RTSP destekli IP kamera ile masa doluluk demosu çalıştırma akışını tanımlar.
 
 ## 1. Hedef Ortam
 
@@ -14,11 +14,11 @@ Bu doküman, gerçek T.UTYM#2 görüntüleri paylaşılmadan Windows üzerinde l
 | Sandalye | Masa başına 1 sandalye |
 | Geliştirme bilgisayarı | Intel Xeon Gold 6284R CPU, GPU yok, kontrollü internet erişimi var |
 | Operasyon bilgisayarı | GPU bulunan Windows bilgisayarlar, internet erişimi yok |
-| İlk test kaynağı | Lokal geçmiş video veya fotoğraf |
+| İlk test kaynağı | Lokal geçmiş video |
 
 ## 2. Güvenlik Kuralları
 
-- Gerçek fotoğraf, video, RTSP URL, kullanıcı adı, parola ve kamera IP adresi repository'ye eklenmez.
+- Gerçek video, RTSP URL, kullanıcı adı, parola ve kamera IP adresi repository'ye eklenmez.
 - Gerçek görüntü dosyaları yalnızca lokal saha makinesinde tutulur.
 - Komut örneklerinde gerçek dosya yolları yerine temsili path kullanılır.
 - T.UTYM#2 config dosyası kamera görüntüsü içermese bile tesis yerleşimi bilgisi taşıyabileceği için kontrollü paylaşılmalıdır.
@@ -30,7 +30,6 @@ Windows saha makinesinde repo dışında aşağıdaki klasör yapısı kullanıl
 ```text
 C:\FTMC_FIELD_DATA\
 ├── input\
-│   ├── photos\
 │   └── videos\
 ├── models\
 │   └── person_detector.onnx
@@ -41,18 +40,9 @@ C:\FTMC_FIELD_DATA\
 
 Bu klasör repository dışında kalmalıdır.
 
-## 4. İlk Lokal Fotoğraf/Video Testi
+## 4. İlk Lokal Video Testi
 
 Gerçek görüntü paylaşılmadan, saha makinesindeki lokal dosya ile demo çalıştırılır.
-
-Fotoğraf örneği:
-
-```powershell
-python -m app.main `
-  --config C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json `
-  --source C:\FTMC_FIELD_DATA\input\photos\sample.jpg `
-  --model C:\FTMC_FIELD_DATA\models\person_detector.onnx
-```
 
 Video örneği:
 
@@ -100,8 +90,8 @@ Görüntü paylaşmadan aşağıdaki sonuçlar raporlanabilir:
 
 | Metrik | Örnek |
 | --- | --- |
-| Test tipi | Lokal video / lokal fotoğraf / RTSP canlı |
-| Test dosyası adedi | 10 fotoğraf veya 1 video gibi |
+| Test tipi | Lokal video / RTSP canlı |
+| Test dosyası adedi | 1 video gibi |
 | Ortalama FPS | 8.5 FPS |
 | Masa bazlı doğruluk | %92 |
 | False empty | %3 |
@@ -111,14 +101,14 @@ Görüntü paylaşmadan aşağıdaki sonuçlar raporlanabilir:
 
 ## 8. Operatör Dostu Lokal Demo Runner
 
-Lokal fotoğraf veya video testleri için daha anlaşılır preflight hataları veren T.UTYM#2 runner eklenmiştir. Bu runner gerçek görüntü, video, model ve lokal config dosyalarının repository dışında tutulduğunu varsayar.
+Lokal video testleri için daha anlaşılır preflight hataları veren T.UTYM#2 runner eklenmiştir. Bu runner gerçek görüntü, video, model ve lokal config dosyalarının repository dışında tutulduğunu varsayar.
 
 Örnek kullanım:
 
 ```powershell
 python scripts/run_tutym2_local_demo.py `
   --config C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json `
-  --source C:\FTMC_FIELD_DATA\input\photos\sample.jpg `
+  --source C:\FTMC_FIELD_DATA\input\videos\sample.mp4 `
   --model C:\FTMC_FIELD_DATA\models\person_detector.onnx `
   --report-output C:\FTMC_FIELD_DATA\reports\demo_result.json
 ```
@@ -137,7 +127,7 @@ python -m app.field_demo `
 Runner şu kontrolleri demo başlamadan yapar:
 
 1. Lokal config dosyası var mı?
-2. Lokal fotoğraf/video kaynağı var mı?
+2. Lokal video kaynağı var mı?
 3. ONNX model dosyası var mı?
 4. Kaynak uzantısı destekleniyor mu?
 5. Confidence ve IoU eşikleri 0 ile 1 arasında mı?

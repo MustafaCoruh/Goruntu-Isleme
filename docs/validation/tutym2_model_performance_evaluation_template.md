@@ -26,7 +26,7 @@ Bu dosya bir rapor şablonudur. Gerçek görüntü veya video eklenmemelidir.
 | Kullanılan config dosya adı | `tutym2_cam_001.local.json` veya `tutym2_cam_001.rtsp.local.json` |
 | Kullanılan model dosya adı | `person_detector.onnx` |
 | Model versiyonu | `...` |
-| Test tipi | `Lokal fotoğraf / Lokal video / RTSP canlı` |
+| Test tipi | `Lokal video / RTSP canlı` |
 | Görüntü paylaşımı yapıldı mı? | `Hayır` |
 | RTSP URL paylaşıldı mı? | `Hayır` |
 

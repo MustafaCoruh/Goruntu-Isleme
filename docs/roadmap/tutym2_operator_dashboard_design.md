@@ -219,7 +219,7 @@ Tam lokal path
 Offline Hazırlık Kontrolü Çalıştır
 Config Doğrula
 RTSP Bağlantı Testi Çalıştır
-Lokal Foto/Video Demo Başlat
+Lokal Video Demo Başlat
 Canlı RTSP Demo Başlat
 Güvenli Rapor Oluştur
 ```

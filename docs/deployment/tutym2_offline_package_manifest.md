@@ -33,7 +33,7 @@ Manifest, en az şu kategorileri kapsamalıdır:
 
 | Kategori | Örnek dosya | Amaç |
 | --- | --- | --- |
-| Lokal demo runner | `app/field_demo.py` | Fotoğraf/video testi |
+| Lokal demo runner | `app/field_demo.py` | Video testi |
 | RTSP runner | `app/rtsp_field_demo.py` | Canlı kamera veya bağlantı testi |
 | Offline readiness | `app/offline_readiness.py` | Kurulum ön kontrolü |
 | Dashboard state builder | `app/dashboard_state.py` | Güvenli dashboard JSON üretimi |
@@ -51,7 +51,7 @@ Aşağıdaki dosyalar veya veri grupları manifestte yalnızca kategori olarak a
 | --- | --- | --- |
 | Lokal config | `tutym2_cam_001.local.json` | Hayır |
 | Model dosyası | `person_detector.onnx` | Kurum politikasına göre; varsayılan hayır |
-| Gerçek fotoğraf/video | Operatör seçimi | Hayır |
+| Gerçek video | Operatör seçimi | Hayır |
 | Lokal raporlar | `offline_readiness.json`, `dashboard_state.json` | Sadece güvenli özetse paylaşılabilir |
 
 ## 4. Manifestte Bile Yazılmaması Gerekenler
@@ -63,7 +63,7 @@ Gerçek kamera stream bilgisi
 Kamera ağ adresi
 Kamera kullanıcı adı
 Kamera parolası
-Gerçek oda fotoğrafı adı
+Gerçek oda videosu adı
 Gerçek video dosya adı
 Tam lokal Windows/Linux path bilgisi
 Katılımcı kimliği veya kişisel veri

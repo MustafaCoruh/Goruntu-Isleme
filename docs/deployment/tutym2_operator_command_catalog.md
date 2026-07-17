@@ -32,7 +32,7 @@ Komutlarda lokal path kullanılması gerekebilir; fakat üretilen güvenli rapor
 | Offline makine hazır mı? | `scripts/check_tutym2_offline_readiness.py` | `offline_readiness.json` |
 | Offline paket manifesti güvenli mi? | `scripts/validate_tutym2_offline_package_manifest.py` | manifest validation JSON |
 | Lokal config geçerli mi? | `scripts/validate_tutym2_config.py` | config validation sonucu |
-| Lokal fotoğraf/video demo | `scripts/run_tutym2_local_demo.py` | local demo report |
+| Lokal video demo | `scripts/run_tutym2_local_demo.py` | local demo report |
 | RTSP bağlantı/demo | `scripts/run_tutym2_rtsp_demo.py` | RTSP report |
 | Table accuracy raporu geçerli mi? | `scripts/validate_tutym2_table_accuracy_report.py` | table report validation sonucu |
 | Dashboard state üret | `scripts/build_tutym2_dashboard_state.py` | `dashboard_state.json` |
@@ -140,7 +140,7 @@ Hassas RTSP bilgisi beklenmeyen yerdeyse
 Amaç:
 
 ```text
-Canlı kameraya geçmeden önce lokal fotoğraf veya video ile masa doluluk akışını test eder.
+Canlı kameraya geçmeden önce lokal video ile masa doluluk akışını test eder.
 ```
 
 Örnek kullanım:

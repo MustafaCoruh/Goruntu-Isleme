@@ -77,7 +77,7 @@ Dashboard üst çubuğu için önerilen birleşik veri modeli:
 
 | Alan | İzinli değerler |
 | --- | --- |
-| `mode` | `local_photo`, `local_video`, `rtsp_connection_test`, `rtsp_live`, `not_started` |
+| `mode` | `local_video`, `rtsp_connection_test`, `rtsp_live`, `not_started` |
 | `connection_status` | `connected`, `disconnected`, `not_tested`, `unknown` |
 | `overall_status` | `normal`, `warning`, `critical`, `not_ready` |
 

@@ -18,7 +18,6 @@ Aşağıdaki veriler hiçbir zaman GitHub'a, PR'a, chat ortamına veya repo içi
 Gerçek RTSP URL
 Kamera IP adresi
 Kamera kullanıcı adı/parolası
-Gerçek fotoğraf
 Gerçek video
 Tam lokal Windows path bilgisi
 Katılımcı/yüz/kimlik bilgisi
@@ -39,7 +38,7 @@ T.UTYM#2 akışı şu sırayla düşünülmelidir:
 6. Offline readiness check yap.
 7. Config validator çalıştır.
 8. RTSP bağlantı testini güvenli raporla.
-9. Lokal fotoğraf/video demosu veya RTSP demosu çalıştır.
+9. Lokal video demosu veya RTSP demosu çalıştır.
 10. Table accuracy raporu hazırla/validate et.
 11. Dashboard state üret ve validate et.
 12. Statik dashboard ile sonucu gör.
@@ -271,9 +270,9 @@ docs/deployment/tutym2_rtsp_connection_report_guide.md
 
 RTSP URL veya kamera IP rapora yazılmamalıdır.
 
-## 10. Lokal Fotoğraf/Video veya RTSP Demo
+## 10. Lokal Video veya RTSP Demo
 
-İlk denemede canlı kamera yerine lokal geçmiş fotoğraf/video ile ilerlemek daha güvenlidir.
+İlk denemede canlı kamera yerine lokal geçmiş video ile ilerlemek daha güvenlidir.
 
 Lokal demo scripti:
 
@@ -426,7 +425,7 @@ Paylaşılmayacaklar:
 RTSP URL
 Kamera IP
 Kamera kullanıcı adı/parolası
-Gerçek fotoğraf/video
+Gerçek video
 Tam lokal path
 Kişi adı/yüz görüntüsü
 ```

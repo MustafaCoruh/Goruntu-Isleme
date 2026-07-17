@@ -1,8 +1,8 @@
-"""Operator-friendly local field demo runner for T.UTYM#2.
+"""Operator-friendly local video demo runner for T.UTYM#2.
 
 This module performs safe preflight checks before delegating to the existing
-``app.main`` photo/video demo flow. It intentionally keeps real images, videos,
-RTSP URLs, and model artifacts outside the repository.
+``app.main`` video demo flow. It intentionally keeps real videos, RTSP URLs,
+and model artifacts outside the repository.
 """
 
 from __future__ import annotations
@@ -14,9 +14,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Sequence
 
-SUPPORTED_IMAGE_EXTENSIONS = frozenset({".jpg", ".jpeg", ".png"})
 SUPPORTED_VIDEO_EXTENSIONS = frozenset({".avi", ".m4v", ".mkv", ".mov", ".mp4"})
-SUPPORTED_SOURCE_EXTENSIONS = SUPPORTED_IMAGE_EXTENSIONS | SUPPORTED_VIDEO_EXTENSIONS
+SUPPORTED_SOURCE_EXTENSIONS = SUPPORTED_VIDEO_EXTENSIONS
 DEFAULT_CONFIG = r"C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json"
 DEFAULT_MODEL = r"C:\FTMC_FIELD_DATA\models\person_detector.onnx"
 
@@ -43,7 +42,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
 
     parser = argparse.ArgumentParser(
         description=(
-            "Run the T.UTYM#2 local field demo against a local photo or video. "
+            "Run the T.UTYM#2 local field demo against a local video file. "
             "Do not pass real RTSP URLs or sensitive paths that will be committed."
         )
     )
@@ -58,7 +57,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--source",
         required=True,
-        help="Path to a local photo/video on the field machine; never commit this file.",
+        help="Path to a local video on the field machine; never commit this file.",
     )
     parser.add_argument(
         "--model",
@@ -87,7 +86,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
         "--report-output",
         help=(
             "Optional path for a safe JSON run report. The report stores filenames, "
-            "extensions, thresholds, and run status, but not real images, videos, "
+            "extensions, thresholds, and run status, but not real videos, "
             "RTSP URLs, full local paths, or credentials."
         ),
     )
@@ -103,7 +102,7 @@ def validate_inputs(args: argparse.Namespace) -> FieldDemoInputs:
     report_output = Path(args.report_output).expanduser() if args.report_output else None
 
     _require_existing_file(config, "config JSON")
-    _require_existing_file(source, "local photo/video source")
+    _require_existing_file(source, "local video source")
     _require_existing_file(model, "ONNX person detector model")
     _require_supported_source(source)
     _require_probability(args.confidence_threshold, "confidence-threshold")
@@ -241,7 +240,7 @@ def _utc_now() -> str:
 
 def _report_safety_note() -> str:
     return (
-        "This report must not contain real images, videos, RTSP URLs, IP addresses, "
+        "This report must not contain real videos, RTSP URLs, IP addresses, "
         "credentials, or participant information."
     )
 
@@ -262,7 +261,7 @@ def _require_supported_source(path: Path) -> None:
         supported = ", ".join(sorted(SUPPORTED_SOURCE_EXTENSIONS))
         raise FieldDemoPreflightError(
             f"Unsupported source extension for {path}. Supported extensions: {supported}. "
-            "Use a local photo/video first; RTSP live runner will be handled separately."
+            "Use a local video first; RTSP live runner will be handled separately."
         )
 
 

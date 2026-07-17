@@ -1,6 +1,6 @@
 # T.UTYM#2 RTSP Canlı Kamera Operatör Kılavuzu
 
-Bu kılavuz, lokal fotoğraf/video ve kalibrasyon adımları tamamlandıktan sonra T.UTYM#2 için RTSP canlı kamera testine güvenli şekilde hazırlanmayı anlatır. Gerçek RTSP URL, kamera IP adresi, kullanıcı adı veya parola bu repository'ye yazılmamalıdır.
+Bu kılavuz, lokal video ve kalibrasyon adımları tamamlandıktan sonra T.UTYM#2 için RTSP canlı kamera testine güvenli şekilde hazırlanmayı anlatır. Gerçek RTSP URL, kamera IP adresi, kullanıcı adı veya parola bu repository'ye yazılmamalıdır.
 
 ## 1. RTSP Nedir?
 
@@ -20,11 +20,11 @@ RTSP canlı kameraya geçmeden önce şu adımlar tamamlanmış olmalıdır:
 
 ```text
 [ ] T.UTYM#2 kalibrasyon ekranı açıldı.
-[ ] 14 masa lokal fotoğraf üzerinde işaretlendi.
+[ ] 14 masa lokal video karesi üzerinde işaretlendi.
 [ ] tutym2_cam_001.local.json üretildi.
 [ ] Config dosyası C:\FTMC_FIELD_DATA\configs\ altında duruyor.
 [ ] ONNX model dosyası C:\FTMC_FIELD_DATA\models\ altında duruyor.
-[ ] Lokal fotoğraf veya video demo testi yapıldı.
+[ ] Lokal video demo testi yapıldı.
 [ ] Görüntü paylaşmadan doğrulama raporu dolduruldu.
 ```
 
@@ -83,7 +83,7 @@ Aşağıdaki örnek gerçek değer içermez. Gerçek kullanıcı adı, parola, I
 | Kamera IP adresi GitHub'a yazılmadı mı? | Evet / Hayır |
 | Kullanıcı adı/parola GitHub'a yazılmadı mı? | Evet / Hayır |
 | Config içinde 14 masa poligonu var mı? | Evet / Hayır |
-| Lokal foto/video demo daha önce denendi mi? | Evet / Hayır |
+| Lokal video demo daha önce denendi mi? | Evet / Hayır |
 
 Her cevap `Evet` değilse canlı RTSP teste geçilmemelidir.
 
@@ -96,7 +96,7 @@ Her cevap `Evet` değilse canlı RTSP teste geçilmemelidir.
 - FPS kabul edilebilir mi?
 - Masa poligonları canlı görüntüde doğru yerde mi?
 - Kişi tespiti canlı görüntüde çalışıyor mu?
-- Dolu/boş kararları lokal foto/video testine benzer mi?
+- Dolu/boş kararları lokal video testine benzer mi?
 - Gecikme veya donma var mı?
 - Ağ kopması yaşandı mı?
 
@@ -107,7 +107,7 @@ Her cevap `Evet` değilse canlı RTSP teste geçilmemelidir.
 | Kamera bağlanmıyor | URL, kullanıcı adı, parola veya ağ erişimi yanlış | RTSP URL lokal olarak doğru mu? |
 | Görüntü donuyor | Ağ gecikmesi veya kamera FPS/codec sorunu | Aynı kamera başka yazılımda akıcı mı? |
 | FPS düşük | CPU/GPU yetersiz veya model ağır | Lokal video FPS ile karşılaştırın |
-| Poligonlar kaymış | Canlı kamera açısı kalibrasyon fotoğrafından farklı | Kalibrasyon yeniden yapılmalı |
+| Poligonlar kaymış | Canlı kamera açısı kalibrasyon video karesinden farklı | Kalibrasyon yeniden yapılmalı |
 | Dolu masa boş görünüyor | Model kişiyi kaçırıyor veya poligon yanlış | False Empty olarak raporlayın |
 
 ## 8. Paylaşılabilir RTSP Test Raporu

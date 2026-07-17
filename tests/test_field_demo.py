@@ -12,7 +12,7 @@ from app.field_demo import (
 )
 
 
-def _args(tmp_path: Path, source_name: str = "sample.jpg") -> Namespace:
+def _args(tmp_path: Path, source_name: str = "sample.mp4") -> Namespace:
     config = tmp_path / "tutym2_cam_001.local.json"
     source = tmp_path / source_name
     model = tmp_path / "person_detector.onnx"
@@ -30,12 +30,11 @@ def _args(tmp_path: Path, source_name: str = "sample.jpg") -> Namespace:
     )
 
 
-def test_validate_inputs_accepts_local_photo_source(tmp_path: Path) -> None:
-    inputs = validate_inputs(_args(tmp_path, "sample.jpg"))
+def test_validate_inputs_rejects_local_photo_source(tmp_path: Path) -> None:
+    args = _args(tmp_path, "sample.jpg")
 
-    assert inputs.config.name == "tutym2_cam_001.local.json"
-    assert inputs.source.name == "sample.jpg"
-    assert inputs.model.name == "person_detector.onnx"
+    with pytest.raises(FieldDemoPreflightError, match="Unsupported source extension"):
+        validate_inputs(args)
 
 
 def test_validate_inputs_accepts_local_video_source(tmp_path: Path) -> None:
@@ -60,7 +59,7 @@ def test_validate_inputs_rejects_unsupported_source_extension(tmp_path: Path) ->
 
 
 def test_build_app_main_argv_forwards_paths_and_thresholds(tmp_path: Path) -> None:
-    inputs = validate_inputs(_args(tmp_path, "sample.png"))
+    inputs = validate_inputs(_args(tmp_path, "sample.mp4"))
 
     argv = build_app_main_argv(inputs)
 
@@ -97,7 +96,7 @@ def test_write_run_report_omits_full_local_paths(tmp_path: Path) -> None:
     report = tmp_path / "reports" / "demo_result.json"
     inputs = FieldDemoInputs(
         config=tmp_path / "tutym2_cam_001.local.json",
-        source=tmp_path / "secret_photo.jpg",
+        source=tmp_path / "secret_video.mp4",
         model=tmp_path / "person_detector.onnx",
         report_output=report,
     )
@@ -106,6 +105,6 @@ def test_write_run_report_omits_full_local_paths(tmp_path: Path) -> None:
 
     text = report.read_text()
     assert "completed" in text
-    assert "secret_photo.jpg" in text
+    assert "secret_video.mp4" in text
     assert str(tmp_path) not in text
     assert "RTSP URLs" in text

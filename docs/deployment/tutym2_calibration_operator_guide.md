@@ -25,8 +25,7 @@ C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json
 
 Kalibrasyon sırasında aşağıdaki verileri GitHub'a, PR'a veya chat ortamına eklemeyin:
 
-- Gerçek T.UTYM#2 fotoğrafı.
-- Gerçek T.UTYM#2 videosu.
+- Gerçek T.UTYM#2 videosu veya video karesi.
 - Gerçek RTSP URL.
 - Kamera IP adresi.
 - Kamera kullanıcı adı/parolası.
@@ -42,17 +41,16 @@ Lokal Windows makinede şu klasör yapısı olmalıdır:
 ```text
 C:\FTMC_FIELD_DATA\
 ├── input\
-│   ├── photos\
 │   └── videos\
 ├── models\
 ├── configs\
 └── reports\
 ```
 
-Kalibrasyon için en pratik başlangıç, gerçek kamera görüntüsünden alınmış tek bir fotoğraftır:
+Kalibrasyon için başlangıç, gerçek kamera videosundan alınmış tek bir net video karesidir:
 
 ```text
-C:\FTMC_FIELD_DATA\input\photos\calibration_reference.jpg
+C:\FTMC_FIELD_DATA\input\videos\calibration_reference_frame.jpg
 ```
 
 Dosya adı örnektir. Gerçek dosya adını paylaşmayın.
@@ -81,14 +79,14 @@ Hedef masa sayısı: 0 / 14
 
 Bu değerler farklıysa yanlış branch veya eski sürüm açılmış olabilir.
 
-## 6. Fotoğraf Yükleme
+## 6. Video Karesi Yükleme
 
-1. `Örnek fotoğraf yükle` alanına tıklayın.
-2. Lokal Windows klasöründen kalibrasyon fotoğrafını seçin.
-3. Fotoğraf ekranda görünmelidir.
-4. Fotoğrafta masalar net görünmüyorsa daha uygun bir kare seçin.
+1. Kalibrasyon için videodan alınmış net bir kare seçin.
+2. Lokal Windows klasöründen kalibrasyon video karesini seçin.
+3. Video karesi ekranda görünmelidir.
+4. Video karesinde masalar net görünmüyorsa daha uygun bir kare seçin.
 
-Gerçek fotoğraf yalnızca lokal makinede kalmalıdır.
+Gerçek video yalnızca lokal makinede kalmalıdır.
 
 ## 7. Masa İşaretleme Mantığı
 
@@ -200,7 +198,7 @@ Gerçek görüntü veya RTSP URL paylaşılmadı mı? Evet/Hayır
 
 ## 14. Sonraki Adım
 
-Kalibrasyon config dosyası hazırlandıktan sonra lokal fotoğraf veya video demosu çalıştırılır:
+Kalibrasyon config dosyası hazırlandıktan sonra lokal video demosu çalıştırılır:
 
 ```text
 scripts/run_tutym2_local_demo.py

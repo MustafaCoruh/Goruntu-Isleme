@@ -139,3 +139,11 @@ def test_validate_report_rejects_input_paths():
 
     with pytest.raises(TableAccuracyReportError, match="Sensitive value"):
         validate_report(payload)
+
+
+def test_validate_report_rejects_local_photo_test_type():
+    payload = _valid_report()
+    payload["evaluation_context"]["test_type"] = "local_photo"
+
+    with pytest.raises(TableAccuracyReportError, match="evaluation_context.test_type"):
+        validate_report(payload)
