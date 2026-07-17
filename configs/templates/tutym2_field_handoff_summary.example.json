@@ -1,0 +1,42 @@
+{
+  "report_type": "field_handoff_summary",
+  "site": "T.UTYM#2",
+  "overall_status": "normal",
+  "report_count": 3,
+  "reports": [
+    {
+      "label": "offline_readiness",
+      "file_name": "offline_readiness.json",
+      "report_type": "offline_readiness",
+      "status": "normal",
+      "safe_to_share": true
+    },
+    {
+      "label": "dashboard_state_validation",
+      "file_name": "dashboard_state_validation.json",
+      "report_type": "dashboard_state_validation",
+      "status": "normal",
+      "safe_to_share": true
+    },
+    {
+      "label": "table_accuracy",
+      "file_name": "table_accuracy_report.json",
+      "report_type": "table_accuracy_report",
+      "status": "normal",
+      "safe_to_share": true
+    }
+  ],
+  "shareable_summary": {
+    "site": "T.UTYM#2",
+    "overall_status": "normal",
+    "report_count": 3,
+    "safe_to_share": true
+  },
+  "safety": {
+    "contains_rtsp_url": false,
+    "contains_credentials": false,
+    "contains_ip_address": false,
+    "contains_full_local_path": false,
+    "contains_image_or_video": false
+  }
+}
