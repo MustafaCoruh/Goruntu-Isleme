@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>T.UTYM#2 R3 Sunum Akışı</title>
+  <style>
+    :root { color-scheme: light; --navy:#102a43; --blue:#0b69a3; --green:#137333; --yellow:#b7791f; --red:#b42318; --bg:#f5f7fb; --card:#fff; --muted:#627d98; font-family: Arial, sans-serif; }
+    body { margin:0; background:var(--bg); color:#172033; }
+    header { background:var(--navy); color:#fff; padding:22px 26px; }
+    header h1 { margin:0 0 8px; font-size:26px; }
+    header p { margin:0; color:#d9e2ec; }
+    main { max-width:1120px; margin:0 auto; padding:18px; display:grid; gap:16px; }
+    .card { background:var(--card); border-radius:14px; box-shadow:0 2px 12px rgb(16 42 67 / 12%); padding:18px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px; }
+    .pill { display:inline-block; border-radius:999px; padding:7px 11px; color:#fff; font-weight:700; background:var(--green); }
+    .warn { background:var(--yellow); }
+    .danger { border-left:6px solid var(--red); }
+    .success { border-left:6px solid var(--green); }
+    .step { border-left:6px solid var(--blue); }
+    a.button { display:inline-block; border-radius:8px; background:var(--blue); color:#fff; padding:10px 12px; font-weight:700; text-decoration:none; }
+    ol li, ul li { margin:8px 0; }
+    code, pre { background:#f1f5f9; border-radius:6px; padding:2px 5px; }
+    pre { padding:12px; overflow:auto; white-space:pre-wrap; }
+    .muted { color:var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>T.UTYM#2 R3 Sunum Akışı</h1>
+    <p>Terminal kullanmadan, gerçek veri göstermeden, güvenli dashboard demo sunumu için konuşma ve tıklama sırası.</p>
+  </header>
+
+  <main>
+    <section class="card success">
+      <h2>Sunum Durumu</h2>
+      <p><span class="pill">R3 DEMO SUNUMA HAZIRLIK</span></p>
+      <p>Bu sayfa R3 içindir. R4 saha kabulü için gerçek saha raporları ve doğruluk ölçümü ayrıca gerekir.</p>
+      <p><a class="button" href="tutym2_r3_demo_launcher.html">R3 Demo Başlatıcıya Git</a></p>
+    </section>
+
+    <section class="grid">
+      <div class="card step">
+        <h2>1. Açılışta Söyle</h2>
+        <p>“Bu demo T.UTYM#2 için güvenli operatör dashboard prototipidir. Gerçek kamera görüntüsü, RTSP URL, kamera IP veya credential göstermiyoruz.”</p>
+      </div>
+      <div class="card step">
+        <h2>2. R3 Başlatıcıyı Göster</h2>
+        <p><code>tutym2_r3_demo_launcher.html</code> sayfasında <strong>R3 DEMO HAZIR</strong> ve PASS kontrollerini göster.</p>
+      </div>
+      <div class="card step">
+        <h2>3. Dashboard'u Aç</h2>
+        <p><strong>T.UTYM#2 Dashboard Aç</strong> bağlantısıyla dashboard'a geç. Üstte <strong>R3 Demo Modu</strong> banner'ını göster.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>4. Dashboard'da Anlatılacaklar</h2>
+      <ol>
+        <li><strong>Genel Durum:</strong> Dashboard state üzerinden sistemin genel durumu gösterilir.</li>
+        <li><strong>14 Masa Kartı:</strong> T.UTYM#2 için hedef masa sayısı 14'tür.</li>
+        <li><strong>Rapor Güvenliği:</strong> Safety alanı gerçek RTSP/IP/credential/görüntü olmadığını belirtir.</li>
+        <li><strong>Uyarılar/Kritikler:</strong> Operatör kritik varsa canlı karar vermemelidir.</li>
+        <li><strong>Kaynak Raporlar:</strong> Readiness, config, RTSP, table accuracy gibi güvenli JSON özetleri dashboard'a kaynak olur.</li>
+      </ol>
+    </section>
+
+    <section class="card danger">
+      <h2>Sunumda Kesinlikle Söylenmeyecek/Gösterilmeyecekler</h2>
+      <ul>
+        <li>Gerçek RTSP URL.</li>
+        <li>Kamera IP adresi.</li>
+        <li>Kamera kullanıcı adı/parolası.</li>
+        <li>Gerçek T.UTYM#2 fotoğrafı veya videosu.</li>
+        <li>Katılımcı/yüz/kimlik bilgisi.</li>
+        <li>Tam lokal Windows path bilgisi.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Beklenen Sorulara Kısa Cevaplar</h2>
+      <ul>
+        <li><strong>Bu canlı kamera mı?</strong> Hayır, R3 demo güvenli örnek dashboard state ile gösterilir.</li>
+        <li><strong>Gerçek sahada çalışacak mı?</strong> R4 aşamasında gerçek saha raporlarıyla doğrulanacak.</li>
+        <li><strong>Kaç masa destekleniyor?</strong> T.UTYM#2 ilk hedefi 14 masa, 1 sandalye/masa.</li>
+        <li><strong>Yüz tanıma var mı?</strong> Bu aşamada yok; ileride ayrıca güvenlik/hukuk değerlendirmesi gerekir.</li>
+        <li><strong>İnternet gerekiyor mu?</strong> Çalışma ortamı offline olacak şekilde planlanıyor.</li>
+        <li><strong>Gizli veri sızar mı?</strong> Tasarım gereği repo ve dashboard güvenli özetlerle çalışacak şekilde kurgulandı.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>R3 Kapanış Cümlesi</h2>
+      <pre>R3 demo, T.UTYM#2 için güvenli dashboard ve operatör iş akışının sunulabilir olduğunu gösterir. R4 saha kabulü için gerçek lokal config, model, RTSP/readiness raporları ve masa bazlı doğruluk raporu üretilecektir.</pre>
+    </section>
+
+    <section class="card">
+      <h2>Sonraki Adım: R4</h2>
+      <p>R3 sunumu başarıyla gösterildikten sonra R4 için gerçek saha hazırlığına geçilir: lokal config, model, offline readiness, RTSP connection report, local/RTSP demo report, table accuracy report, dashboard state validation ve field handoff summary.</p>
+      <p class="muted">R4 gerçek saha doğrulamasıdır; gerçek görüntü/video yine repo'ya konmaz ve paylaşılmaz.</p>
+    </section>
+  </main>
+</body>
+</html>
