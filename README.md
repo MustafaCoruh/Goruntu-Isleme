@@ -34,6 +34,12 @@ Ekranda şunları kontrol edin:
 
 Uygulamayı kapatmak için açılan `T.UTYM#2 Sunucu` penceresini kapatın.
 
+### “Python bulunamadı” uyarısı çıkarsa
+
+Başlatıcı sırasıyla repository içindeki `.venv`, `python` komutu ve Windows Python Launcher (`py -3`) seçeneklerini dener. Python kurulu olduğu hâlde üçü de çalışmıyorsa Python kurulumunu **Modify** ile açıp **Add Python to PATH** ve **Python Launcher** seçeneklerini etkinleştirin. Ardından `TUTYM2_KONTROL.bat` dosyasını yeniden açın.
+
+Python bulunduğu hâlde gerekli paketler eksikse başlatıcı bunları `requirements.txt` üzerinden otomatik kurmak için onay ister.
+
 ## Geliştirme videosunu çalıştırma
 
 Terminal kullanabilen geliştirici, video dosyasını repo dışında tutarak aşağıdaki giriş noktasını kullanır:
