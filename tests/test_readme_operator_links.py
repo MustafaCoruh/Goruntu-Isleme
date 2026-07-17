@@ -5,16 +5,22 @@ ROOT = Path(__file__).resolve().parents[1]
 README = ROOT / "README.md"
 
 
-def test_readme_explains_terminal_free_tutym2_r4_flow():
+def test_readme_explains_video_first_tutym2_workflow():
     text = README.read_text(encoding="utf-8")
 
-    assert "T.UTYM#2 için terminalsiz hızlı yol" in text
-    assert "app/ui/static/tutym2_r4_acceptance_center.html" in text
-    assert "Güvenli Örnek JSON Dosyalarını İndir" in text
-    assert "Dashboard Durum Raporu" in text
-    assert "Saha Teslim Özeti" in text
-    assert "R4 Final Karar Raporu" in text
-    assert "KONTROLLÜ SAHA KABULÜNE HAZIR" in text
-    assert "Ne kadar kaldı?" in text
-    assert "yaklaşık %90+ hazır" in text
-    assert "Güvenli örnek dosyalar resmi kapanış değildir" in text
+    assert "T.UTYM#2 için gerçek çalışma akışı" in text
+    assert "Geliştirme aşaması" in text
+    assert "14 masanın her biri için **dolu/boş**" in text
+    assert "canlı kamera akışıyla veya kameradan alınmış eski bir video kaydıyla" in text
+    assert "Fotoğraf girişi bu akışın parçası değildir" in text
+    assert "kullanıcıdan temin edilmesi gereken kaynak dosyalar değildir" in text
+    assert "scripts/run_tutym2_local_demo.py" in text
+    assert "scripts/run_tutym2_rtsp_demo.py" in text
+
+
+def test_readme_does_not_require_r4_json_files_to_finish_product():
+    text = README.read_text(encoding="utf-8")
+
+    assert "üç JSON dosyasının seçilmesiyle değil" in text
+    assert "Lokal geçmiş videoda 14 masanın" in text
+    assert "Canlı kamera akışında veya eski kamera kaydında" in text

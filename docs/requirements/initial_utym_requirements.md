@@ -44,7 +44,7 @@ Bu doküman, ilk prototipin çalışacağı UTYM ortamı ve görüntü işleme k
 - Gerçek T.UTYM#2 görüntüleri ve videoları repo’ya eklenmeyecektir.
 - Gerçek görüntü/video asistanla veya dış ortamla paylaşılmayacaktır.
 - Geliştirme reposunda yalnızca sentetik/anonim örnek veri, kalibrasyon şablonu ve test fixture'ları tutulacaktır.
-- Saha doğrulaması, kurum içi Windows makinede ve gerçek RTSP/IP video kaynağına erişimi olan operatör tarafından çalıştırılacaktır.
+- Doğrulama, önce kurum içi Windows makinede T.UTYM#2'den alınmış lokal geçmiş video ile; ürün aşamasında canlı kamera akışı veya eski kamera kaydı ile çalıştırılacaktır.
 - Kalibrasyon noktaları gerçek görüntü paylaşılmadan; kullanıcı tarafından lokal kalibrasyon ekranında veya koordinat dosyası üzerinden girilecektir.
 
 ## 7. Açık Kararlar
@@ -52,7 +52,7 @@ Bu doküman, ilk prototipin çalışacağı UTYM ortamı ve görüntü işleme k
 | Konu | Durum | Etki |
 | --- | --- | --- |
 | Toplam kamera sayısı | Karar bekliyor | Çoklu kamera birleştirme kapsamını etkiler |
-| İlk kamera ID / RTSP URL | RTSP var; gerçek URL saha kurulumunda lokal secret/config olarak girilecek | Canlı IP video bağlantı testini etkiler |
+| İlk kamera ID / RTSP URL | RTSP var; gerçek URL ürün bilgisayarında lokal secret/config olarak girilecek | Canlı IP video bağlantı testini etkiler |
 | FPS | Karar bekliyor | Performans kabul kriterini etkiler |
 | İlk test kaynağı | Lokal geçmiş video | Gerçek görüntü paylaşılmadan ilk saha denemesini mümkün kılar |
 | Geliştirme donanımı | Intel Xeon Gold 6284R CPU; GPU yok | CPU baseline performansını belirler |
@@ -62,6 +62,6 @@ Bu doküman, ilk prototipin çalışacağı UTYM ortamı ve görüntü işleme k
 ## Notlar
 
 - İlk prototipte T.UTYM#2 için 14 masa ve masa başına 1 sandalye üzerinden masa doluluk tespiti yapılacaktır.
-- Gerçek veri paylaşılmayacağı için bir sonraki geliştirme aşaması, gerçek görüntü gerektirmeyen Windows offline kurulum, kalibrasyon ve saha doğrulama prosedürlerine odaklanmalıdır.
+- Bir sonraki geliştirme aşaması, kullanıcı tarafından seçilen lokal geçmiş videoyu işleyip 14 masa için dolu/boş sonucu üretmeye odaklanmalıdır.
 - Kamera tipi RTSP destekli IP video olduğundan ilk canlı bağlantı testi gerçek RTSP URL repo’ya yazılmadan lokal ortamda yapılmalıdır.
 - İlk algoritma denemesi canlı kamera yerine lokal geçmiş video üzerinden yapılabilir; gerçek dosya repo’ya eklenmemelidir.

@@ -1,30 +1,45 @@
 # FTMC Occupancy
 
-FTMC/UTYM ortamlarında kamera görüntüsünden masa doluluk durumunu tespit eden offline çalışabilir görüntü işleme uygulaması.
+FTMC/UTYM ortamlarında **video görüntüsünden** masaların dolu veya boş olduğunu belirleyen, çevrimdışı çalışabilen görüntü işleme uygulaması.
 
-## T.UTYM#2 için terminalsiz hızlı yol
+## T.UTYM#2 için gerçek çalışma akışı
 
-Bu repo artık T.UTYM#2 saha demo ve R4 kabul akışı için terminal kullanmadan izlenebilecek statik ekranlar da içerir. Operatör tarafında öncelik şu sıradır:
+Bu sistemin kullanıcıdan beklediği ana girdi JSON raporu veya fotoğraf değil, **videodur**:
 
-1. `app/ui/static/tutym2_r4_acceptance_center.html` dosyasını tarayıcıda aç.
-2. Önce **Güvenli Örnekle Dene** veya **Güvenli Örnek JSON Dosyalarını İndir** ile ekranın nasıl çalıştığını kontrol et.
-3. Gerçek R4 kapanışı için yalnızca sahadan gelen üç güvenli JSON dosyasını seç:
-   - Dashboard Durum Raporu
-   - Saha Teslim Özeti
-   - R4 Final Karar Raporu
-4. Ekranda **Toplu R4 Görsel Sonuç: KONTROLLÜ SAHA KABULÜNE HAZIR** görünmeden projeyi saha kabul açısından bitmiş sayma.
+1. **Geliştirme aşaması:** T.UTYM#2 kamerasından daha önce alınmış bir video dosyası bilgisayardan seçilir.
+2. Sistem videonun karelerini işler ve 14 masanın her biri için **dolu/boş** sonucu üretir.
+3. Sonuçlar masa doluluk panelinde izlenir; hatalı masalar için kalibrasyon veya model ayarı yapılır.
+4. **Ürün hazır olduğunda:** aynı işlem canlı kamera akışıyla veya kameradan alınmış eski bir video kaydıyla çalışır.
 
-**Ne kadar kaldı?** Yazılım/UI/doküman tarafı yaklaşık %90+ hazır kabul edilebilir. Kalan ana iş, gerçek saha makinesinden üretilecek üç güvenli R4 JSON dosyasının gelmesi ve R4 ekranında PASS vermesidir. Bu dosyalar hazırsa kontrol aynı gün içinde kapanabilir; dosyalar yoksa süre saha ekibinin üretimine bağlıdır.
+Desteklenen lokal video uzantıları: `.avi`, `.m4v`, `.mkv`, `.mov`, `.mp4`.
 
-> Güvenli örnek dosyalar resmi kapanış değildir. Gerçek video dosyası, RTSP URL, kamera IP, parola veya tam lokal path bu repoya eklenmemeli ve R4 ekranına not olarak yazılmamalıdır.
+> Fotoğraf girişi bu akışın parçası değildir. `dashboard_state.json`, `field_handoff_summary.json` ve `r4_acceptance_gate.json` kullanıcıdan temin edilmesi gereken kaynak dosyalar değildir; bunlar yalnızca sistemin gerektiğinde üretebildiği teknik özetlerdir.
 
-## Operatörün kontrol edeceği ana ekranlar
+## Kullanılacak ana ekranlar
 
-- R4 kabul merkezi: `app/ui/static/tutym2_r4_acceptance_center.html`
-- T.UTYM#2 dashboard: `app/ui/static/tutym2_dashboard.html`
-- R3 başlatıcı: `app/ui/static/tutym2_r3_demo_launcher.html`
-- R3 sunum ekranı: `app/ui/static/tutym2_r3_presentation.html`
+- Masa doluluk paneli: `app/ui/static/index.html`
+- T.UTYM#2 doluluk görünümü: `app/ui/static/tutym2_dashboard.html`
+- Masa bölgelerini tanımlama/düzeltme: `app/ui/static/calibration.html`
+- Teknik hata ayıklama: `app/ui/static/debug.html`
 
-## Teknik kullanıcılar için güvenli CLI girişleri
+## Geliştirme videosunu çalıştırma
 
-Terminal kullanabilen ekip üyeleri için script girişleri `scripts/` altındadır. Üretilen raporlar RTSP URL, credential, görüntü/video ve tam lokal path içermeyecek şekilde tasarlanmıştır. Operatör terminal kullanamıyorsa bu scriptleri çalıştırması beklenmez; ona yalnızca güvenli JSON çıktıları verilmelidir.
+Terminal kullanabilen geliştirici, video dosyasını repo dışında tutarak aşağıdaki giriş noktasını kullanır:
+
+```bash
+python scripts/run_tutym2_local_demo.py \
+  --source "C:\\TUTYM2_DATA\\videos\\ornek.mp4" \
+  --config "configs\\local\\tutym2_cam_001.json" \
+  --output-dir "C:\\TUTYM2_DATA\\output"
+```
+
+Canlı kamera veya eski kamera kaydı aşamasında RTSP akışı için `scripts/run_tutym2_rtsp_demo.py` kullanılır. Gerçek video, RTSP adresi, kullanıcı adı, parola ve IP bilgileri repoya eklenmez.
+
+## Projenin tamamlanma ölçütü
+
+Proje üç JSON dosyasının seçilmesiyle değil, aşağıdaki iki video doğrulamasının başarıyla tamamlanmasıyla hazır sayılır:
+
+- Lokal geçmiş videoda 14 masanın dolu/boş sonuçlarının doğrulanması.
+- Canlı kamera akışında veya eski kamera kaydında aynı sonuçların doğrulanması.
+
+Teknik durum özeti gerekirse `scripts/build_tutym2_project_status.py` bu iki doğrulama sonucuna göre bir JSON üretir; bu JSON bir video girdisinin yerine geçmez.

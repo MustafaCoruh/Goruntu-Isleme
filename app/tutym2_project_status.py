@@ -1,4 +1,4 @@
-"""Build a safe, shareable T.UTYM#2 project status summary."""
+"""Build a T.UTYM#2 video-validation project status summary."""
 
 from __future__ import annotations
 
@@ -9,29 +9,38 @@ from typing import Any
 
 EXPECTED_SITE = "T.UTYM#2"
 EXPECTED_CAMERA_ID = "TUTYM2-CAM-001"
-SOFTWARE_READINESS_PERCENT = 90
 
 
-def build_project_status(*, real_r4_files_passed: bool = False) -> dict[str, Any]:
-    """Return a non-sensitive project completion summary for operators."""
+def build_project_status(
+    *,
+    local_video_test_passed: bool = False,
+    camera_video_test_passed: bool = False,
+) -> dict[str, Any]:
+    """Return progress based on the two real video-validation milestones."""
     remaining = []
-    if not real_r4_files_passed:
-        remaining.append("Gerçek saha makinesinden gelen 3 güvenli R4 JSON dosyası seçilip PASS vermeli.")
+    if not local_video_test_passed:
+        remaining.append("T.UTYM#2'den alınmış lokal geçmiş video ile 14 masa doluluk testi yapılmalı.")
+    if not camera_video_test_passed:
+        remaining.append("Canlı kamera akışı veya eski kamera kaydı ile ürün doğrulaması yapılmalı.")
+
+    completed_milestones = int(local_video_test_passed) + int(camera_video_test_passed)
 
     return {
         "report_type": "tutym2_project_status",
         "site": EXPECTED_SITE,
         "camera_id": EXPECTED_CAMERA_ID,
-        "software_ui_docs_percent": SOFTWARE_READINESS_PERCENT,
-        "software_ui_docs_status": "largely_ready",
-        "field_acceptance_status": "ready_to_close" if real_r4_files_passed else "waiting_for_real_r4_files",
-        "can_close_project": real_r4_files_passed,
+        "workflow": "video_to_table_occupancy",
+        "target": "14 masanın dolu veya boş olduğunu belirlemek",
+        "completion_percent": completed_milestones * 50,
+        "development_video_status": "passed" if local_video_test_passed else "waiting",
+        "camera_video_status": "passed" if camera_video_test_passed else "waiting",
+        "can_mark_product_ready": local_video_test_passed and camera_video_test_passed,
         "remaining_work": remaining,
-        "required_real_r4_files": [
-            "Dashboard Durum Raporu",
-            "Saha Teslim Özeti",
-            "R4 Final Karar Raporu",
+        "required_video_inputs": [
+            "Geliştirme için T.UTYM#2 lokal geçmiş videosu",
+            "Ürün doğrulaması için canlı kamera akışı veya eski kamera kaydı",
         ],
+        "required_manual_json_inputs": [],
         "safe_to_share": True,
         "safety": {
             "contains_rtsp_url": False,
@@ -43,8 +52,16 @@ def build_project_status(*, real_r4_files_passed: bool = False) -> dict[str, Any
     }
 
 
-def write_project_status(path: Path, *, real_r4_files_passed: bool = False) -> dict[str, Any]:
-    payload = build_project_status(real_r4_files_passed=real_r4_files_passed)
+def write_project_status(
+    path: Path,
+    *,
+    local_video_test_passed: bool = False,
+    camera_video_test_passed: bool = False,
+) -> dict[str, Any]:
+    payload = build_project_status(
+        local_video_test_passed=local_video_test_passed,
+        camera_video_test_passed=camera_video_test_passed,
+    )
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return payload
@@ -54,16 +71,25 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Build a safe T.UTYM#2 project status JSON.")
     parser.add_argument("--output", type=Path, required=True, help="Output JSON path.")
     parser.add_argument(
-        "--real-r4-files-passed",
+        "--local-video-test-passed",
         action="store_true",
-        help="Mark project closable only after real field R4 JSON files pass.",
+        help="Mark the local historical-video occupancy test as passed.",
+    )
+    parser.add_argument(
+        "--camera-video-test-passed",
+        action="store_true",
+        help="Mark live-camera or recorded-camera video validation as passed.",
     )
     return parser
 
 
 def run(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    write_project_status(args.output, real_r4_files_passed=args.real_r4_files_passed)
+    write_project_status(
+        args.output,
+        local_video_test_passed=args.local_video_test_passed,
+        camera_video_test_passed=args.camera_video_test_passed,
+    )
     return 0
 
 
