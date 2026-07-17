@@ -13,12 +13,11 @@ Bu sistemin kullanıcıdan beklediği ana girdi JSON raporu veya fotoğraf deği
 
 Desteklenen lokal video uzantıları: `.avi`, `.m4v`, `.mkv`, `.mov`, `.mp4`.
 
-> Fotoğraf girişi bu akışın parçası değildir. `dashboard_state.json`, `field_handoff_summary.json` ve `r4_acceptance_gate.json` kullanıcıdan temin edilmesi gereken kaynak dosyalar değildir; bunlar yalnızca sistemin gerektiğinde üretebildiği teknik özetlerdir.
+> Fotoğraf ve elle seçilen JSON raporları bu akışın girdisi değildir.
 
 ## Kullanılacak ana ekranlar
 
 - Masa doluluk paneli: `app/ui/static/index.html`
-- T.UTYM#2 doluluk görünümü: `app/ui/static/tutym2_dashboard.html`
 - Masa bölgelerini tanımlama/düzeltme: `app/ui/static/calibration.html`
 - Teknik hata ayıklama: `app/ui/static/debug.html`
 
@@ -37,9 +36,7 @@ Canlı kamera veya eski kamera kaydı aşamasında RTSP akışı için `scripts/
 
 ## Projenin tamamlanma ölçütü
 
-Proje üç JSON dosyasının seçilmesiyle değil, aşağıdaki iki video doğrulamasının başarıyla tamamlanmasıyla hazır sayılır:
+Proje aşağıdaki iki video doğrulamasının başarıyla tamamlanmasıyla hazır sayılır:
 
 - Lokal geçmiş videoda 14 masanın dolu/boş sonuçlarının doğrulanması.
 - Canlı kamera akışında veya eski kamera kaydında aynı sonuçların doğrulanması.
-
-Teknik durum özeti gerekirse `scripts/build_tutym2_project_status.py` bu iki doğrulama sonucuna göre bir JSON üretir; bu JSON bir video girdisinin yerine geçmez.
