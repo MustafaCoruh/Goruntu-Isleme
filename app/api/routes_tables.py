@@ -51,7 +51,12 @@ def list_tables(db: Session = Depends(get_db)) -> list[dict[str, Any]]:
 
 
 def _default_calibration_config_path() -> Path:
-    return Path(os.getenv("FTMC_CALIBRATION_CONFIG_PATH", "camera-config.json"))
+    return Path(
+        os.getenv(
+            "FTMC_CALIBRATION_CONFIG_PATH",
+            r"C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json",
+        )
+    )
 
 
 @router.post("/calibration/config", status_code=status.HTTP_201_CREATED)
