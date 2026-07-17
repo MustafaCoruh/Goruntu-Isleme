@@ -37,3 +37,9 @@ def test_removed_non_occupancy_features_do_not_return():
     ]
 
     assert all(not path.exists() for path in removed_paths)
+
+
+def test_repository_has_no_legacy_tutym_pages_or_placeholder_files():
+    assert not list((ROOT / "app" / "ui" / "static").glob("tutym2_*.html"))
+    assert not list(ROOT.rglob(".gitkeep"))
+    assert not (ROOT / "sample_data").exists()

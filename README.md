@@ -25,6 +25,8 @@ Desteklenen lokal video uzantıları: `.avi`, `.m4v`, `.mkv`, `.mov`, `.mp4`.
 
 Windows bilgisayarda repository içindeki `TUTYM2_KONTROL.bat` dosyasına çift tıklayın. Dosya uygulamayı başlatır ve ana kontrol ekranını tarayıcıda açar. Terminal komutu yazmanız gerekmez.
 
+Başlatıcı açılışta eski sürümlerden lokal klasörde kalmış `tutym2_*.html` sayfalarını ve gereksiz `.gitkeep` dosyalarını da temizler. Böylece Git güncel olsa bile bilgisayarda kalan eski arayüz dosyaları tekrar görünmez.
+
 Ekranda şunları kontrol edin:
 
 1. **Video testi hazırlığı** kartında hangi girdilerin hazır veya eksik olduğu.

@@ -14,6 +14,8 @@ def test_windows_launcher_starts_product_and_opens_dashboard():
     assert "--host 127.0.0.1 --port 8000" in launcher
     assert "http://127.0.0.1:8000/ui/index.html" in launcher
     assert "timeout /t 3" in launcher
+    assert 'app\\ui\\static\\tutym2_*.html' in launcher
+    assert "for /r %%F in (.gitkeep)" in launcher
 
 
 def test_windows_launcher_can_install_missing_dependencies():

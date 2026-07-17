@@ -2,6 +2,10 @@
 setlocal
 cd /d "%~dp0"
 
+echo Eski ve kullanilmayan lokal dosyalar temizleniyor...
+for %%F in ("app\ui\static\tutym2_*.html") do if exist "%%~F" del /q "%%~F"
+for /r %%F in (.gitkeep) do if exist "%%~F" del /q "%%~F"
+
 set "PYTHON_LAUNCH="
 
 if exist ".venv\Scripts\python.exe" set "PYTHON_LAUNCH=""%CD%\.venv\Scripts\python.exe"""
