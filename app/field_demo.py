@@ -21,19 +21,19 @@ DEFAULT_MODEL = r"C:\FTMC_FIELD_DATA\models\person_detector.onnx"
 
 
 class FieldDemoPreflightError(RuntimeError):
-    """Raised when local field demo inputs are missing or unsafe."""
+    """Raised when local video demo inputs are missing or unsafe."""
 
 
 @dataclass(frozen=True)
 class FieldDemoInputs:
-    """Validated local field demo paths and detector thresholds."""
+    """Validated local video demo paths and detector thresholds."""
 
     config: Path
     source: Path
     model: Path
     confidence_threshold: float = 0.5
     iou_threshold: float = 0.45
-    window_name: str = "T.UTYM#2 Local Field Demo"
+    window_name: str = "T.UTYM#2 Lokal Video Testi"
     report_output: Path | None = None
 
 
@@ -42,7 +42,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
 
     parser = argparse.ArgumentParser(
         description=(
-            "Run the T.UTYM#2 local field demo against a local video file. "
+            "Run the T.UTYM#2 occupancy test against a local video file. "
             "Do not pass real RTSP URLs or sensitive paths that will be committed."
         )
     )
@@ -78,7 +78,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--window-name",
-        default="T.UTYM#2 Local Field Demo",
+        default="T.UTYM#2 Lokal Video Testi",
         help="OpenCV window title for the debug overlay.",
     )
     # MERGE-CHECK: report-output must stay available for safe local demo reports.
@@ -150,7 +150,7 @@ def run(argv: Sequence[str] | None = None) -> int:
         inputs = validate_inputs(args)
     except FieldDemoPreflightError as error:
         _write_preflight_failure_report(args, str(error))
-        parser.exit(status=2, message=f"T.UTYM#2 field demo preflight failed: {error}\n")
+        parser.exit(status=2, message=f"T.UTYM#2 video test preflight failed: {error}\n")
 
     from app.main import main as app_main
 

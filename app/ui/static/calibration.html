@@ -33,8 +33,8 @@
   <main>
     <section class="card">
       <div class="toolbar">
-        <label>Örnek fotoğraf yükle
-          <input id="imageInput" type="file" accept="image/*" />
+        <label>Kalibrasyon videosu yükle
+          <input id="videoInput" type="file" accept="video/*,.avi,.m4v,.mkv,.mov,.mp4" />
         </label>
         <button id="undoButton" class="secondary" type="button">Son Noktayı Sil</button>
         <button id="clearButton" class="danger" type="button">Poligonu Temizle</button>
@@ -58,7 +58,7 @@
         <img id="photo" alt="Kalibrasyon görseli" hidden />
         <canvas id="canvas"></canvas>
       </div>
-      <p class="hint">Görsel üzerinde tıklayarak en az 3 poligon noktası ekleyin. Noktalar gerçek görsel çözünürlüğüne göre kaydedilir.</p>
+      <p class="hint">Videoyu uygun karede durdurun veya kareyi yakalayın; ardından en az 3 poligon noktası ekleyin.</p>
       <p class="hint"><strong>Güvenlik:</strong> Gerçek görüntü, RTSP URL veya lokal config dosyasını GitHub'a yüklemeyin.</p>
       <p id="targetStatus" class="status"></p>
       <p id="status" class="status"></p>
@@ -174,12 +174,15 @@ canvas.addEventListener('click', (event) => {
   render();
 });
 
-$('imageInput').addEventListener('change', (event) => {
+$('videoInput').addEventListener('change', (event) => {
   const file = event.target.files[0];
   if (!file) return;
   const url = URL.createObjectURL(file);
-  $('photo').src = url; $('photo').hidden = false;
-  $('photo').onload = () => { state.width = $('photo').naturalWidth; state.height = $('photo').naturalHeight; state.source = 'image'; fitCanvas(); render(); };
+  $('video').srcObject = null; $('video').src = url; $('video').hidden = false; $('photo').hidden = true;
+  $('video').onloadedmetadata = () => {
+    state.width = $('video').videoWidth; state.height = $('video').videoHeight; state.source = 'video_file';
+    $('snapshotButton').disabled = false; fitCanvas(); render();
+  };
 });
 
 $('undoButton').addEventListener('click', () => { state.points.pop(); render(); });

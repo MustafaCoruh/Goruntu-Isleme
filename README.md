@@ -25,6 +25,14 @@ Desteklenen lokal video uzantıları: `.avi`, `.m4v`, `.mkv`, `.mov`, `.mp4`.
 
 Terminal kullanabilen geliştirici, video dosyasını repo dışında tutarak aşağıdaki giriş noktasını kullanır:
 
+Önce yapılandırma, masa kalibrasyonu ve ONNX modelini kontrol edin:
+
+```bash
+python scripts/check_tutym2_product.py
+```
+
+Sonuç `READY` değilse video testi henüz başlamamalıdır. Kontrol başarılıysa:
+
 ```bash
 python scripts/run_tutym2_local_demo.py \
   --source "C:\\TUTYM2_DATA\\videos\\ornek.mp4" \

@@ -1,4 +1,4 @@
-"""Safe RTSP field demo runner for T.UTYM#2.
+"""Safe RTSP live-video runner for T.UTYM#2.
 
 This module validates a local RTSP config without printing or reporting the real
 RTSP URL, then runs the existing visual demo loop against a live camera source.
@@ -29,14 +29,14 @@ DEFAULT_RTSP_CONFIG = r"C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.rtsp.local.jso
 
 @dataclass(frozen=True)
 class RtspFieldDemoInputs:
-    """Validated RTSP field demo inputs."""
+    """Validated RTSP live-video inputs."""
 
     config: Path
     model: Path
     camera_id: str
     confidence_threshold: float = 0.5
     iou_threshold: float = 0.45
-    window_name: str = "T.UTYM#2 RTSP Field Demo"
+    window_name: str = "T.UTYM#2 Canlı Kamera Testi"
     report_output: Path | None = None
     connection_test_frames: int = 0
 
@@ -46,7 +46,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
 
     parser = argparse.ArgumentParser(
         description=(
-            "Run the T.UTYM#2 RTSP field demo from a local-only config. "
+            "Run the T.UTYM#2 live camera test from a local-only config. "
             "Do not paste RTSP URLs into commands, docs, GitHub, or chat."
         )
     )
@@ -77,7 +77,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--window-name",
-        default="T.UTYM#2 RTSP Field Demo",
+        default="T.UTYM#2 Canlı Kamera Testi",
         help="OpenCV window title for the debug overlay.",
     )
     parser.add_argument(

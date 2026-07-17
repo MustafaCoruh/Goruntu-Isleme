@@ -1,4 +1,4 @@
-"""Run the T.UTYM#2 safe RTSP field demo.
+"""Run the T.UTYM#2 RTSP live-camera test.
 
 Example:
     python scripts/run_tutym2_rtsp_demo.py \
@@ -8,6 +8,13 @@ Example:
 """
 
 from __future__ import annotations
+
+from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from app.rtsp_field_demo import run
 

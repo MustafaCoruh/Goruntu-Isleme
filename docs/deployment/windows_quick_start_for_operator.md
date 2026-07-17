@@ -139,7 +139,7 @@ Demo açıldığında beklenen davranış:
 İlk denemede görüntü paylaşmadan şu bilgileri not almak yeterlidir:
 
 - Test tipi: video mu canlı RTSP mi?
-- Kaç görüntü/video denendi?
+- Kaç video denendi?
 - Masa poligonları doğru yerde mi?
 - Model insanları bulabildi mi?
 - Dolu masalar dolu göründü mü?
