@@ -46,18 +46,17 @@ for /f "tokens=5" %%P in ('netstat -ano ^| findstr /R /C:":8000 .*LISTENING"') d
   echo Eski sunucu PID %%P kapatiliyor...
   taskkill /PID %%P /F >nul 2>nul
 )
-timeout /t 1 /nobreak >nul
+timeout /t 2 /nobreak >nul
 
 echo T.UTYM#2 uygulamasinin guncel surumu baslatiliyor...
 start "T.UTYM#2 Sunucu" cmd /k "cd /d ""%~dp0"" && %PYTHON_LAUNCH% -m uvicorn app.api.app:app --host 127.0.0.1 --port 8000"
-timeout /t 3 /nobreak >nul
-powershell -NoProfile -Command "try { $schema = Invoke-RestMethod 'http://127.0.0.1:8000/openapi.json'; if ($schema.paths.PSObject.Properties.Name -contains '/product/calibration-frame') { exit 0 }; exit 1 } catch { exit 1 }"
+echo Guncel API hazir olana kadar bekleniyor...
+powershell -NoProfile -Command "$deadline = (Get-Date).AddSeconds(20); $ok = $false; while ((Get-Date) -lt $deadline -and -not $ok) { try { $schema = Invoke-RestMethod 'http://127.0.0.1:8000/openapi.json' -TimeoutSec 2; $ok = $schema.paths.PSObject.Properties.Name -contains '/product/calibration-frame' } catch { }; if (-not $ok) { Start-Sleep -Milliseconds 500 } }; if ($ok) { exit 0 } else { exit 1 }"
 if errorlevel 1 (
-  echo Guncel sunucu dogrulanamadi. Acik T.UTYM#2 Sunucu pencerelerini kapatip tekrar deneyin.
-  pause
-  exit /b 1
+  echo UYARI: Guncel API 20 saniyede dogrulanamadi.
+  echo Tarayici yine de acilacak. Sunucu penceresindeki hatayi kontrol edip sayfayi yenileyin.
 )
-start "" "http://127.0.0.1:8000/ui/index.html"
+start "" "http://127.0.0.1:8000/ui/index.html?v=%RANDOM%"
 
 echo.
 echo Kontrol ekrani tarayicida acildi.

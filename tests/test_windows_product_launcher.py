@@ -13,12 +13,15 @@ def test_windows_launcher_starts_product_and_opens_dashboard():
     assert "%PYTHON_LAUNCH% -m uvicorn app.api.app:app" in launcher
     assert "--host 127.0.0.1 --port 8000" in launcher
     assert "http://127.0.0.1:8000/ui/index.html" in launcher
-    assert "timeout /t 3" in launcher
+    assert "AddSeconds(20)" in launcher
+    assert "Start-Sleep -Milliseconds 500" in launcher
     assert "netstat -ano" in launcher
     assert "taskkill /PID %%P /F" in launcher
     assert "openapi.json" in launcher
     assert "'/product/calibration-frame'" in launcher
-    assert "Guncel sunucu dogrulanamadi" in launcher
+    assert "Tarayici yine de acilacak" in launcher
+    assert "exit /b 1" not in launcher.split("echo Guncel API hazir olana kadar bekleniyor...", 1)[1]
+    assert "?v=%RANDOM%" in launcher
     assert 'app\\ui\\static\\tutym2_*.html' in launcher
     assert "for /r %%F in (.gitkeep)" in launcher
 
