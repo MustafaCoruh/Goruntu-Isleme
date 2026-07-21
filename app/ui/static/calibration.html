@@ -19,8 +19,9 @@
     button.danger { background: #c52727; }
     button:disabled { background: #bcccdc; cursor: not-allowed; }
     .stage { position: relative; width: 100%; min-height: 420px; border: 2px dashed #9fb3c8; border-radius: 12px; overflow: hidden; background: #d9e2ec; }
-    img, canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-    canvas { cursor: crosshair; }
+    video, img, canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+    video, img { pointer-events: none; visibility: hidden; }
+    canvas { cursor: crosshair; z-index: 2; }
     .hint { color: #486581; font-size: 13px; margin: 8px 0 0; }
     .steps { background: #e8f4fc; border-left: 4px solid #0b69a3; border-radius: 8px; margin-bottom: 12px; padding: 10px 14px; }
     .steps ol { margin: 6px 0 0; padding-left: 22px; }
@@ -97,7 +98,7 @@
 const TARGET_TABLE_COUNT = 14;
 const DEFAULT_CAPACITY = 1;
 const DOWNLOAD_FILENAME = 'tutym2_cam_001.local.json';
-const state = { tables: [], points: [], width: 1280, height: 720, stream: null, source: null, videoUrl: null };
+const state = { tables: [], points: [], width: 1280, height: 720, stream: null, source: null, videoUrl: null, animationFrame: null };
 const $ = (id) => document.getElementById(id);
 const canvas = $('canvas');
 const ctx = canvas.getContext('2d');
@@ -168,10 +169,38 @@ function drawPolygon(points, color, fill = false) {
   });
 }
 
+function drawMediaFrame() {
+  const photo = $('photo');
+  const video = $('video');
+  const media = !photo.hidden && photo.complete ? photo : video;
+  const mediaReady = media === photo ? Boolean(photo.naturalWidth) : video.readyState >= 2;
+  if (!mediaReady) return;
+  const scale = Math.min(canvas.width / state.width, canvas.height / state.height);
+  const width = state.width * scale;
+  const height = state.height * scale;
+  ctx.drawImage(media, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
+}
+
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawMediaFrame();
   state.tables.forEach((table) => drawPolygon(table.polygon, 'rgba(11, 105, 163, 1)', true));
   drawPolygon(state.points, 'rgba(197, 39, 39, 1)', false);
+}
+
+function stopFrameLoop() {
+  if (state.animationFrame !== null) cancelAnimationFrame(state.animationFrame);
+  state.animationFrame = null;
+}
+
+function startFrameLoop() {
+  stopFrameLoop();
+  const tick = () => {
+    draw();
+    if (!$('video').paused && !$('video').ended) state.animationFrame = requestAnimationFrame(tick);
+    else state.animationFrame = null;
+  };
+  tick();
 }
 
 function configPayload() {
@@ -234,7 +263,7 @@ $('videoInput').addEventListener('change', (event) => {
     fitCanvas(); render();
     video.play().catch(() => { setVideoStatus('Video hazır. Başlatmak için Videoyu Oynat düğmesine basın.'); });
   };
-  video.onloadeddata = () => { $('snapshotButton').disabled = false; };
+  video.onloadeddata = () => { $('snapshotButton').disabled = false; draw(); };
   video.onerror = () => { setVideoStatus('Video açılamadı. Dosya bozuk veya tarayıcının desteklemediği bir codec kullanıyor olabilir. MP4 (H.264) deneyin.'); };
   video.load();
   window.setTimeout(() => {
@@ -254,9 +283,10 @@ $('playPauseButton').addEventListener('click', async () => {
   updatePlaybackControls();
 });
 
-$('video').addEventListener('play', updatePlaybackControls);
-$('video').addEventListener('pause', updatePlaybackControls);
+$('video').addEventListener('play', () => { updatePlaybackControls(); startFrameLoop(); });
+$('video').addEventListener('pause', () => { updatePlaybackControls(); stopFrameLoop(); draw(); });
 $('video').addEventListener('timeupdate', updatePlaybackControls);
+$('video').addEventListener('seeked', draw);
 $('seekInput').addEventListener('input', (event) => {
   const video = $('video');
   video.currentTime = Number(event.target.value);
@@ -278,6 +308,7 @@ $('snapshotButton').addEventListener('click', () => {
   $('video').pause();
   const snap = document.createElement('canvas'); snap.width = state.width; snap.height = state.height;
   snap.getContext('2d').drawImage($('video'), 0, 0, state.width, state.height);
+  $('photo').onload = draw;
   $('photo').src = snap.toDataURL('image/jpeg'); $('photo').hidden = false; $('video').hidden = true;
   setVideoStatus('Kare yakalandı. Şimdi masanın köşelerine sırayla tıklayın.');
   updatePlaybackControls();
@@ -308,7 +339,7 @@ $('downloadButton').addEventListener('click', () => {
   link.click(); URL.revokeObjectURL(link.href);
 });
 window.addEventListener('resize', fitCanvas);
-window.addEventListener('beforeunload', () => { if (state.videoUrl) URL.revokeObjectURL(state.videoUrl); });
+window.addEventListener('beforeunload', () => { stopFrameLoop(); if (state.videoUrl) URL.revokeObjectURL(state.videoUrl); });
 fitCanvas(); render();
 </script>
 </body>
