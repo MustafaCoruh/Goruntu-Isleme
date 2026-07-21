@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Masa Kalibrasyonu</title>
+  <title>T.UTYM#2 Lokal Masa Kalibrasyonu</title>
   <style>
     :root { color-scheme: light; font-family: Arial, sans-serif; }
     body { margin: 0; background: #f5f7fb; color: #172033; }
@@ -19,7 +19,7 @@
     button.danger { background: #c52727; }
     button:disabled { background: #bcccdc; cursor: not-allowed; }
     .stage { position: relative; width: 100%; min-height: 420px; border: 2px dashed #9fb3c8; border-radius: 12px; overflow: hidden; background: #d9e2ec; }
-    video, img, canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+    img, canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
     canvas { cursor: crosshair; }
     .hint { color: #486581; font-size: 13px; margin: 8px 0 0; }
     .steps { background: #e8f4fc; border-left: 4px solid #0b69a3; border-radius: 8px; margin-bottom: 12px; padding: 10px 14px; }
@@ -196,6 +196,11 @@ function render() {
       <span>Nokta: ${table.polygon.length}</span><br />
       <button class="danger" type="button" onclick="removeTable(${index})">Sil</button>
     </div>`).join('') : '<p>Henüz masa eklenmedi.</p>';
+  const remaining = Math.max(0, REQUIRED_TABLE_COUNT - state.tables.length);
+  $('completionStatus').textContent = remaining === 0
+    ? '14 masa tamamlandı. Config lokal Windows yoluna kaydedilebilir.'
+    : `${state.tables.length}/${REQUIRED_TABLE_COUNT} masa eklendi. ${remaining} masa kaldı.`;
+  $('saveButton').disabled = state.tables.length !== REQUIRED_TABLE_COUNT;
   $('jsonPreview').textContent = JSON.stringify(configPayload(), null, 2);
   draw();
 }
@@ -291,11 +296,13 @@ $('addTableButton').addEventListener('click', () => {
 });
 
 $('saveButton').addEventListener('click', async () => {
+  if (state.tables.length !== REQUIRED_TABLE_COUNT) { $('status').textContent = 'Config kaydetmeden önce 14 masa tamamlanmalı.'; return; }
   const response = await fetch('/calibration/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(configPayload()) });
   const data = await response.json();
   $('status').textContent = response.ok ? 'Kalibrasyon kaydedildi. Doluluk Paneline Dön bağlantısıyla hazırlık durumunu yenileyin.' : `Kaydetme hatası: ${data.detail}`;
 });
 $('downloadButton').addEventListener('click', () => {
+  if (state.tables.length !== REQUIRED_TABLE_COUNT) { $('status').textContent = 'JSON indirmeden önce 14 masa tamamlanmalı.'; return; }
   const blob = new Blob([JSON.stringify(configPayload(), null, 2)], { type: 'application/json' });
   const link = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: DOWNLOAD_FILENAME });
   link.click(); URL.revokeObjectURL(link.href);
