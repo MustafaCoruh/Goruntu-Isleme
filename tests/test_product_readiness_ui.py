@@ -39,7 +39,7 @@ def test_dashboard_displays_product_readiness():
     assert "event.target.value = ''" in calibration
     assert "video.onloadeddata" in calibration
     assert "Video hâlâ açılamadı" in calibration
-    assert "function drawMediaFrame()" in calibration
-    assert "ctx.drawImage(media" in calibration
-    assert "requestAnimationFrame(tick)" in calibration
-    assert "addEventListener('seeked', draw)" in calibration
+    assert ".stage video:not([hidden])" in calibration
+    assert "visibility: visible !important" in calibration
+    assert "canvas { background: transparent" in calibration
+    assert "video.hidden = false" in calibration

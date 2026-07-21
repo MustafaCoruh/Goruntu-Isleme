@@ -20,8 +20,9 @@
     button:disabled { background: #bcccdc; cursor: not-allowed; }
     .stage { position: relative; width: 100%; min-height: 420px; border: 2px dashed #9fb3c8; border-radius: 12px; overflow: hidden; background: #d9e2ec; }
     video, img, canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-    video, img { pointer-events: none; visibility: hidden; }
-    canvas { cursor: crosshair; z-index: 2; }
+    video, img { background: #111; pointer-events: none; z-index: 1; }
+    .stage video:not([hidden]), .stage img:not([hidden]) { display: block !important; visibility: visible !important; }
+    canvas { background: transparent; cursor: crosshair; z-index: 2; }
     .hint { color: #486581; font-size: 13px; margin: 8px 0 0; }
     .steps { background: #e8f4fc; border-left: 4px solid #0b69a3; border-radius: 8px; margin-bottom: 12px; padding: 10px 14px; }
     .steps ol { margin: 6px 0 0; padding-left: 22px; }
@@ -98,7 +99,7 @@
 const TARGET_TABLE_COUNT = 14;
 const DEFAULT_CAPACITY = 1;
 const DOWNLOAD_FILENAME = 'tutym2_cam_001.local.json';
-const state = { tables: [], points: [], width: 1280, height: 720, stream: null, source: null, videoUrl: null, animationFrame: null };
+const state = { tables: [], points: [], width: 1280, height: 720, stream: null, source: null, videoUrl: null };
 const $ = (id) => document.getElementById(id);
 const canvas = $('canvas');
 const ctx = canvas.getContext('2d');
@@ -263,7 +264,11 @@ $('videoInput').addEventListener('change', (event) => {
     fitCanvas(); render();
     video.play().catch(() => { setVideoStatus('Video hazır. Başlatmak için Videoyu Oynat düğmesine basın.'); });
   };
-  video.onloadeddata = () => { $('snapshotButton').disabled = false; draw(); };
+  video.onloadeddata = () => {
+    $('snapshotButton').disabled = false;
+    video.hidden = false;
+    setVideoStatus(`Görüntü hazır: ${file.name}. Video görünmüyorsa sayfayı Ctrl+F5 ile yenileyin.`);
+  };
   video.onerror = () => { setVideoStatus('Video açılamadı. Dosya bozuk veya tarayıcının desteklemediği bir codec kullanıyor olabilir. MP4 (H.264) deneyin.'); };
   video.load();
   window.setTimeout(() => {
@@ -283,10 +288,9 @@ $('playPauseButton').addEventListener('click', async () => {
   updatePlaybackControls();
 });
 
-$('video').addEventListener('play', () => { updatePlaybackControls(); startFrameLoop(); });
-$('video').addEventListener('pause', () => { updatePlaybackControls(); stopFrameLoop(); draw(); });
+$('video').addEventListener('play', updatePlaybackControls);
+$('video').addEventListener('pause', updatePlaybackControls);
 $('video').addEventListener('timeupdate', updatePlaybackControls);
-$('video').addEventListener('seeked', draw);
 $('seekInput').addEventListener('input', (event) => {
   const video = $('video');
   video.currentTime = Number(event.target.value);
@@ -339,7 +343,7 @@ $('downloadButton').addEventListener('click', () => {
   link.click(); URL.revokeObjectURL(link.href);
 });
 window.addEventListener('resize', fitCanvas);
-window.addEventListener('beforeunload', () => { stopFrameLoop(); if (state.videoUrl) URL.revokeObjectURL(state.videoUrl); });
+window.addEventListener('beforeunload', () => { if (state.videoUrl) URL.revokeObjectURL(state.videoUrl); });
 fitCanvas(); render();
 </script>
 </body>
