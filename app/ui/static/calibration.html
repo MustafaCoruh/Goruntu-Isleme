@@ -99,7 +99,7 @@
 const TARGET_TABLE_COUNT = 14;
 const DEFAULT_CAPACITY = 1;
 const DOWNLOAD_FILENAME = 'tutym2_cam_001.local.json';
-const state = { tables: [], points: [], width: 1280, height: 720, stream: null, source: null, videoUrl: null };
+const state = { tables: [], points: [], width: 1280, height: 720, stream: null, source: null, videoUrl: null, frameUrl: null, selectedFile: null };
 const $ = (id) => document.getElementById(id);
 const canvas = $('canvas');
 const ctx = canvas.getContext('2d');
@@ -120,6 +120,44 @@ function updatePlaybackControls() {
   $('playPauseButton').textContent = video.paused ? 'Videoyu Oynat' : 'Videoyu Durdur';
   $('seekInput').value = String(video.currentTime || 0);
   $('currentTime').textContent = formatTime(video.currentTime);
+}
+
+async function requestCalibrationFrame(timestamp = 0) {
+  if (!state.selectedFile) return false;
+  setVideoStatus(`Kalibrasyon karesi hazırlanıyor (${formatTime(timestamp)})...`);
+  let response;
+  try {
+    response = await fetch('/product/calibration-frame', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/octet-stream',
+        'X-Video-Filename': state.selectedFile.name,
+        'X-Video-Timestamp': String(timestamp),
+      },
+      body: state.selectedFile,
+    });
+  } catch (error) {
+    setVideoStatus(`Video sunucuya gönderilemedi: ${error.message}`);
+    return false;
+  }
+  if (!response.ok) {
+    const error = await response.json();
+    setVideoStatus(`Kare çıkarılamadı: ${error.detail || response.statusText}`);
+    return false;
+  }
+  const blob = await response.blob();
+  if (state.frameUrl) URL.revokeObjectURL(state.frameUrl);
+  state.frameUrl = URL.createObjectURL(blob);
+  const photo = $('photo');
+  photo.onload = () => {
+    state.width = Number(response.headers.get('X-Frame-Width')) || photo.naturalWidth;
+    state.height = Number(response.headers.get('X-Frame-Height')) || photo.naturalHeight;
+    photo.hidden = false; $('video').hidden = true; $('video').pause();
+    fitCanvas(); render();
+    setVideoStatus(`Kare hazır (${formatTime(timestamp)}). Şimdi masanın köşelerine tıklayın.`);
+  };
+  photo.src = state.frameUrl;
+  return true;
 }
 
 function fitCanvas() {
@@ -248,6 +286,7 @@ $('videoInput').addEventListener('click', (event) => { event.target.value = ''; 
 $('videoInput').addEventListener('change', (event) => {
   const file = event.target.files[0];
   if (!file) return;
+  state.selectedFile = file;
   setVideoStatus(`Dosya seçildi: ${file.name}. Video hazırlanıyor...`);
   if (state.videoUrl) URL.revokeObjectURL(state.videoUrl);
   const url = URL.createObjectURL(file);
@@ -267,7 +306,8 @@ $('videoInput').addEventListener('change', (event) => {
   video.onloadeddata = () => {
     $('snapshotButton').disabled = false;
     video.hidden = false;
-    setVideoStatus(`Görüntü hazır: ${file.name}. Video görünmüyorsa sayfayı Ctrl+F5 ile yenileyin.`);
+    setVideoStatus(`Video çözüldü: ${file.name}. Kalibrasyon karesi hazırlanıyor...`);
+    requestCalibrationFrame(Math.min(1, video.duration || 0));
   };
   video.onerror = () => { setVideoStatus('Video açılamadı. Dosya bozuk veya tarayıcının desteklemediği bir codec kullanıyor olabilir. MP4 (H.264) deneyin.'); };
   video.load();
@@ -307,8 +347,12 @@ $('cameraButton').addEventListener('click', async () => {
   } catch (error) { $('status').textContent = `Kamera açılamadı: ${error.message}`; }
 });
 
-$('snapshotButton').addEventListener('click', () => {
+$('snapshotButton').addEventListener('click', async () => {
   if ($('video').readyState < 2) { setVideoStatus('Video karesi henüz hazır değil. Birkaç saniye bekleyin veya başka MP4/H.264 dosyası deneyin.'); return; }
+  if (state.selectedFile) {
+    await requestCalibrationFrame($('video').currentTime || 0);
+    return;
+  }
   $('video').pause();
   const snap = document.createElement('canvas'); snap.width = state.width; snap.height = state.height;
   snap.getContext('2d').drawImage($('video'), 0, 0, state.width, state.height);
@@ -343,7 +387,10 @@ $('downloadButton').addEventListener('click', () => {
   link.click(); URL.revokeObjectURL(link.href);
 });
 window.addEventListener('resize', fitCanvas);
-window.addEventListener('beforeunload', () => { if (state.videoUrl) URL.revokeObjectURL(state.videoUrl); });
+window.addEventListener('beforeunload', () => {
+  if (state.videoUrl) URL.revokeObjectURL(state.videoUrl);
+  if (state.frameUrl) URL.revokeObjectURL(state.frameUrl);
+});
 fitCanvas(); render();
 </script>
 </body>

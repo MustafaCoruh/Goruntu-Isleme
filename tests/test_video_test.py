@@ -7,7 +7,7 @@ import pytest
 from fastapi import HTTPException
 
 from app.api import routes_product
-from app.video_test import process_video
+from app.video_test import extract_video_frame, process_video
 
 
 def _write_config(path: Path) -> None:
@@ -57,6 +57,49 @@ class EmptyDetector:
         return []
 
 
+class FakeFrame:
+    shape = (720, 1280, 3)
+
+
+class FakeJpegBuffer:
+    def tobytes(self):
+        return b"jpeg-data"
+
+
+class FakeFrameCapture:
+    def __init__(self):
+        self.released = False
+        self.position = None
+
+    def isOpened(self):
+        return True
+
+    def set(self, key, value):
+        self.position = (key, value)
+
+    def read(self):
+        return True, FakeFrame()
+
+    def release(self):
+        self.released = True
+
+
+def test_extract_video_frame_seeks_encodes_and_releases(tmp_path):
+    capture = FakeFrameCapture()
+
+    jpeg, width, height = extract_video_frame(
+        tmp_path / "video.mp4",
+        2.5,
+        capture_factory=lambda path: capture,
+        encode_frame=lambda extension, frame: (True, FakeJpegBuffer()),
+    )
+
+    assert jpeg == b"jpeg-data"
+    assert (width, height) == (1280, 720)
+    assert capture.position == (0, 2500)
+    assert capture.released is True
+
+
 def test_process_video_returns_fourteen_smoothed_table_results(tmp_path):
     config = tmp_path / "config.json"
     _write_config(config)
@@ -79,8 +122,10 @@ def test_process_video_returns_fourteen_smoothed_table_results(tmp_path):
 
 
 class FakeRequest:
-    def __init__(self, body=b"video", filename="test.mp4") -> None:
+    def __init__(self, body=b"video", filename="test.mp4", timestamp=None) -> None:
         self.headers = {"x-video-filename": filename}
+        if timestamp is not None:
+            self.headers["x-video-timestamp"] = str(timestamp)
         self.body = body
 
     async def stream(self):
@@ -129,3 +174,24 @@ def test_video_endpoint_processes_and_deletes_temporary_file(monkeypatch):
     finally:
         routes_product.CURRENT_OCCUPANCY_SNAPSHOT.clear()
         routes_product.CURRENT_OCCUPANCY_SNAPSHOT.update(original_snapshot)
+
+
+def test_calibration_frame_endpoint_returns_jpeg_and_deletes_upload(monkeypatch):
+    temporary_paths = []
+
+    def fake_extract(path, timestamp):
+        temporary_paths.append(path)
+        assert path.exists()
+        assert timestamp == 3.5
+        return b"jpeg-data", 1280, 720
+
+    monkeypatch.setattr(routes_product, "extract_video_frame", fake_extract)
+    response = asyncio.run(
+        routes_product.get_calibration_frame(FakeRequest(timestamp=3.5))
+    )
+
+    assert response.body == b"jpeg-data"
+    assert response.media_type == "image/jpeg"
+    assert response.headers["x-frame-width"] == "1280"
+    assert response.headers["x-frame-height"] == "720"
+    assert temporary_paths and not temporary_paths[0].exists()

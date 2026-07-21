@@ -217,6 +217,7 @@ def test_calibration_config_route_is_registered() -> None:
     route_paths = set(app.openapi()["paths"])
 
     assert "/calibration/config" in route_paths
+    assert "/product/calibration-frame" in route_paths
 
 
 

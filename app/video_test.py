@@ -13,6 +13,42 @@ from app.vision.occupancy import OccupancySmoother, TableOccupancy, compute_tabl
 from app.vision.onnx_detector import OnnxPersonDetector, OnnxPersonDetectorConfig
 
 
+def extract_video_frame(
+    source_path: Path,
+    timestamp_seconds: float = 0,
+    *,
+    capture_factory: Callable[[str], Any] | None = None,
+    encode_frame: Callable[[str, Any], tuple[bool, Any]] | None = None,
+) -> tuple[bytes, int, int]:
+    """Decode one frame for browser-independent calibration preview."""
+
+    if timestamp_seconds < 0:
+        raise ValueError("timestamp_seconds cannot be negative")
+    if capture_factory is None or encode_frame is None:
+        import cv2
+
+        capture_factory = capture_factory or cv2.VideoCapture
+        encode_frame = encode_frame or cv2.imencode
+
+    capture = capture_factory(str(source_path))
+    if not capture.isOpened():
+        capture.release()
+        raise RuntimeError("Video açılamadı.")
+    try:
+        if timestamp_seconds:
+            capture.set(0, timestamp_seconds * 1000)
+        ok, frame = capture.read()
+        if not ok or frame is None:
+            raise RuntimeError("Videodan kalibrasyon karesi okunamadı.")
+        encoded, buffer = encode_frame(".jpg", frame)
+        if not encoded:
+            raise RuntimeError("Kalibrasyon karesi JPEG biçimine dönüştürülemedi.")
+        height, width = frame.shape[:2]
+        return buffer.tobytes(), int(width), int(height)
+    finally:
+        capture.release()
+
+
 def process_video(
     source_path: Path,
     config_path: Path,

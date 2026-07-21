@@ -43,3 +43,7 @@ def test_dashboard_displays_product_readiness():
     assert "visibility: visible !important" in calibration
     assert "canvas { background: transparent" in calibration
     assert "video.hidden = false" in calibration
+    assert "'/product/calibration-frame'" in calibration
+    assert "async function requestCalibrationFrame" in calibration
+    assert "X-Video-Timestamp" in calibration
+    assert "Kare hazır" in calibration
