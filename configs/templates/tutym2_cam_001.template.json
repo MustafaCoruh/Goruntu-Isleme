@@ -1,0 +1,353 @@
+{
+  "utym_id": "T.UTYM#2",
+  "camera_id": "TUTYM2-CAM-001",
+  "source_type": "rtsp",
+  "stream_url": "LOCAL_ONLY_DO_NOT_COMMIT_REAL_RTSP_URL",
+  "resolution": {
+    "width": 1920,
+    "height": 1080
+  },
+  "tables": [
+    {
+      "table_id": "T-001",
+      "name": "Masa 1",
+      "capacity": 1,
+      "polygon": [
+        [
+          80,
+          120
+        ],
+        [
+          240,
+          120
+        ],
+        [
+          240,
+          210
+        ],
+        [
+          80,
+          210
+        ]
+      ],
+      "notes": "PLACEHOLDER_POLYGON_REPLACE_WITH_LOCAL_CALIBRATION"
+    },
+    {
+      "table_id": "T-002",
+      "name": "Masa 2",
+      "capacity": 1,
+      "polygon": [
+        [
+          310,
+          120
+        ],
+        [
+          470,
+          120
+        ],
+        [
+          470,
+          210
+        ],
+        [
+          310,
+          210
+        ]
+      ],
+      "notes": "PLACEHOLDER_POLYGON_REPLACE_WITH_LOCAL_CALIBRATION"
+    },
+    {
+      "table_id": "T-003",
+      "name": "Masa 3",
+      "capacity": 1,
+      "polygon": [
+        [
+          540,
+          120
+        ],
+        [
+          700,
+          120
+        ],
+        [
+          700,
+          210
+        ],
+        [
+          540,
+          210
+        ]
+      ],
+      "notes": "PLACEHOLDER_POLYGON_REPLACE_WITH_LOCAL_CALIBRATION"
+    },
+    {
+      "table_id": "T-004",
+      "name": "Masa 4",
+      "capacity": 1,
+      "polygon": [
+        [
+          770,
+          120
+        ],
+        [
+          930,
+          120
+        ],
+        [
+          930,
+          210
+        ],
+        [
+          770,
+          210
+        ]
+      ],
+      "notes": "PLACEHOLDER_POLYGON_REPLACE_WITH_LOCAL_CALIBRATION"
+    },
+    {
+      "table_id": "T-005",
+      "name": "Masa 5",
+      "capacity": 1,
+      "polygon": [
+        [
+          80,
+          290
+        ],
+        [
+          240,
+          290
+        ],
+        [
+          240,
+          380
+        ],
+        [
+          80,
+          380
+        ]
+      ],
+      "notes": "PLACEHOLDER_POLYGON_REPLACE_WITH_LOCAL_CALIBRATION"
+    },
+    {
+      "table_id": "T-006",
+      "name": "Masa 6",
+      "capacity": 1,
+      "polygon": [
+        [
+          310,
+          290
+        ],
+        [
+          470,
+          290
+        ],
+        [
+          470,
+          380
+        ],
+        [
+          310,
+          380
+        ]
+      ],
+      "notes": "PLACEHOLDER_POLYGON_REPLACE_WITH_LOCAL_CALIBRATION"
+    },
+    {
+      "table_id": "T-007",
+      "name": "Masa 7",
+      "capacity": 1,
+      "polygon": [
+        [
+          540,
+          290
+        ],
+        [
+          700,
+          290
+        ],
+        [
+          700,
+          380
+        ],
+        [
+          540,
+          380
+        ]
+      ],
+      "notes": "PLACEHOLDER_POLYGON_REPLACE_WITH_LOCAL_CALIBRATION"
+    },
+    {
+      "table_id": "T-008",
+      "name": "Masa 8",
+      "capacity": 1,
+      "polygon": [
+        [
+          770,
+          290
+        ],
+        [
+          930,
+          290
+        ],
+        [
+          930,
+          380
+        ],
+        [
+          770,
+          380
+        ]
+      ],
+      "notes": "PLACEHOLDER_POLYGON_REPLACE_WITH_LOCAL_CALIBRATION"
+    },
+    {
+      "table_id": "T-009",
+      "name": "Masa 9",
+      "capacity": 1,
+      "polygon": [
+        [
+          80,
+          460
+        ],
+        [
+          240,
+          460
+        ],
+        [
+          240,
+          550
+        ],
+        [
+          80,
+          550
+        ]
+      ],
+      "notes": "PLACEHOLDER_POLYGON_REPLACE_WITH_LOCAL_CALIBRATION"
+    },
+    {
+      "table_id": "T-010",
+      "name": "Masa 10",
+      "capacity": 1,
+      "polygon": [
+        [
+          310,
+          460
+        ],
+        [
+          470,
+          460
+        ],
+        [
+          470,
+          550
+        ],
+        [
+          310,
+          550
+        ]
+      ],
+      "notes": "PLACEHOLDER_POLYGON_REPLACE_WITH_LOCAL_CALIBRATION"
+    },
+    {
+      "table_id": "T-011",
+      "name": "Masa 11",
+      "capacity": 1,
+      "polygon": [
+        [
+          540,
+          460
+        ],
+        [
+          700,
+          460
+        ],
+        [
+          700,
+          550
+        ],
+        [
+          540,
+          550
+        ]
+      ],
+      "notes": "PLACEHOLDER_POLYGON_REPLACE_WITH_LOCAL_CALIBRATION"
+    },
+    {
+      "table_id": "T-012",
+      "name": "Masa 12",
+      "capacity": 1,
+      "polygon": [
+        [
+          770,
+          460
+        ],
+        [
+          930,
+          460
+        ],
+        [
+          930,
+          550
+        ],
+        [
+          770,
+          550
+        ]
+      ],
+      "notes": "PLACEHOLDER_POLYGON_REPLACE_WITH_LOCAL_CALIBRATION"
+    },
+    {
+      "table_id": "T-013",
+      "name": "Masa 13",
+      "capacity": 1,
+      "polygon": [
+        [
+          80,
+          630
+        ],
+        [
+          240,
+          630
+        ],
+        [
+          240,
+          720
+        ],
+        [
+          80,
+          720
+        ]
+      ],
+      "notes": "PLACEHOLDER_POLYGON_REPLACE_WITH_LOCAL_CALIBRATION"
+    },
+    {
+      "table_id": "T-014",
+      "name": "Masa 14",
+      "capacity": 1,
+      "polygon": [
+        [
+          310,
+          630
+        ],
+        [
+          470,
+          630
+        ],
+        [
+          470,
+          720
+        ],
+        [
+          310,
+          720
+        ]
+      ],
+      "notes": "PLACEHOLDER_POLYGON_REPLACE_WITH_LOCAL_CALIBRATION"
+    }
+  ],
+  "notes": [
+    "Template only. Do not commit real RTSP credentials or sensitive site-specific secrets.",
+    "Replace placeholder polygons with local calibration coordinates on the Windows field machine.",
+    "Real images and videos must remain outside the repository."
+  ]
+}

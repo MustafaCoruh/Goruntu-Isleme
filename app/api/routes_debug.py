@@ -13,13 +13,11 @@ from fastapi import APIRouter, HTTPException, Response, status
 from app.calibration.models import CameraConfig, UtymConfig
 from app.config import load_camera_config
 from app.api.routes_occupancy import CURRENT_OCCUPANCY_SNAPSHOT
+from app.local_assets import TEMPLATE_CALIBRATION_PATH, calibration_path
 from app.vision.visualization import draw_debug_overlay
 
 router = APIRouter(prefix="/debug", tags=["debug"])
 
-_DEFAULT_CONFIG_PATH = (
-    Path(__file__).resolve().parents[2] / "configs" / "utym_001_cam_001.json"
-)
 _DEBUG_ENABLED_ENV = "FTMC_DEBUG_UI_ENABLED"
 
 _SAMPLE_DETECTIONS: list[dict[str, Any]] = [
@@ -52,8 +50,11 @@ def _select_debug_camera(config: UtymConfig | CameraConfig) -> CameraConfig:
 
 
 def _load_debug_tables() -> list[dict[str, Any]]:
+    default_path = calibration_path()
+    if not default_path.is_file():
+        default_path = TEMPLATE_CALIBRATION_PATH
     config = _select_debug_camera(
-        load_camera_config(os.getenv("FTMC_CAMERA_CONFIG", _DEFAULT_CONFIG_PATH))
+        load_camera_config(os.getenv("FTMC_CAMERA_CONFIG", default_path))
     )
     snapshot_tables = {
         str(table["table_id"]): table
@@ -78,8 +79,11 @@ def _load_debug_tables() -> list[dict[str, Any]]:
 
 def _resolution_from_tables(tables: list[dict[str, Any]]) -> tuple[int, int]:
     try:
+        default_path = calibration_path()
+        if not default_path.is_file():
+            default_path = TEMPLATE_CALIBRATION_PATH
         config = _select_debug_camera(
-            load_camera_config(os.getenv("FTMC_CAMERA_CONFIG", _DEFAULT_CONFIG_PATH))
+            load_camera_config(os.getenv("FTMC_CAMERA_CONFIG", default_path))
         )
         return config.resolution.width, config.resolution.height
     except (FileNotFoundError, KeyError, ValueError):

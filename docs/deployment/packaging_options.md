@@ -12,7 +12,7 @@ PyInstaller için önerilen dağıtım modeli `--onedir` çıktısıdır. `--one
 FTMC-Occupancy/
 ├── FTMC-Occupancy.exe
 ├── configs/
-│   └── utym_001_cam_001.json
+│   └── tutym2_cam_001.local.json
 ├── models/
 │   └── person_detector.onnx
 ├── data/
@@ -75,7 +75,7 @@ Kamera, UTYM ve ortam ayarlarını içeren JSON config dosyaları executable dı
 Öneriler:
 
 - `configs/` klasörü paketle birlikte örnek veya varsayılan JSON dosyalarıyla gelmelidir.
-- Çalıştırma komutu config yolunu açıkça vermelidir: `FTMC-Occupancy.exe --config configs\utym_001_cam_001.json ...`.
+- Çalıştırma komutu config yolunu açıkça vermelidir: `FTMC-Occupancy.exe --config configs\tutym2_cam_001.local.json ...`.
 - Güncelleme paketleri mevcut config dosyalarını otomatik olarak ezmemelidir.
 - Yeni config şeması gerekiyorsa dağıtım notlarında migrasyon adımı veya örnek farklar verilmelidir.
 - Config dosyaları üzerinde kurum içi değişiklik takibi gerekiyorsa `configs/` yedekleme kapsamına alınmalıdır.
@@ -88,7 +88,7 @@ Log dosyaları executable içine veya geçici PyInstaller dizinine yazılmamalı
 
 ```powershell
 New-Item -ItemType Directory -Force -Path .\logs | Out-Null
-.\FTMC-Occupancy.exe --config .\configs\utym_001_cam_001.json --source .\sample.mp4 --model .\models\person_detector.onnx *> .\logs\app.log
+.\FTMC-Occupancy.exe --config .\configs\tutym2_cam_001.local.json --source .\sample.mp4 --model .\models\person_detector.onnx *> .\logs\app.log
 ```
 
 Servis olarak çalıştırılan dağıtımlarda loglar aşağıdaki seçeneklerden biriyle yönetilebilir:

@@ -1,0 +1,64 @@
+{
+  "report_type": "table_accuracy_evaluation",
+  "schema_version": "1.0",
+  "site": "T.UTYM#2",
+  "camera_id": "TUTYM2-CAM-001",
+  "created_at": "YYYY-MM-DDTHH:MM:SS",
+  "evaluation_context": {
+    "test_type": "rtsp_live",
+    "lighting": "normal",
+    "occupancy_level": "medium",
+    "camera_angle_changed": false,
+    "calibration_recent": true,
+    "duration_minutes": 5,
+    "average_fps": 0.0
+  },
+  "inputs": {
+    "config_name": "tutym2_cam_001.rtsp.local.json",
+    "model_name": "person_detector.onnx",
+    "model_version": "initial-field-test"
+  },
+  "summary": {
+    "table_count": 14,
+    "tp": 0,
+    "tn": 0,
+    "fp": 0,
+    "fn": 0,
+    "unk": 14,
+    "correct": 0,
+    "incorrect": 0,
+    "evaluated": 0,
+    "accuracy": null
+  },
+  "tables": [
+    {"table_id": "table_01", "ground_truth": "empty", "prediction": "unknown", "label": "UNK", "confidence": null, "safe_note": ""},
+    {"table_id": "table_02", "ground_truth": "empty", "prediction": "unknown", "label": "UNK", "confidence": null, "safe_note": ""},
+    {"table_id": "table_03", "ground_truth": "empty", "prediction": "unknown", "label": "UNK", "confidence": null, "safe_note": ""},
+    {"table_id": "table_04", "ground_truth": "empty", "prediction": "unknown", "label": "UNK", "confidence": null, "safe_note": ""},
+    {"table_id": "table_05", "ground_truth": "empty", "prediction": "unknown", "label": "UNK", "confidence": null, "safe_note": ""},
+    {"table_id": "table_06", "ground_truth": "empty", "prediction": "unknown", "label": "UNK", "confidence": null, "safe_note": ""},
+    {"table_id": "table_07", "ground_truth": "empty", "prediction": "unknown", "label": "UNK", "confidence": null, "safe_note": ""},
+    {"table_id": "table_08", "ground_truth": "empty", "prediction": "unknown", "label": "UNK", "confidence": null, "safe_note": ""},
+    {"table_id": "table_09", "ground_truth": "empty", "prediction": "unknown", "label": "UNK", "confidence": null, "safe_note": ""},
+    {"table_id": "table_10", "ground_truth": "empty", "prediction": "unknown", "label": "UNK", "confidence": null, "safe_note": ""},
+    {"table_id": "table_11", "ground_truth": "empty", "prediction": "unknown", "label": "UNK", "confidence": null, "safe_note": ""},
+    {"table_id": "table_12", "ground_truth": "empty", "prediction": "unknown", "label": "UNK", "confidence": null, "safe_note": ""},
+    {"table_id": "table_13", "ground_truth": "empty", "prediction": "unknown", "label": "UNK", "confidence": null, "safe_note": ""},
+    {"table_id": "table_14", "ground_truth": "empty", "prediction": "unknown", "label": "UNK", "confidence": null, "safe_note": ""}
+  ],
+  "decision": {
+    "prototype_ready": false,
+    "recommended_next_action": "Fill this template locally after field evaluation.",
+    "requires_recalibration": false,
+    "requires_model_change": false,
+    "requires_camera_adjustment": false
+  },
+  "safety": {
+    "contains_image_or_video": false,
+    "contains_rtsp_url": false,
+    "contains_ip_address": false,
+    "contains_credentials": false,
+    "contains_person_name": false,
+    "contains_full_local_path": false
+  }
+}
