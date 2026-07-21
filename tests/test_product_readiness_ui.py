@@ -35,3 +35,7 @@ def test_dashboard_displays_product_readiness():
     assert "video.play().catch" in calibration
     assert "Video açılamadı" in calibration
     assert "Kare yakalandı" in calibration
+    assert 'id="videoStatus"' in calibration
+    assert "event.target.value = ''" in calibration
+    assert "video.onloadeddata" in calibration
+    assert "Video hâlâ açılamadı" in calibration

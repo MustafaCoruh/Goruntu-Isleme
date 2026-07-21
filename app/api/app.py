@@ -8,7 +8,9 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+
 from app.database.db import init_db
+
 
 @asynccontextmanager
 async def lifespan(api_app: FastAPI) -> AsyncIterator[None]:
@@ -22,6 +24,13 @@ def create_app() -> FastAPI:
     """Create and configure the FTMC occupancy API application."""
 
     api_app = FastAPI(title="FTMC Occupancy API", lifespan=lifespan)
+
+    @api_app.middleware("http")
+    async def disable_ui_cache(request, call_next):
+        response = await call_next(request)
+        if request.url.path.startswith("/ui"):
+            response.headers["Cache-Control"] = "no-store"
+        return response
 
     from app.api.routes_debug import router as debug_router
     from app.api.routes_health import router as health_router

@@ -31,6 +31,7 @@
     .table-item strong { display: block; }
     pre { max-height: 240px; overflow: auto; background: #102a43; color: #d9e2ec; padding: 12px; border-radius: 8px; }
     .status { min-height: 20px; color: #334e68; }
+    .video-status { background: #fff8d9; border-radius: 8px; font-weight: 700; margin: 0 0 12px; padding: 10px 12px; }
   </style>
 </head>
 <body>
@@ -51,6 +52,7 @@
         <button id="undoButton" class="secondary" type="button">Son Noktayı Sil</button>
         <button id="clearButton" class="danger" type="button">Poligonu Temizle</button>
       </div>
+      <p id="videoStatus" class="video-status">Henüz video seçilmedi.</p>
       <div class="fields">
         <label>Masa adı
           <input id="tableName" type="text" placeholder="Örn. Masa 1" />
@@ -67,6 +69,7 @@
         <button id="addTableButton" type="button">Masayı Ekle</button>
       </div>
       <div class="stage" id="stage">
+        <video id="video" playsinline muted preload="metadata" hidden></video>
         <img id="photo" alt="Kalibrasyon görseli" hidden />
         <canvas id="canvas"></canvas>
       </div>
@@ -98,6 +101,11 @@ const state = { tables: [], points: [], width: 1280, height: 720, stream: null, 
 const $ = (id) => document.getElementById(id);
 const canvas = $('canvas');
 const ctx = canvas.getContext('2d');
+
+function setVideoStatus(message) {
+  $('videoStatus').textContent = message;
+  $('status').textContent = message;
+}
 
 function formatTime(seconds) {
   if (!Number.isFinite(seconds)) return '00:00';
@@ -206,36 +214,42 @@ canvas.addEventListener('click', (event) => {
   render();
 });
 
+$('videoInput').addEventListener('click', (event) => { event.target.value = ''; });
 $('videoInput').addEventListener('change', (event) => {
   const file = event.target.files[0];
   if (!file) return;
+  setVideoStatus(`Dosya seçildi: ${file.name}. Video hazırlanıyor...`);
   if (state.videoUrl) URL.revokeObjectURL(state.videoUrl);
   const url = URL.createObjectURL(file);
   state.videoUrl = url;
   const video = $('video');
-  video.srcObject = null; video.src = url; video.hidden = false; $('photo').hidden = true;
-  $('status').textContent = `Video yükleniyor: ${file.name}`;
-  $('video').onloadedmetadata = () => {
+  if ('srcObject' in video) video.srcObject = null;
+  video.src = url; video.hidden = false; $('photo').hidden = true;
+  $('playPauseButton').disabled = false;
+  video.onloadedmetadata = () => {
     state.width = video.videoWidth; state.height = video.videoHeight; state.source = 'video_file';
-    $('snapshotButton').disabled = false; $('playPauseButton').disabled = false;
     $('seekInput').disabled = false; $('seekInput').max = String(video.duration || 0);
     $('duration').textContent = formatTime(video.duration);
-    $('status').textContent = 'Video hazır. Oynatın ve masaların net göründüğü karede durdurun.';
+    setVideoStatus(`Video hazır: ${file.name} (${state.width}×${state.height}). Net bir kare seçin.`);
     fitCanvas(); render();
-    video.play().catch(() => { $('status').textContent = 'Video hazır. Başlatmak için Videoyu Oynat düğmesine basın.'; });
+    video.play().catch(() => { setVideoStatus('Video hazır. Başlatmak için Videoyu Oynat düğmesine basın.'); });
   };
-  video.onerror = () => { $('status').textContent = 'Video açılamadı. Dosya bozuk veya tarayıcının desteklemediği bir codec kullanıyor olabilir. MP4 (H.264) deneyin.'; };
+  video.onloadeddata = () => { $('snapshotButton').disabled = false; };
+  video.onerror = () => { setVideoStatus('Video açılamadı. Dosya bozuk veya tarayıcının desteklemediği bir codec kullanıyor olabilir. MP4 (H.264) deneyin.'); };
   video.load();
+  window.setTimeout(() => {
+    if (video.readyState === 0 && video.src === url) setVideoStatus('Video hâlâ açılamadı. MP4/H.264 dosyası deneyin veya sayfayı Ctrl+F5 ile yenileyin.');
+  }, 5000);
 });
 
 $('playPauseButton').addEventListener('click', async () => {
   const video = $('video');
   if (video.paused) {
     $('photo').hidden = true; video.hidden = false;
-    try { await video.play(); } catch (error) { $('status').textContent = `Video oynatılamadı: ${error.message}`; }
+    try { await video.play(); } catch (error) { setVideoStatus(`Video oynatılamadı: ${error.message}`); }
   } else {
     video.pause();
-    $('status').textContent = 'Video durduruldu. Bu kare uygunsa Kareyi Yakala düğmesine basın.';
+    setVideoStatus('Video durduruldu. Bu kare uygunsa Kareyi Yakala düğmesine basın.');
   }
   updatePlaybackControls();
 });
@@ -260,12 +274,12 @@ $('cameraButton').addEventListener('click', async () => {
 });
 
 $('snapshotButton').addEventListener('click', () => {
-  if ($('video').readyState < 2) { $('status').textContent = 'Video karesi henüz hazır değil.'; return; }
+  if ($('video').readyState < 2) { setVideoStatus('Video karesi henüz hazır değil. Birkaç saniye bekleyin veya başka MP4/H.264 dosyası deneyin.'); return; }
   $('video').pause();
   const snap = document.createElement('canvas'); snap.width = state.width; snap.height = state.height;
   snap.getContext('2d').drawImage($('video'), 0, 0, state.width, state.height);
   $('photo').src = snap.toDataURL('image/jpeg'); $('photo').hidden = false; $('video').hidden = true;
-  $('status').textContent = 'Kare yakalandı. Şimdi masanın köşelerine sırayla tıklayın.';
+  setVideoStatus('Kare yakalandı. Şimdi masanın köşelerine sırayla tıklayın.');
   updatePlaybackControls();
 });
 
