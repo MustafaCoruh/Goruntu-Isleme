@@ -33,6 +33,7 @@ Ekranda şunları kontrol edin:
 2. 14 masa kartının dolu, boş veya belirsiz sonuçları.
 3. **Kalibrasyon** bağlantısında video seçme ve masa poligonu çizme akışı.
 4. **Teknik Görünüm** bağlantısında kamera/masa çizimleri.
+5. Ürün hazırlığı tamamlandığında **T.UTYM#2 videosunu test et** alanından lokal videoyu seçip **Videoyu İşle** düğmesiyle 14 masa sonucunu güncelleme.
 
 Uygulamayı kapatmak için açılan `T.UTYM#2 Sunucu` penceresini kapatın.
 

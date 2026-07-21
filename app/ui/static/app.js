@@ -10,6 +10,9 @@ const readinessChecks = document.querySelector("#readiness-checks");
 const occupiedCount = document.querySelector("#occupied-count");
 const emptyCount = document.querySelector("#empty-count");
 const uncertainCount = document.querySelector("#uncertain-count");
+const videoTestFile = document.querySelector("#video-test-file");
+const videoTestButton = document.querySelector("#video-test-button");
+const videoTestStatus = document.querySelector("#video-test-status");
 
 const statusLabels = {
   occupied: "Dolu",
@@ -97,6 +100,10 @@ function renderReadiness(data) {
   readinessTitle.textContent = ready ? "Video testine hazır" : "Video testi için eksikler var";
   readinessNextStep.textContent = data.next_step ?? "Ürün hazırlık sonucu alınamadı.";
   readinessChecks.replaceChildren();
+  videoTestButton.disabled = !ready || !videoTestFile.files.length;
+  if (!ready) {
+    videoTestStatus.textContent = "Kalibrasyon ve model hazır olmadan video işlenemez.";
+  }
 
   (data.checks ?? []).forEach((check) => {
     const item = document.createElement("li");
@@ -105,6 +112,35 @@ function renderReadiness(data) {
     readinessChecks.append(item);
   });
 }
+
+videoTestFile.addEventListener("change", () => {
+  videoTestButton.disabled = !videoTestFile.files.length || readinessPanel.classList.contains("readiness-panel--blocked");
+  if (videoTestFile.files.length) {
+    videoTestStatus.textContent = `${videoTestFile.files[0].name} seçildi.`;
+  }
+});
+
+videoTestButton.addEventListener("click", async () => {
+  const file = videoTestFile.files[0];
+  if (!file) return;
+  videoTestButton.disabled = true;
+  videoTestStatus.textContent = "Video işleniyor; bu işlem birkaç dakika sürebilir…";
+  try {
+    const response = await fetch("/product/video-test", {
+      method: "POST",
+      headers: { "Content-Type": "application/octet-stream", "X-Video-Filename": file.name },
+      body: file,
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail?.next_step ?? data.detail ?? `HTTP ${response.status}`);
+    videoTestStatus.textContent = `${data.processed_frames} kare işlendi; ${data.table_count} masa güncellendi.`;
+    await loadOccupancy();
+  } catch (error) {
+    videoTestStatus.textContent = `Video testi başarısız: ${error.message}`;
+  } finally {
+    videoTestButton.disabled = false;
+  }
+});
 
 async function loadReadiness() {
   try {

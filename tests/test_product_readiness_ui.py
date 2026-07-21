@@ -20,3 +20,7 @@ def test_dashboard_displays_product_readiness():
     assert 'id="empty-count"' in html
     assert 'id="uncertain-count"' in html
     assert "totals[normalizeStatus(table.status)] += 1" in script
+    assert 'id="video-test-file"' in html
+    assert 'id="video-test-button"' in html
+    assert 'fetch("/product/video-test"' in script
+    assert "Video yalnızca işlem sırasında geçici olarak kullanılır" in html

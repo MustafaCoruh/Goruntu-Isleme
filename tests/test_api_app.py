@@ -79,6 +79,7 @@ def test_app_registers_expected_routes() -> None:
         "/occupancy/current",
         "/occupancy/events",
         "/product/readiness",
+        "/product/video-test",
     }.issubset(route_paths)
 
 

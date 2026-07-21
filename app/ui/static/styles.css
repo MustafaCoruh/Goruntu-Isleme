@@ -132,6 +132,40 @@ button:hover {
   padding: 22px;
 }
 
+.video-test-panel {
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgb(23 32 51 / 8%);
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(280px, 1.2fr);
+  margin-bottom: 20px;
+  padding: 22px;
+}
+
+.video-test-panel h2,
+.video-test-panel p {
+  margin-bottom: 8px;
+  margin-top: 0;
+}
+
+.video-test-controls {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+}
+
+.video-test-controls input {
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.video-test-status {
+  color: #5d6b85;
+  font-weight: 700;
+}
+
 .readiness-panel h2,
 .readiness-panel p {
   margin-bottom: 8px;
@@ -172,7 +206,8 @@ button:hover {
 }
 
 @media (max-width: 720px) {
-  .readiness-panel {
+  .readiness-panel,
+  .video-test-panel {
     grid-template-columns: 1fr;
   }
 }

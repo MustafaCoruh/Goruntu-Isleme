@@ -43,18 +43,17 @@
         <ul id="readiness-checks" class="readiness-checks"></ul>
       </section>
 
-      <aside class="scope-note">
-        <strong>Ürün kapsamı:</strong>
-        Videodan yalnızca 14 masanın dolu, boş veya belirsiz durumu ölçülür. Kişi kimliği ve manuel masa ataması yapılmaz.
-      </aside>
-
-      <section id="readiness-panel" class="readiness-panel" aria-labelledby="readiness-title">
+      <section class="video-test-panel" aria-labelledby="video-test-title">
         <div>
-          <p class="eyebrow">Video testi hazırlığı</p>
-          <h2 id="readiness-title">Ürün kontrol ediliyor…</h2>
-          <p id="readiness-next-step">Yapılandırma, kalibrasyon ve model denetleniyor.</p>
+          <p class="eyebrow">Lokal video</p>
+          <h2 id="video-test-title">T.UTYM#2 videosunu test et</h2>
+          <p>Video yalnızca işlem sırasında geçici olarak kullanılır ve işlem bitince silinir.</p>
         </div>
-        <ul id="readiness-checks" class="readiness-checks"></ul>
+        <div class="video-test-controls">
+          <input id="video-test-file" type="file" accept="video/*,.avi,.m4v,.mkv,.mov,.mp4" />
+          <button id="video-test-button" type="button" disabled>Videoyu İşle</button>
+          <p id="video-test-status" class="video-test-status">Önce ürün hazırlık kontrolleri geçmelidir.</p>
+        </div>
       </section>
 
       <section id="status-message" class="status-message" role="status"></section>
