@@ -39,6 +39,8 @@ Kalibrasyon ekranında 14 masanın tamamı çizilip **Config JSON Kaydet** düğ
 
 Video seçildikten sonra otomatik oynatma başlamazsa **Videoyu Oynat** düğmesine basın. Zaman çubuğuyla masaların net göründüğü kareye gidin, videoyu durdurun ve **Kareyi Yakala** düğmesine basın. Video hiç görüntülenmezse tarayıcı codec'i desteklemiyor olabilir; videoyu MP4/H.264 biçimine dönüştürüp yeniden seçin.
 
+**Kare çıkarılamadı: Not Found** uyarısı eski sunucu işleminin hâlâ 8000 portunda çalıştığını gösterir. Güncel başlatıcı 8000 portundaki eski işlemi kapatır ve yeni API'de kalibrasyon endpoint'ini doğrulamadan tarayıcıyı açmaz.
+
 Uygulamayı kapatmak için açılan `T.UTYM#2 Sunucu` penceresini kapatın.
 
 ### “Python bulunamadı” uyarısı çıkarsa

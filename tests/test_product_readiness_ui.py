@@ -47,3 +47,5 @@ def test_dashboard_displays_product_readiness():
     assert "async function requestCalibrationFrame" in calibration
     assert "X-Video-Timestamp" in calibration
     assert "Kare hazır" in calibration
+    assert "response.status === 404" in calibration
+    assert "Eski sunucu hâlâ çalışıyor" in calibration

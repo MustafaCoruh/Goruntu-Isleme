@@ -41,9 +41,22 @@ if errorlevel 1 (
   )
 )
 
-echo T.UTYM#2 uygulamasi baslatiliyor...
+echo 8000 portunda kalmis eski T.UTYM#2 sunucusu kapatiliyor...
+for /f "tokens=5" %%P in ('netstat -ano ^| findstr /R /C:":8000 .*LISTENING"') do (
+  echo Eski sunucu PID %%P kapatiliyor...
+  taskkill /PID %%P /F >nul 2>nul
+)
+timeout /t 1 /nobreak >nul
+
+echo T.UTYM#2 uygulamasinin guncel surumu baslatiliyor...
 start "T.UTYM#2 Sunucu" cmd /k "cd /d ""%~dp0"" && %PYTHON_LAUNCH% -m uvicorn app.api.app:app --host 127.0.0.1 --port 8000"
 timeout /t 3 /nobreak >nul
+powershell -NoProfile -Command "try { $schema = Invoke-RestMethod 'http://127.0.0.1:8000/openapi.json'; if ($schema.paths.PSObject.Properties.Name -contains '/product/calibration-frame') { exit 0 }; exit 1 } catch { exit 1 }"
+if errorlevel 1 (
+  echo Guncel sunucu dogrulanamadi. Acik T.UTYM#2 Sunucu pencerelerini kapatip tekrar deneyin.
+  pause
+  exit /b 1
+)
 start "" "http://127.0.0.1:8000/ui/index.html"
 
 echo.

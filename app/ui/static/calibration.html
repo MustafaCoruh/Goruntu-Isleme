@@ -141,6 +141,10 @@ async function requestCalibrationFrame(timestamp = 0) {
     return false;
   }
   if (!response.ok) {
+    if (response.status === 404) {
+      setVideoStatus('Eski sunucu hâlâ çalışıyor. Tüm T.UTYM#2 Sunucu pencerelerini kapatın ve TUTYM2_KONTROL.bat dosyasını yeniden açın.');
+      return false;
+    }
     const error = await response.json();
     setVideoStatus(`Kare çıkarılamadı: ${error.detail || response.statusText}`);
     return false;
