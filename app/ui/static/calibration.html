@@ -7,7 +7,8 @@
   <style>
     :root { color-scheme: light; font-family: Arial, sans-serif; }
     body { margin: 0; background: #f5f7fb; color: #172033; }
-    header { padding: 16px 24px; background: #102a43; color: white; }
+    header { align-items: center; display: flex; justify-content: space-between; padding: 16px 24px; background: #102a43; color: white; }
+    header a { color: white; font-weight: 700; }
     main { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; padding: 16px; }
     .card { background: white; border-radius: 12px; box-shadow: 0 2px 12px rgb(16 42 67 / 12%); padding: 16px; }
     .toolbar, .fields { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 12px; }
@@ -29,7 +30,7 @@
   </style>
 </head>
 <body>
-  <header><h1>T.UTYM#2 Masa Kalibrasyonu</h1></header>
+  <header><h1>T.UTYM#2 Masa Kalibrasyonu</h1><a href="index.html">Doluluk Paneline Dön</a></header>
   <main>
     <section class="card">
       <div class="toolbar">
@@ -140,7 +141,8 @@ function configPayload() {
   return {
     utym_id: $('utymId').value.trim(),
     camera_id: $('cameraId').value.trim(),
-    source_type: 'local_image',
+    source_type: 'rtsp',
+    stream_url: 'LOCAL_ONLY_DO_NOT_COMMIT_REAL_RTSP_URL',
     resolution: { width: state.width, height: state.height },
     tables: state.tables,
   };
@@ -149,6 +151,7 @@ function configPayload() {
 function render() {
   $('targetStatus').textContent = `T.UTYM#2 hedef masa sayısı: ${state.tables.length} / ${TARGET_TABLE_COUNT}`;
   $('addTableButton').disabled = state.tables.length >= TARGET_TABLE_COUNT;
+  $('saveButton').disabled = state.tables.length !== TARGET_TABLE_COUNT;
   $('tableList').innerHTML = state.tables.length ? state.tables.map((table, index) => `
     <div class="table-item">
       <strong>${table.name}</strong>
@@ -217,7 +220,7 @@ $('saveButton').addEventListener('click', async () => {
   if (state.tables.length !== REQUIRED_TABLE_COUNT) { $('status').textContent = 'Config kaydetmeden önce 14 masa tamamlanmalı.'; return; }
   const response = await fetch('/calibration/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(configPayload()) });
   const data = await response.json();
-  $('status').textContent = response.ok ? `Config kaydedildi: ${data.path}` : `Kaydetme hatası: ${data.detail}`;
+  $('status').textContent = response.ok ? 'Kalibrasyon kaydedildi. Doluluk Paneline Dön bağlantısıyla hazırlık durumunu yenileyin.' : `Kaydetme hatası: ${data.detail}`;
 });
 $('downloadButton').addEventListener('click', () => {
   if (state.tables.length !== REQUIRED_TABLE_COUNT) { $('status').textContent = 'JSON indirmeden önce 14 masa tamamlanmalı.'; return; }

@@ -185,8 +185,10 @@ def test_debug_routes_are_registered() -> None:
 
 def test_debug_state_returns_overlay_payload(monkeypatch) -> None:
     from app.api.routes_debug import get_debug_state
+    from app.local_assets import TEMPLATE_CALIBRATION_PATH
 
     monkeypatch.setenv("FTMC_DEBUG_UI_ENABLED", "true")
+    monkeypatch.setenv("FTMC_CAMERA_CONFIG", str(TEMPLATE_CALIBRATION_PATH))
     response = get_debug_state()
 
     assert response["enabled"] is True
@@ -232,7 +234,7 @@ def test_save_calibration_config_writes_validated_json(tmp_path, monkeypatch) ->
     from app.api.routes_tables import save_calibration_config
 
     config_path = tmp_path / "camera-config.json"
-    monkeypatch.setenv("FTMC_CALIBRATION_CONFIG_PATH", str(config_path))
+    monkeypatch.setenv("FTMC_TUTYM2_CONFIG_PATH", str(config_path))
 
     response = save_calibration_config(
         {

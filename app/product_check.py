@@ -11,10 +11,11 @@ from typing import Any, Callable
 import onnxruntime as ort
 
 from app.tutym2_config_validator import Tutym2ConfigValidationError, validate_config_file
+from app.local_assets import DEFAULT_CALIBRATION_PATH, DEFAULT_MODEL_PATH
 
 
-DEFAULT_CONFIG = Path("configs/templates/tutym2_cam_001.template.json")
-DEFAULT_MODEL = Path("models/person_detector.onnx")
+DEFAULT_CONFIG = DEFAULT_CALIBRATION_PATH
+DEFAULT_MODEL = DEFAULT_MODEL_PATH
 
 
 @dataclass(frozen=True)

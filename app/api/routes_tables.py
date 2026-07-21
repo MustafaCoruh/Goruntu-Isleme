@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 from typing import Any
 
@@ -18,6 +17,7 @@ from app.calibration.service import (
     save_camera_config,
 )
 from app.database.models import Table
+from app.local_assets import calibration_path
 
 router = APIRouter(tags=["tables"])
 
@@ -51,12 +51,7 @@ def list_tables(db: Session = Depends(get_db)) -> list[dict[str, Any]]:
 
 
 def _default_calibration_config_path() -> Path:
-    return Path(
-        os.getenv(
-            "FTMC_CALIBRATION_CONFIG_PATH",
-            r"C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json",
-        )
-    )
+    return calibration_path()
 
 
 @router.post("/calibration/config", status_code=status.HTTP_201_CREATED)
@@ -64,6 +59,7 @@ def save_calibration_config(config: dict[str, Any]) -> dict[str, Any]:
     """Validate and save a calibration config JSON payload."""
 
     config_path = _default_calibration_config_path()
+    config_path.parent.mkdir(parents=True, exist_ok=True)
     try:
         saved_config = save_camera_config(str(config_path), config)
     except CameraConfigError as exc:

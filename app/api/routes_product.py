@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -10,12 +9,12 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Request
 
 from app.api.routes_occupancy import CURRENT_OCCUPANCY_SNAPSHOT
+from app.local_assets import calibration_path, model_path
 from app.product_check import check_product_assets
 from app.video_test import process_video
 
 
 router = APIRouter(prefix="/product", tags=["product"])
-ROOT = Path(__file__).resolve().parents[2]
 SUPPORTED_VIDEO_EXTENSIONS = {".avi", ".m4v", ".mkv", ".mov", ".mp4"}
 MAX_UPLOAD_BYTES = 2 * 1024 * 1024 * 1024
 
@@ -69,16 +68,4 @@ async def run_video_test(request: Request) -> dict[str, Any]:
 
 
 def _asset_paths() -> tuple[Path, Path]:
-    config_path = Path(
-        os.getenv(
-            "FTMC_TUTYM2_CONFIG_PATH",
-            ROOT / "configs" / "templates" / "tutym2_cam_001.template.json",
-        )
-    )
-    model_path = Path(
-        os.getenv(
-            "FTMC_PERSON_MODEL_PATH",
-            ROOT / "models" / "person_detector.onnx",
-        )
-    )
-    return config_path, model_path
+    return calibration_path(), model_path()

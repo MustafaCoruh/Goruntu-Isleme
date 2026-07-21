@@ -35,6 +35,8 @@ Ekranda şunları kontrol edin:
 4. **Teknik Görünüm** bağlantısında kamera/masa çizimleri.
 5. Ürün hazırlığı tamamlandığında **T.UTYM#2 videosunu test et** alanından lokal videoyu seçip **Videoyu İşle** düğmesiyle 14 masa sonucunu güncelleme.
 
+Kalibrasyon ekranında 14 masanın tamamı çizilip **Config JSON Kaydet** düğmesine basıldığında dosya ürünün kullandığı lokal konuma kaydedilir. Ana panele dönüp **Yenile** dediğinizde kalibrasyon kontrolü otomatik güncellenir.
+
 Uygulamayı kapatmak için açılan `T.UTYM#2 Sunucu` penceresini kapatın.
 
 ### “Python bulunamadı” uyarısı çıkarsa

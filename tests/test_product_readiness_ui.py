@@ -24,3 +24,9 @@ def test_dashboard_displays_product_readiness():
     assert 'id="video-test-button"' in html
     assert 'fetch("/product/video-test"' in script
     assert "Video yalnızca işlem sırasında geçici olarak kullanılır" in html
+    calibration = (STATIC / "calibration.html").read_text(encoding="utf-8")
+    assert "LOCAL_ONLY_DO_NOT_COMMIT_REAL_RTSP_URL" in calibration
+    assert "source_type: 'rtsp'" in calibration
+    assert "Doluluk Paneline Dön" in calibration
+    assert "state.tables.length !== TARGET_TABLE_COUNT" in calibration
+    assert "Kalibrasyon kaydedildi" in calibration

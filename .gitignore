@@ -54,3 +54,4 @@ temp/
 
 # Local runtime database
 data/*.sqlite
+data/*.json
