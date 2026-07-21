@@ -1,6 +1,7 @@
 import pytest
 
 np = pytest.importorskip("numpy")
+pytest.importorskip("cv2", exc_type=ImportError)
 
 from app.camera.sources import RtspCameraSource, RtspCameraSourceError
 

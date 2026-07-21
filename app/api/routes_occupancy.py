@@ -15,24 +15,19 @@ from app.database.models import OccupancyEvent
 
 router = APIRouter(prefix="/occupancy", tags=["occupancy"])
 
-# In-memory current occupancy snapshot until live inference or storage is wired in.
+# In-memory current occupancy snapshot until video inference updates it.
 CURRENT_OCCUPANCY_SNAPSHOT: dict[str, Any] = {
-    "utym_id": "UTYM-001",
-    "camera_id": "CAM-001",
-    "timestamp": "2026-07-09T10:05:21Z",
+    "utym_id": "T.UTYM#2",
+    "camera_id": "TUTYM2-CAM-001",
+    "timestamp": None,
     "tables": [
         {
-            "table_id": "T-001",
-            "name": "Masa 1",
-            "status": "occupied",
-            "confidence": 0.91,
-        },
-        {
-            "table_id": "T-002",
-            "name": "Masa 2",
-            "status": "empty",
-            "confidence": 0.83,
-        },
+            "table_id": f"T-{index:03d}",
+            "name": f"Masa {index}",
+            "status": "uncertain",
+            "confidence": 0.0,
+        }
+        for index in range(1, 15)
     ],
 }
 
