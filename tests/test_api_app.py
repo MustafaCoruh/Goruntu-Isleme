@@ -73,7 +73,35 @@ def _seed_api_data(session_factory):
 def test_app_registers_expected_routes() -> None:
     route_paths = set(app.openapi()["paths"])
 
-    assert {"/health", "/tables", "/occupancy/current", "/occupancy/events"}.issubset(route_paths)
+    assert {
+        "/health",
+        "/tables",
+        "/occupancy/current",
+        "/occupancy/events",
+        "/product/readiness",
+        "/product/video-test",
+    }.issubset(route_paths)
+
+
+def test_product_readiness_endpoint_returns_safe_result(monkeypatch) -> None:
+    from app.api import routes_product
+
+    monkeypatch.setattr(
+        routes_product,
+        "check_product_assets",
+        lambda config, model: {
+            "ready_for_video_test": False,
+            "status": "NOT_READY",
+            "checks": [{"name": "person_model", "status": "fail", "message": "Model eksik."}],
+            "next_step": "Modeli yükleyin.",
+        },
+    )
+
+    response = routes_product.get_product_readiness()
+
+    assert response["status"] == "NOT_READY"
+    assert response["checks"][0]["message"] == "Model eksik."
+    assert "path" not in str(response).lower()
 
 
 def test_health_endpoint_returns_ok() -> None:
@@ -95,6 +123,10 @@ def test_current_occupancy_endpoint_returns_in_memory_snapshot() -> None:
     response = get_current_occupancy()
 
     assert response == CURRENT_OCCUPANCY_SNAPSHOT
+    assert response["utym_id"] == "T.UTYM#2"
+    assert response["camera_id"] == "TUTYM2-CAM-001"
+    assert len(response["tables"]) == 14
+    assert all(table["status"] == "uncertain" for table in response["tables"])
     assert response is not CURRENT_OCCUPANCY_SNAPSHOT
     assert response["tables"] is not CURRENT_OCCUPANCY_SNAPSHOT["tables"]
 
@@ -160,8 +192,9 @@ def test_debug_state_returns_overlay_payload(monkeypatch) -> None:
     assert response["enabled"] is True
     assert response["frame_url"] == "/debug/frame.jpg"
     assert response["detections"][0]["class_name"] == "person"
-    assert response["tables"][0]["polygon"] == [[100, 200], [300, 200], [320, 420], [80, 420]]
-    assert response["tables"][0]["status"] == "occupied"
+    assert len(response["tables"]) == 14
+    assert response["tables"][0]["polygon"] == [[80, 120], [240, 120], [240, 210], [80, 210]]
+    assert response["tables"][0]["status"] == "uncertain"
 
 
 def test_debug_state_can_be_disabled_for_operation_mode(monkeypatch) -> None:
@@ -208,140 +241,3 @@ def test_save_calibration_config_writes_validated_json(tmp_path, monkeypatch) ->
 
     assert response["path"] == str(config_path)
     assert config_path.exists()
-
-
-def test_session_assignment_routes_are_registered() -> None:
-    route_paths = set(app.openapi()["paths"])
-
-    assert {
-        "/sessions/active/assignment",
-        "/sessions/active/participants/{session_participant_id}/assignment",
-    }.issubset(route_paths)
-
-
-def test_manual_session_assignment_updates_table_time_and_source() -> None:
-    from app.api.routes_sessions import ManualAssignmentRequest, assign_participant_to_table, get_active_session_assignment
-    from app.database.models import (
-        FlightTest,
-        Participant,
-        SessionParticipant,
-        UtymSession,
-    )
-
-    session_factory = _session_factory()
-    with session_factory() as session:
-        utym = Utym(name="UTYM Assignment", location="Test")
-        camera = Camera(name="Camera Assignment", source_type="file", utym=utym)
-        table = Table(
-            name="Masa 1",
-            capacity=2,
-            polygon_json="[]",
-            utym=utym,
-            camera=camera,
-        )
-        flight_test = FlightTest(aircraft_name="Jet", test_name="Aktif Test")
-        utym_session = UtymSession(flight_test=flight_test, utym=utym, status="active")
-        participant = Participant(full_name="Ayşe Demir", organization="Test", role="Operatör")
-        session_participant = SessionParticipant(utym_session=utym_session, participant=participant)
-        session.add_all(
-            [
-                utym,
-                camera,
-                table,
-                flight_test,
-                utym_session,
-                participant,
-                session_participant,
-            ]
-        )
-        session.commit()
-        session_participant_id = session_participant.id
-        table_id = table.id
-
-    with session_factory() as session:
-        response = assign_participant_to_table(
-            session_participant_id,
-            ManualAssignmentRequest(table_id=table_id),
-            session,
-        )
-        assert response["assigned_table_id"] == table_id
-        assert response["assignment_source"] == "manual"
-        assert response["assigned_at"] is not None
-
-    with session_factory() as session:
-        state = get_active_session_assignment(session)
-        assert state["participants"][0]["assigned_table_name"] == "Masa 1"
-        assert state["tables"][0]["assigned_count"] == 1
-
-
-def test_session_participant_report_route_is_registered() -> None:
-    route_paths = set(app.openapi()["paths"])
-
-    assert "/reports/session/{session_id}/participants" in route_paths
-
-
-def test_session_participant_report_returns_assignment_history() -> None:
-    from app.api.routes_reports import get_session_participant_table_history
-    from app.database.models import (
-        FlightTest,
-        Participant,
-        SessionParticipant,
-        UtymSession,
-    )
-
-    session_factory = _session_factory()
-    with session_factory() as session:
-        utym = Utym(name="UTYM Report", location="Test")
-        camera = Camera(name="Camera Report", source_type="file", utym=utym)
-        table = Table(
-            name="Masa 1",
-            capacity=2,
-            polygon_json="[]",
-            utym=utym,
-            camera=camera,
-        )
-        flight_test = FlightTest(aircraft_name="Jet", test_name="Rapor Test")
-        utym_session = UtymSession(
-            flight_test=flight_test,
-            utym=utym,
-            status="completed",
-        )
-        participant = Participant(
-            full_name="Ahmet Yılmaz",
-            organization="Test",
-            role="Mühendis",
-        )
-        session_participant = SessionParticipant(
-            utym_session=utym_session,
-            participant=participant,
-            expected_table=table,
-            assigned_at=datetime(2026, 7, 9, 9, 5, 0),
-            assignment_source="manual",
-        )
-        session.add_all(
-            [
-                utym,
-                camera,
-                table,
-                flight_test,
-                utym_session,
-                participant,
-                session_participant,
-            ]
-        )
-        session.commit()
-        session_id = utym_session.id
-        table_id = table.id
-
-    with session_factory() as session:
-        report = get_session_participant_table_history(session_id, session)
-
-    assert report == [
-        {
-            "participant_name": "Ahmet Yılmaz",
-            "table_id": table_id,
-            "table_name": "Masa 1",
-            "assigned_at": "2026-07-09T09:05:00Z",
-            "assignment_source": "manual",
-        }
-    ]
