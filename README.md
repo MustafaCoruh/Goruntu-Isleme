@@ -37,6 +37,8 @@ Ekranda şunları kontrol edin:
 
 Kalibrasyon ekranında 14 masanın tamamı çizilip **Config JSON Kaydet** düğmesine basıldığında dosya ürünün kullandığı lokal konuma kaydedilir. Ana panele dönüp **Yenile** dediğinizde kalibrasyon kontrolü otomatik güncellenir.
 
+Video seçildikten sonra otomatik oynatma başlamazsa **Videoyu Oynat** düğmesine basın. Zaman çubuğuyla masaların net göründüğü kareye gidin, videoyu durdurun ve **Kareyi Yakala** düğmesine basın. Video hiç görüntülenmezse tarayıcı codec'i desteklemiyor olabilir; videoyu MP4/H.264 biçimine dönüştürüp yeniden seçin.
+
 Uygulamayı kapatmak için açılan `T.UTYM#2 Sunucu` penceresini kapatın.
 
 ### “Python bulunamadı” uyarısı çıkarsa

@@ -30,3 +30,8 @@ def test_dashboard_displays_product_readiness():
     assert "Doluluk Paneline Dön" in calibration
     assert "state.tables.length !== TARGET_TABLE_COUNT" in calibration
     assert "Kalibrasyon kaydedildi" in calibration
+    assert 'id="playPauseButton"' in calibration
+    assert 'id="seekInput"' in calibration
+    assert "video.play().catch" in calibration
+    assert "Video açılamadı" in calibration
+    assert "Kare yakalandı" in calibration

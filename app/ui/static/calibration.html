@@ -22,6 +22,10 @@
     img, canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
     canvas { cursor: crosshair; }
     .hint { color: #486581; font-size: 13px; margin: 8px 0 0; }
+    .steps { background: #e8f4fc; border-left: 4px solid #0b69a3; border-radius: 8px; margin-bottom: 12px; padding: 10px 14px; }
+    .steps ol { margin: 6px 0 0; padding-left: 22px; }
+    .timeline { align-items: center; display: flex; gap: 8px; margin: 8px 0; }
+    .timeline input { flex: 1; }
     aside h2 { margin-top: 0; }
     .table-item { border: 1px solid #d9e2ec; border-radius: 10px; padding: 10px; margin-bottom: 10px; background: #f8fbff; }
     .table-item strong { display: block; }
@@ -33,10 +37,17 @@
   <header><h1>T.UTYM#2 Masa Kalibrasyonu</h1><a href="index.html">Doluluk Paneline Dön</a></header>
   <main>
     <section class="card">
+      <div class="steps">
+        <strong>Nasıl ilerleyeceksiniz?</strong>
+        <ol><li>Videoyu seçin.</li><li>Oynatıp masaların net göründüğü karede durdurun.</li><li>Kareyi yakalayın ve her masanın köşelerine tıklayın.</li><li>14 masayı ekleyip kaydedin.</li></ol>
+      </div>
       <div class="toolbar">
         <label>Kalibrasyon videosu yükle
           <input id="videoInput" type="file" accept="video/*,.avi,.m4v,.mkv,.mov,.mp4" />
         </label>
+        <button id="cameraButton" type="button">Kamerayı Aç</button>
+        <button id="playPauseButton" class="secondary" type="button" disabled>Videoyu Oynat</button>
+        <button id="snapshotButton" class="secondary" type="button" disabled>Kareyi Yakala</button>
         <button id="undoButton" class="secondary" type="button">Son Noktayı Sil</button>
         <button id="clearButton" class="danger" type="button">Poligonu Temizle</button>
       </div>
@@ -59,6 +70,11 @@
         <img id="photo" alt="Kalibrasyon görseli" hidden />
         <canvas id="canvas"></canvas>
       </div>
+      <div class="timeline">
+        <span id="currentTime">00:00</span>
+        <input id="seekInput" type="range" min="0" max="0" step="0.1" value="0" disabled aria-label="Video zamanı" />
+        <span id="duration">00:00</span>
+      </div>
       <p class="hint">Videoyu uygun karede durdurun veya kareyi yakalayın; ardından en az 3 poligon noktası ekleyin.</p>
       <p class="hint"><strong>Güvenlik:</strong> Gerçek görüntü, RTSP URL veya lokal config dosyasını GitHub'a yüklemeyin.</p>
       <p id="targetStatus" class="status"></p>
@@ -78,10 +94,23 @@
 const TARGET_TABLE_COUNT = 14;
 const DEFAULT_CAPACITY = 1;
 const DOWNLOAD_FILENAME = 'tutym2_cam_001.local.json';
-const state = { tables: [], points: [], width: 1280, height: 720, stream: null, source: null };
+const state = { tables: [], points: [], width: 1280, height: 720, stream: null, source: null, videoUrl: null };
 const $ = (id) => document.getElementById(id);
 const canvas = $('canvas');
 const ctx = canvas.getContext('2d');
+
+function formatTime(seconds) {
+  if (!Number.isFinite(seconds)) return '00:00';
+  const minutes = Math.floor(seconds / 60);
+  return `${String(minutes).padStart(2, '0')}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
+}
+
+function updatePlaybackControls() {
+  const video = $('video');
+  $('playPauseButton').textContent = video.paused ? 'Videoyu Oynat' : 'Videoyu Durdur';
+  $('seekInput').value = String(video.currentTime || 0);
+  $('currentTime').textContent = formatTime(video.currentTime);
+}
 
 function fitCanvas() {
   const rect = $('stage').getBoundingClientRect();
@@ -180,12 +209,44 @@ canvas.addEventListener('click', (event) => {
 $('videoInput').addEventListener('change', (event) => {
   const file = event.target.files[0];
   if (!file) return;
+  if (state.videoUrl) URL.revokeObjectURL(state.videoUrl);
   const url = URL.createObjectURL(file);
-  $('video').srcObject = null; $('video').src = url; $('video').hidden = false; $('photo').hidden = true;
+  state.videoUrl = url;
+  const video = $('video');
+  video.srcObject = null; video.src = url; video.hidden = false; $('photo').hidden = true;
+  $('status').textContent = `Video yükleniyor: ${file.name}`;
   $('video').onloadedmetadata = () => {
-    state.width = $('video').videoWidth; state.height = $('video').videoHeight; state.source = 'video_file';
-    $('snapshotButton').disabled = false; fitCanvas(); render();
+    state.width = video.videoWidth; state.height = video.videoHeight; state.source = 'video_file';
+    $('snapshotButton').disabled = false; $('playPauseButton').disabled = false;
+    $('seekInput').disabled = false; $('seekInput').max = String(video.duration || 0);
+    $('duration').textContent = formatTime(video.duration);
+    $('status').textContent = 'Video hazır. Oynatın ve masaların net göründüğü karede durdurun.';
+    fitCanvas(); render();
+    video.play().catch(() => { $('status').textContent = 'Video hazır. Başlatmak için Videoyu Oynat düğmesine basın.'; });
   };
+  video.onerror = () => { $('status').textContent = 'Video açılamadı. Dosya bozuk veya tarayıcının desteklemediği bir codec kullanıyor olabilir. MP4 (H.264) deneyin.'; };
+  video.load();
+});
+
+$('playPauseButton').addEventListener('click', async () => {
+  const video = $('video');
+  if (video.paused) {
+    $('photo').hidden = true; video.hidden = false;
+    try { await video.play(); } catch (error) { $('status').textContent = `Video oynatılamadı: ${error.message}`; }
+  } else {
+    video.pause();
+    $('status').textContent = 'Video durduruldu. Bu kare uygunsa Kareyi Yakala düğmesine basın.';
+  }
+  updatePlaybackControls();
+});
+
+$('video').addEventListener('play', updatePlaybackControls);
+$('video').addEventListener('pause', updatePlaybackControls);
+$('video').addEventListener('timeupdate', updatePlaybackControls);
+$('seekInput').addEventListener('input', (event) => {
+  const video = $('video');
+  video.currentTime = Number(event.target.value);
+  updatePlaybackControls();
 });
 
 $('cameraButton').addEventListener('click', async () => {
@@ -199,9 +260,13 @@ $('cameraButton').addEventListener('click', async () => {
 });
 
 $('snapshotButton').addEventListener('click', () => {
+  if ($('video').readyState < 2) { $('status').textContent = 'Video karesi henüz hazır değil.'; return; }
+  $('video').pause();
   const snap = document.createElement('canvas'); snap.width = state.width; snap.height = state.height;
   snap.getContext('2d').drawImage($('video'), 0, 0, state.width, state.height);
   $('photo').src = snap.toDataURL('image/jpeg'); $('photo').hidden = false; $('video').hidden = true;
+  $('status').textContent = 'Kare yakalandı. Şimdi masanın köşelerine sırayla tıklayın.';
+  updatePlaybackControls();
 });
 
 $('undoButton').addEventListener('click', () => { state.points.pop(); render(); });
@@ -229,6 +294,7 @@ $('downloadButton').addEventListener('click', () => {
   link.click(); URL.revokeObjectURL(link.href);
 });
 window.addEventListener('resize', fitCanvas);
+window.addEventListener('beforeunload', () => { if (state.videoUrl) URL.revokeObjectURL(state.videoUrl); });
 fitCanvas(); render();
 </script>
 </body>
