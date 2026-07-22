@@ -8,7 +8,9 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+
 from app.database.db import init_db
+
 
 @asynccontextmanager
 async def lifespan(api_app: FastAPI) -> AsyncIterator[None]:
@@ -23,21 +25,24 @@ def create_app() -> FastAPI:
 
     api_app = FastAPI(title="FTMC Occupancy API", lifespan=lifespan)
 
+    @api_app.middleware("http")
+    async def disable_ui_cache(request, call_next):
+        response = await call_next(request)
+        if request.url.path.startswith("/ui"):
+            response.headers["Cache-Control"] = "no-store"
+        return response
+
     from app.api.routes_debug import router as debug_router
     from app.api.routes_health import router as health_router
-    from app.api.routes_import import router as import_router
     from app.api.routes_occupancy import router as occupancy_router
-    from app.api.routes_reports import router as reports_router
-    from app.api.routes_sessions import router as sessions_router
+    from app.api.routes_product import router as product_router
     from app.api.routes_tables import router as tables_router
 
     api_app.include_router(health_router)
-    api_app.include_router(import_router)
     api_app.include_router(debug_router)
     api_app.include_router(tables_router)
     api_app.include_router(occupancy_router)
-    api_app.include_router(sessions_router)
-    api_app.include_router(reports_router)
+    api_app.include_router(product_router)
 
     static_dir = Path(__file__).resolve().parents[1] / "ui" / "static"
     api_app.mount("/ui", StaticFiles(directory=static_dir, html=True), name="ui")
