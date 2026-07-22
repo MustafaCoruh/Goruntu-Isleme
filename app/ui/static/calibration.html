@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Masa Kalibrasyonu</title>
+  <title>T.UTYM#2 Lokal Masa Kalibrasyonu</title>
   <style>
     :root { color-scheme: light; font-family: Arial, sans-serif; }
     body { margin: 0; background: #f5f7fb; color: #172033; }
@@ -239,10 +239,38 @@ function drawPolygon(points, color, fill = false) {
   });
 }
 
+function drawMediaFrame() {
+  const photo = $('photo');
+  const video = $('video');
+  const media = !photo.hidden && photo.complete ? photo : video;
+  const mediaReady = media === photo ? Boolean(photo.naturalWidth) : video.readyState >= 2;
+  if (!mediaReady) return;
+  const scale = Math.min(canvas.width / state.width, canvas.height / state.height);
+  const width = state.width * scale;
+  const height = state.height * scale;
+  ctx.drawImage(media, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
+}
+
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawMediaFrame();
   state.tables.forEach((table) => drawPolygon(table.polygon, 'rgba(11, 105, 163, 1)', true));
   drawPolygon(state.points, 'rgba(197, 39, 39, 1)', false);
+}
+
+function stopFrameLoop() {
+  if (state.animationFrame !== null) cancelAnimationFrame(state.animationFrame);
+  state.animationFrame = null;
+}
+
+function startFrameLoop() {
+  stopFrameLoop();
+  const tick = () => {
+    draw();
+    if (!$('video').paused && !$('video').ended) state.animationFrame = requestAnimationFrame(tick);
+    else state.animationFrame = null;
+  };
+  tick();
 }
 
 function configPayload() {
@@ -271,6 +299,11 @@ function render() {
       <span>Nokta: ${table.polygon.length}</span><br />
       <button class="danger" type="button" onclick="removeTable(${index})">Sil</button>
     </div>`).join('') : '<p>Henüz masa eklenmedi.</p>';
+  const remaining = Math.max(0, REQUIRED_TABLE_COUNT - state.tables.length);
+  $('completionStatus').textContent = remaining === 0
+    ? '14 masa tamamlandı. Config lokal Windows yoluna kaydedilebilir.'
+    : `${state.tables.length}/${REQUIRED_TABLE_COUNT} masa eklendi. ${remaining} masa kaldı.`;
+  $('saveButton').disabled = state.tables.length !== REQUIRED_TABLE_COUNT;
   $('jsonPreview').textContent = JSON.stringify(configPayload(), null, 2);
   draw();
 }
@@ -419,6 +452,7 @@ $('saveButton').addEventListener('click', async () => {
   }
 });
 $('downloadButton').addEventListener('click', () => {
+  if (state.tables.length !== REQUIRED_TABLE_COUNT) { $('status').textContent = 'JSON indirmeden önce 14 masa tamamlanmalı.'; return; }
   const blob = new Blob([JSON.stringify(configPayload(), null, 2)], { type: 'application/json' });
   const link = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: DOWNLOAD_FILENAME });
   link.click(); URL.revokeObjectURL(link.href);
