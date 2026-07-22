@@ -92,6 +92,7 @@
       <div id="tableList"></div>
       <button id="saveButton" type="button">Config JSON Kaydet</button>
       <p id="saveStatus" class="status">14 masa tamamlandığında kaydetme düğmesi aktifleşir.</p>
+      <a id="returnAfterSave" href="index.html?calibration=saved" hidden>Kaydı kontrol etmek için Doluluk Paneline Dön</a>
       <button id="downloadButton" class="secondary" type="button">tutym2_cam_001.local.json İndir</button>
       <h3>Önizleme</h3>
       <pre id="jsonPreview"></pre>
@@ -439,6 +440,7 @@ $('saveButton').addEventListener('click', async () => {
     if (!response.ok) throw new Error(data.detail || response.statusText);
     button.textContent = 'Kalibrasyon Kaydedildi';
     $('saveStatus').textContent = 'Başarılı: 14 masa kalibrasyonu yerel dosyaya kaydedildi.';
+    $('returnAfterSave').hidden = false;
     $('workflowStatus').textContent = 'Tamamlandı: Doluluk Paneline Dön bağlantısına basıp Yenile seçeneğini kullanın.';
     $('status').textContent = 'Kalibrasyon kaydedildi. Doluluk Paneline Dön bağlantısıyla hazırlık durumunu yenileyin.';
   } catch (error) {

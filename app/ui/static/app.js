@@ -13,6 +13,18 @@ const uncertainCount = document.querySelector("#uncertain-count");
 const videoTestFile = document.querySelector("#video-test-file");
 const videoTestButton = document.querySelector("#video-test-button");
 const videoTestStatus = document.querySelector("#video-test-status");
+const workflowNotice = document.querySelector("#workflow-notice");
+
+const readinessLabels = {
+  camera_config: "Kamera yapılandırması",
+  table_calibration: "Masa kalibrasyonu",
+  person_model: "Kişi tespit modeli",
+};
+
+if (new URLSearchParams(window.location.search).get("calibration") === "saved") {
+  workflowNotice.classList.add("workflow-notice--saved");
+  workflowNotice.innerHTML = "<strong>Kalibrasyon kaydedildi.</strong> Hazırlık kontrolü yenilendi. Doluluk sonuçları model hazırlandıktan ve video işlendikten sonra değişir.";
+}
 
 const statusLabels = {
   occupied: "Dolu",
@@ -108,7 +120,8 @@ function renderReadiness(data) {
   (data.checks ?? []).forEach((check) => {
     const item = document.createElement("li");
     item.className = `readiness-check readiness-check--${check.status}`;
-    item.textContent = `${check.status === "pass" ? "✓" : "!"} ${check.message}`;
+    const label = readinessLabels[check.name] ?? check.name ?? "Kontrol";
+    item.textContent = `${check.status === "pass" ? "✓" : "!"} ${label}: ${check.message}`;
     readinessChecks.append(item);
   });
 }

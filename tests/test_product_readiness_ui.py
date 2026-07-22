@@ -24,6 +24,11 @@ def test_dashboard_displays_product_readiness():
     assert 'id="video-test-button"' in html
     assert 'fetch("/product/video-test"' in script
     assert "Video yalnızca işlem sırasında geçici olarak kullanılır" in html
+    assert 'id="workflow-notice"' in html
+    assert "Kalibrasyon yalnızca masa bölgelerini kaydeder" in html
+    assert "readinessLabels" in script
+    assert 'get("calibration") === "saved"' in script
+    assert "Doluluk sonuçları model hazırlandıktan" in script
     calibration = (STATIC / "calibration.html").read_text(encoding="utf-8")
     assert "LOCAL_ONLY_DO_NOT_COMMIT_REAL_RTSP_URL" in calibration
     assert "source_type: 'rtsp'" in calibration
@@ -64,3 +69,5 @@ def test_dashboard_displays_product_readiness():
     snapshot_handler = calibration.split("$('snapshotButton').addEventListener", 1)[1].split("$('undoButton')", 1)[0]
     assert "video.hidden = false" in snapshot_handler
     assert "video.hidden = true" not in snapshot_handler
+    assert 'id="returnAfterSave"' in calibration
+    assert "$('returnAfterSave').hidden = false" in calibration

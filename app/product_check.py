@@ -46,12 +46,19 @@ def check_product_assets(
         "ready_for_video_test": ready,
         "status": "READY" if ready else "NOT_READY",
         "checks": [check.to_dict() for check in checks],
-        "next_step": (
-            "Lokal T.UTYM#2 videosunu çalıştırabilirsiniz."
-            if ready
-            else "FAIL olan girdileri düzeltmeden gerçek video testine geçmeyin."
-        ),
+        "next_step": _next_step(checks),
     }
+
+
+def _next_step(checks: list[ProductCheck]) -> str:
+    failed = {check.name for check in checks if check.status != "pass"}
+    if "camera_config" in failed:
+        return "Kalibrasyon dosyası geçerli değil. Kalibrasyon ekranında 14 masayı kaydedin."
+    if "table_calibration" in failed:
+        return "Masa kalibrasyonu tamamlanmadı. Video karesi üzerinde 14 gerçek masa poligonu çizin."
+    if "person_model" in failed:
+        return "Kalibrasyon hazır. Sıradaki adım: models/person_detector.onnx konumuna gerçek ONNX kişi tespit modelini yerleştirin."
+    return "Hazır: Lokal T.UTYM#2 videosunu seçip Videoyu İşle düğmesine basın."
 
 
 def _check_config(path: Path) -> ProductCheck:

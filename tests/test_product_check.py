@@ -42,6 +42,7 @@ def test_product_check_is_ready_with_calibration_and_loadable_model(tmp_path):
     assert result["ready_for_video_test"] is True
     assert result["status"] == "READY"
     assert all(check["status"] == "pass" for check in result["checks"])
+    assert result["next_step"].startswith("Hazır:")
 
 
 def test_product_check_rejects_placeholder_calibration_and_invalid_model(tmp_path):
@@ -61,3 +62,20 @@ def test_product_check_rejects_placeholder_calibration_and_invalid_model(tmp_pat
         "table_calibration",
         "person_model",
     }
+    assert "14 gerçek masa poligonu" in result["next_step"]
+
+
+def test_product_check_explains_model_is_next_after_calibration(tmp_path):
+    config = tmp_path / "config.json"
+    model = tmp_path / "model.onnx"
+    _write_config(config)
+    model.write_text("not an ONNX model", encoding="utf-8")
+
+    result = check_product_assets(
+        config,
+        model,
+        session_factory=lambda *args, **kwargs: (_ for _ in ()).throw(ValueError()),
+    )
+
+    assert "Kalibrasyon hazır" in result["next_step"]
+    assert "models/person_detector.onnx" in result["next_step"]

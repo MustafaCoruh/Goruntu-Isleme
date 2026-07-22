@@ -49,6 +49,8 @@ Sunucudan çıkarılan kalibrasyon karesi görünüyorsa tekrar **Kareyi Yakala*
 
 **Kareyi Yakala** düğmesi videoyu yalnızca durdurur; görüntüyü gizlemez veya başka bir katmana dönüştürmez. Sabit kalan video karesi üzerinde masa köşelerini işaretleyebilirsiniz. Tekrar oynatmak için **Videoyu Oynat** düğmesini kullanın.
 
+Kalibrasyon kaydı doluluk sayılarını tek başına değiştirmez; yalnızca 14 masa bölgesini tanımlar. Ana panelde **Kamera yapılandırması** ve **Masa kalibrasyonu** geçerken **Kişi tespit modeli** başarısız görünüyorsa sıradaki eksik gerçek `models/person_detector.onnx` dosyasıdır. Üç kontrol de geçtikten sonra lokal videoyu seçip **Videoyu İşle** düğmesine basınca doluluk sonuçları güncellenir.
+
 Uygulamayı kapatmak için açılan `T.UTYM#2 Sunucu` penceresini kapatın.
 
 ### “Python bulunamadı” uyarısı çıkarsa
