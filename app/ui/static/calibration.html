@@ -34,6 +34,7 @@
     pre { max-height: 240px; overflow: auto; background: #102a43; color: #d9e2ec; padding: 12px; border-radius: 8px; }
     .status { min-height: 20px; color: #334e68; }
     .video-status { background: #fff8d9; border-radius: 8px; font-weight: 700; margin: 0 0 12px; padding: 10px 12px; }
+    .workflow-status { background: #eafbea; border: 1px solid #8fd19e; border-radius: 8px; color: #164b26; font-weight: 700; margin: 0 0 12px; padding: 10px 12px; }
   </style>
 </head>
 <body>
@@ -55,9 +56,10 @@
         <button id="clearButton" class="danger" type="button">Poligonu Temizle</button>
       </div>
       <p id="videoStatus" class="video-status">Henüz video seçilmedi.</p>
+      <p id="workflowStatus" class="workflow-status">Adım 1/4: Kalibrasyon videosunu seçin.</p>
       <div class="fields">
         <label>Masa adı
-          <input id="tableName" type="text" placeholder="Örn. Masa 1" />
+          <input id="tableName" type="text" value="Masa 1" />
         </label>
         <label>Kapasite
           <input id="capacity" type="number" min="1" step="1" value="1" />
@@ -68,7 +70,7 @@
         <label>Kamera ID
           <input id="cameraId" type="text" value="TUTYM2-CAM-001" />
         </label>
-        <button id="addTableButton" type="button">Masayı Ekle</button>
+        <button id="addTableButton" type="button" disabled>Poligonu Tamamla ve Masayı Ekle</button>
       </div>
       <div class="stage" id="stage">
         <video id="video" playsinline muted preload="metadata" hidden></video>
@@ -99,7 +101,7 @@
 const TARGET_TABLE_COUNT = 14;
 const DEFAULT_CAPACITY = 1;
 const DOWNLOAD_FILENAME = 'tutym2_cam_001.local.json';
-const state = { tables: [], points: [], width: 1280, height: 720, stream: null, source: null, videoUrl: null, frameUrl: null, selectedFile: null };
+const state = { tables: [], points: [], width: 1280, height: 720, stream: null, source: null, videoUrl: null, frameUrl: null, selectedFile: null, frameReady: false };
 const $ = (id) => document.getElementById(id);
 const canvas = $('canvas');
 const ctx = canvas.getContext('2d');
@@ -120,6 +122,29 @@ function updatePlaybackControls() {
   $('playPauseButton').textContent = video.paused ? 'Videoyu Oynat' : 'Videoyu Durdur';
   $('seekInput').value = String(video.currentTime || 0);
   $('currentTime').textContent = formatTime(video.currentTime);
+}
+
+function nextTableNumber() {
+  const used = new Set(state.tables.map((table) => Number(table.table_id.split('-')[1])));
+  for (let number = 1; number <= TARGET_TABLE_COUNT; number += 1) {
+    if (!used.has(number)) return number;
+  }
+  return TARGET_TABLE_COUNT + 1;
+}
+
+function updateWorkflowStatus() {
+  const nextNumber = nextTableNumber();
+  if (!state.selectedFile && !state.stream) {
+    $('workflowStatus').textContent = 'Adım 1/4: Kalibrasyon videosunu seçin.';
+  } else if (!state.frameReady) {
+    $('workflowStatus').textContent = 'Adım 2/4: Net bir görüntü seçip Kareyi Yakala düğmesine basın.';
+  } else if (state.tables.length === TARGET_TABLE_COUNT) {
+    $('workflowStatus').textContent = 'Adım 4/4: 14 masa tamamlandı. Config JSON Kaydet düğmesine basın.';
+  } else if (state.points.length < 3) {
+    $('workflowStatus').textContent = `Adım 3/4: Masa ${nextNumber} köşelerine sırayla tıklayın (${state.points.length} nokta).`;
+  } else {
+    $('workflowStatus').textContent = `Adım 3/4: Masa ${nextNumber} poligonu hazır. Mavi düğmeyle masayı ekleyin.`;
+  }
 }
 
 async function requestCalibrationFrame(timestamp = 0) {
@@ -156,6 +181,7 @@ async function requestCalibrationFrame(timestamp = 0) {
   photo.onload = () => {
     state.width = Number(response.headers.get('X-Frame-Width')) || photo.naturalWidth;
     state.height = Number(response.headers.get('X-Frame-Height')) || photo.naturalHeight;
+    state.frameReady = true;
     photo.hidden = false; $('video').hidden = true; $('video').pause();
     fitCanvas(); render();
     setVideoStatus(`Kare hazır (${formatTime(timestamp)}). Şimdi masanın köşelerine tıklayın.`);
@@ -259,8 +285,9 @@ function configPayload() {
 
 function render() {
   $('targetStatus').textContent = `T.UTYM#2 hedef masa sayısı: ${state.tables.length} / ${TARGET_TABLE_COUNT}`;
-  $('addTableButton').disabled = state.tables.length >= TARGET_TABLE_COUNT;
+  $('addTableButton').disabled = !state.frameReady || state.points.length < 3 || state.tables.length >= TARGET_TABLE_COUNT;
   $('saveButton').disabled = state.tables.length !== TARGET_TABLE_COUNT;
+  updateWorkflowStatus();
   $('tableList').innerHTML = state.tables.length ? state.tables.map((table, index) => `
     <div class="table-item">
       <strong>${table.name}</strong>
@@ -277,7 +304,11 @@ function render() {
   draw();
 }
 
-window.removeTable = (index) => { state.tables.splice(index, 1); render(); };
+window.removeTable = (index) => {
+  state.tables.splice(index, 1);
+  $('tableName').value = `Masa ${nextTableNumber()}`;
+  render();
+};
 
 canvas.addEventListener('click', (event) => {
   const point = stageToImagePoint(event);
@@ -291,6 +322,7 @@ $('videoInput').addEventListener('change', (event) => {
   const file = event.target.files[0];
   if (!file) return;
   state.selectedFile = file;
+  state.frameReady = false;
   setVideoStatus(`Dosya seçildi: ${file.name}. Video hazırlanıyor...`);
   if (state.videoUrl) URL.revokeObjectURL(state.videoUrl);
   const url = URL.createObjectURL(file);
@@ -344,6 +376,7 @@ $('seekInput').addEventListener('input', (event) => {
 $('cameraButton').addEventListener('click', async () => {
   try {
     state.stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    state.frameReady = false;
     $('video').srcObject = state.stream; await $('video').play();
     $('video').hidden = false; $('photo').hidden = true; $('snapshotButton').disabled = false;
     state.width = $('video').videoWidth || 1280; state.height = $('video').videoHeight || 720; state.source = 'camera';
@@ -362,6 +395,7 @@ $('snapshotButton').addEventListener('click', async () => {
   snap.getContext('2d').drawImage($('video'), 0, 0, state.width, state.height);
   $('photo').onload = draw;
   $('photo').src = snap.toDataURL('image/jpeg'); $('photo').hidden = false; $('video').hidden = true;
+  state.frameReady = true;
   setVideoStatus('Kare yakalandı. Şimdi masanın köşelerine sırayla tıklayın.');
   updatePlaybackControls();
 });
@@ -374,8 +408,13 @@ $('addTableButton').addEventListener('click', () => {
   if (!Number.isInteger(capacity) || capacity < 1) { $('status').textContent = 'Kapasite pozitif tam sayı olmalı.'; return; }
   if (state.points.length < 3) { $('status').textContent = 'Poligon için en az 3 nokta ekleyin.'; return; }
   if (state.tables.length >= TARGET_TABLE_COUNT) { $('status').textContent = `T.UTYM#2 için hedef masa sayısı ${TARGET_TABLE_COUNT}. Daha fazla masa eklenemez.`; return; }
-  state.tables.push({ table_id: `T-${String(state.tables.length + 1).padStart(3, '0')}`, name, capacity, polygon: [...state.points] });
-  state.points = []; $('tableName').value = ''; $('capacity').value = String(DEFAULT_CAPACITY); $('status').textContent = `Masa eklendi. ${state.tables.length} / ${TARGET_TABLE_COUNT}`; render();
+  const tableNumber = nextTableNumber();
+  state.tables.push({ table_id: `T-${String(tableNumber).padStart(3, '0')}`, name, capacity, polygon: [...state.points] });
+  state.points = [];
+  $('tableName').value = state.tables.length < TARGET_TABLE_COUNT ? `Masa ${nextTableNumber()}` : '';
+  $('capacity').value = String(DEFAULT_CAPACITY);
+  $('status').textContent = `Masa eklendi. ${state.tables.length} / ${TARGET_TABLE_COUNT}`;
+  render();
 });
 
 $('saveButton').addEventListener('click', async () => {

@@ -49,3 +49,9 @@ def test_dashboard_displays_product_readiness():
     assert "Kare hazır" in calibration
     assert "response.status === 404" in calibration
     assert "Eski sunucu hâlâ çalışıyor" in calibration
+    assert 'id="workflowStatus"' in calibration
+    assert "function updateWorkflowStatus()" in calibration
+    assert "function nextTableNumber()" in calibration
+    assert "state.points.length < 3" in calibration
+    assert "14 masa tamamlandı" in calibration
+    assert "Poligonu Tamamla ve Masayı Ekle" in calibration

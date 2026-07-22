@@ -43,6 +43,8 @@ Video seçildikten sonra otomatik oynatma başlamazsa **Videoyu Oynat** düğmes
 
 Başlatıcı API doğrulamasını 20 saniyeye kadar tekrarlar. Doğrulama tamamlanmasa bile arayüzü açar; böyle bir durumda `T.UTYM#2 Sunucu` penceresindeki asıl Python hatasını kontrol edip tarayıcı sayfasını yenileyin.
 
+Kalibrasyon sayfasındaki yeşil kutu sıradaki işlemi gösterir. Kare göründükten sonra bir masanın köşelerine sırayla en az üç kez tıklayın; poligon hazır olduğunda **Poligonu Tamamla ve Masayı Ekle** düğmesi aktifleşir. Masa adı otomatik ilerler. Bu işlemi 14 masa için tekrarlayıp son olarak **Config JSON Kaydet** düğmesine basın.
+
 Uygulamayı kapatmak için açılan `T.UTYM#2 Sunucu` penceresini kapatın.
 
 ### “Python bulunamadı” uyarısı çıkarsa
