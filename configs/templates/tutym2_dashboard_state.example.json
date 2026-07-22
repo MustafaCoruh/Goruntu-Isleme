@@ -1,0 +1,47 @@
+{
+  "report_type": "dashboard_state",
+  "site": "T.UTYM#2",
+  "camera_id": "TUTYM2-CAM-001",
+  "overall_status": "warning",
+  "connection_status": "connected",
+  "average_fps": 8.3,
+  "table_summary": {
+    "total": 14,
+    "occupied": 6,
+    "empty": 7,
+    "unknown": 1,
+    "no_data": 0
+  },
+  "tables": [
+    {"table_id": "table_01", "display_name": "Masa 01", "state": "occupied", "confidence": 0.91, "label": "TP", "color": "red_or_orange", "warning": null},
+    {"table_id": "table_02", "display_name": "Masa 02", "state": "empty", "confidence": 0.88, "label": "TN", "color": "green", "warning": null},
+    {"table_id": "table_03", "display_name": "Masa 03", "state": "unknown", "confidence": 0.42, "label": "UNK", "color": "yellow", "warning": "Belirsiz karar; kalibrasyon veya görüş açısı kontrol edilebilir."},
+    {"table_id": "table_04", "display_name": "Masa 04", "state": "empty", "confidence": 0.93, "label": "TN", "color": "green", "warning": null},
+    {"table_id": "table_05", "display_name": "Masa 05", "state": "occupied", "confidence": 0.86, "label": "TP", "color": "red_or_orange", "warning": null},
+    {"table_id": "table_06", "display_name": "Masa 06", "state": "occupied", "confidence": 0.82, "label": "TP", "color": "red_or_orange", "warning": null},
+    {"table_id": "table_07", "display_name": "Masa 07", "state": "empty", "confidence": 0.89, "label": "TN", "color": "green", "warning": null},
+    {"table_id": "table_08", "display_name": "Masa 08", "state": "empty", "confidence": 0.9, "label": "TN", "color": "green", "warning": null},
+    {"table_id": "table_09", "display_name": "Masa 09", "state": "occupied", "confidence": 0.84, "label": "TP", "color": "red_or_orange", "warning": null},
+    {"table_id": "table_10", "display_name": "Masa 10", "state": "empty", "confidence": 0.92, "label": "TN", "color": "green", "warning": null},
+    {"table_id": "table_11", "display_name": "Masa 11", "state": "occupied", "confidence": 0.81, "label": "TP", "color": "red_or_orange", "warning": null},
+    {"table_id": "table_12", "display_name": "Masa 12", "state": "empty", "confidence": 0.87, "label": "TN", "color": "green", "warning": null},
+    {"table_id": "table_13", "display_name": "Masa 13", "state": "occupied", "confidence": 0.85, "label": "TP", "color": "red_or_orange", "warning": null},
+    {"table_id": "table_14", "display_name": "Masa 14", "state": "empty", "confidence": 0.9, "label": "TN", "color": "green", "warning": null}
+  ],
+  "warnings": [
+    "Masa 03 belirsiz. Kalibrasyon veya görüş açısı kontrol edilebilir."
+  ],
+  "criticals": [],
+  "sources": {
+    "offline_readiness": {"status": "loaded", "name": "offline_readiness.json"},
+    "config_validation": {"status": "loaded", "name": "config_validation_summary.json"},
+    "rtsp_connection": {"status": "loaded", "name": "rtsp_connection_test.json"},
+    "table_accuracy": {"status": "loaded", "name": "tutym2_table_accuracy_report.json"}
+  },
+  "safety": {
+    "contains_rtsp_url": false,
+    "contains_credentials": false,
+    "contains_image_or_video": false,
+    "contains_full_local_path": false
+  }
+}
