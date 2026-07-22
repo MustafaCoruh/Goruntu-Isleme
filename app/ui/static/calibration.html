@@ -361,13 +361,14 @@ $('snapshotButton').addEventListener('click', () => {
     setVideoStatus('Kalibrasyon karesi zaten hazır. Şimdi masanın köşelerine sırayla tıklayın.');
     return;
   }
-  $('video').pause();
-  const snap = document.createElement('canvas'); snap.width = state.width; snap.height = state.height;
-  snap.getContext('2d').drawImage($('video'), 0, 0, state.width, state.height);
-  $('photo').src = snap.toDataURL('image/jpeg'); $('photo').hidden = false; $('video').hidden = true;
+  const video = $('video');
+  video.pause();
+  video.hidden = false;
+  $('photo').hidden = true;
   state.frameReady = true;
-  setVideoStatus('Kare yakalandı. Şimdi masanın köşelerine sırayla tıklayın.');
+  setVideoStatus('Kare sabitlendi. Video görüntüsü ekranda kalacak; şimdi masanın köşelerine sırayla tıklayın.');
   updatePlaybackControls();
+  render();
 });
 
 $('undoButton').addEventListener('click', () => { state.points.pop(); render(); });

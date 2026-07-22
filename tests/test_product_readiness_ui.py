@@ -34,7 +34,7 @@ def test_dashboard_displays_product_readiness():
     assert 'id="seekInput"' in calibration
     assert "video.play().catch" in calibration
     assert "Video açılamadı" in calibration
-    assert "Kare yakalandı" in calibration
+    assert "Kare sabitlendi" in calibration
     assert 'id="videoStatus"' in calibration
     assert "event.target.value = ''" in calibration
     assert "video.onloadeddata" in calibration
@@ -60,3 +60,7 @@ def test_dashboard_displays_product_readiness():
     assert "controller.abort()" in calibration
     assert "Kaydetme 15 saniyede tamamlanamadı" in calibration
     assert "Kalibrasyon karesi zaten hazır" in calibration
+    assert "Kare sabitlendi. Video görüntüsü ekranda kalacak" in calibration
+    snapshot_handler = calibration.split("$('snapshotButton').addEventListener", 1)[1].split("$('undoButton')", 1)[0]
+    assert "video.hidden = false" in snapshot_handler
+    assert "video.hidden = true" not in snapshot_handler

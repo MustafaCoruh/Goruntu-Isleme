@@ -47,6 +47,8 @@ Kalibrasyon sayfasındaki yeşil kutu sıradaki işlemi gösterir. Kare göründ
 
 Sunucudan çıkarılan kalibrasyon karesi görünüyorsa tekrar **Kareyi Yakala** ile videoyu yüklemeniz gerekmez; doğrudan masa köşelerine tıklayın. Kaydetme sırasında düğme **Kaydediliyor...**, başarıdan sonra **Kalibrasyon Kaydedildi** yazar. Hata veya 15 saniyelik zaman aşımı sağ tarafta açıkça gösterilir.
 
+**Kareyi Yakala** düğmesi videoyu yalnızca durdurur; görüntüyü gizlemez veya başka bir katmana dönüştürmez. Sabit kalan video karesi üzerinde masa köşelerini işaretleyebilirsiniz. Tekrar oynatmak için **Videoyu Oynat** düğmesini kullanın.
+
 Uygulamayı kapatmak için açılan `T.UTYM#2 Sunucu` penceresini kapatın.
 
 ### “Python bulunamadı” uyarısı çıkarsa
