@@ -55,3 +55,8 @@ def test_dashboard_displays_product_readiness():
     assert "state.points.length < 3" in calibration
     assert "14 masa tamamlandı" in calibration
     assert "Poligonu Tamamla ve Masayı Ekle" in calibration
+    assert 'id="saveStatus"' in calibration
+    assert "Kalibrasyon Kaydedildi" in calibration
+    assert "controller.abort()" in calibration
+    assert "Kaydetme 15 saniyede tamamlanamadı" in calibration
+    assert "Kalibrasyon karesi zaten hazır" in calibration

@@ -91,6 +91,7 @@
       <h2>Oluşturulan Masalar</h2>
       <div id="tableList"></div>
       <button id="saveButton" type="button">Config JSON Kaydet</button>
+      <p id="saveStatus" class="status">14 masa tamamlandığında kaydetme düğmesi aktifleşir.</p>
       <button id="downloadButton" class="secondary" type="button">tutym2_cam_001.local.json İndir</button>
       <h3>Önizleme</h3>
       <pre id="jsonPreview"></pre>
@@ -287,6 +288,9 @@ function render() {
   $('targetStatus').textContent = `T.UTYM#2 hedef masa sayısı: ${state.tables.length} / ${TARGET_TABLE_COUNT}`;
   $('addTableButton').disabled = !state.frameReady || state.points.length < 3 || state.tables.length >= TARGET_TABLE_COUNT;
   $('saveButton').disabled = state.tables.length !== TARGET_TABLE_COUNT;
+  if (state.tables.length === TARGET_TABLE_COUNT && $('saveStatus').textContent.startsWith('14 masa')) {
+    $('saveStatus').textContent = 'Hazır: 14 masa tamamlandı. Config JSON Kaydet düğmesine basın.';
+  }
   updateWorkflowStatus();
   $('tableList').innerHTML = state.tables.length ? state.tables.map((table, index) => `
     <div class="table-item">
@@ -384,10 +388,10 @@ $('cameraButton').addEventListener('click', async () => {
   } catch (error) { $('status').textContent = `Kamera açılamadı: ${error.message}`; }
 });
 
-$('snapshotButton').addEventListener('click', async () => {
+$('snapshotButton').addEventListener('click', () => {
   if ($('video').readyState < 2) { setVideoStatus('Video karesi henüz hazır değil. Birkaç saniye bekleyin veya başka MP4/H.264 dosyası deneyin.'); return; }
-  if (state.selectedFile) {
-    await requestCalibrationFrame($('video').currentTime || 0);
+  if (!$('photo').hidden && state.frameReady) {
+    setVideoStatus('Kalibrasyon karesi zaten hazır. Şimdi masanın köşelerine sırayla tıklayın.');
     return;
   }
   $('video').pause();
@@ -418,10 +422,34 @@ $('addTableButton').addEventListener('click', () => {
 });
 
 $('saveButton').addEventListener('click', async () => {
-  if (state.tables.length !== REQUIRED_TABLE_COUNT) { $('status').textContent = 'Config kaydetmeden önce 14 masa tamamlanmalı.'; return; }
-  const response = await fetch('/calibration/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(configPayload()) });
-  const data = await response.json();
-  $('status').textContent = response.ok ? 'Kalibrasyon kaydedildi. Doluluk Paneline Dön bağlantısıyla hazırlık durumunu yenileyin.' : `Kaydetme hatası: ${data.detail}`;
+  const button = $('saveButton');
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 15000);
+  button.disabled = true;
+  button.textContent = 'Kaydediliyor...';
+  $('saveStatus').textContent = 'Kalibrasyon yerel dosyaya kaydediliyor...';
+  try {
+    const response = await fetch('/calibration/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(configPayload()),
+      signal: controller.signal,
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || response.statusText);
+    button.textContent = 'Kalibrasyon Kaydedildi';
+    $('saveStatus').textContent = 'Başarılı: 14 masa kalibrasyonu yerel dosyaya kaydedildi.';
+    $('workflowStatus').textContent = 'Tamamlandı: Doluluk Paneline Dön bağlantısına basıp Yenile seçeneğini kullanın.';
+    $('status').textContent = 'Kalibrasyon kaydedildi. Doluluk Paneline Dön bağlantısıyla hazırlık durumunu yenileyin.';
+  } catch (error) {
+    const message = error.name === 'AbortError' ? 'Kaydetme 15 saniyede tamamlanamadı. Sunucu penceresini kontrol edin.' : error.message;
+    button.disabled = false;
+    button.textContent = 'Config JSON Kaydet';
+    $('saveStatus').textContent = `Kaydetme hatası: ${message}`;
+    $('status').textContent = `Kaydetme hatası: ${message}`;
+  } finally {
+    window.clearTimeout(timeout);
+  }
 });
 $('downloadButton').addEventListener('click', () => {
   if (state.tables.length !== REQUIRED_TABLE_COUNT) { $('status').textContent = 'JSON indirmeden önce 14 masa tamamlanmalı.'; return; }

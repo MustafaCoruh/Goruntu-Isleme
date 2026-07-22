@@ -45,6 +45,8 @@ Başlatıcı API doğrulamasını 20 saniyeye kadar tekrarlar. Doğrulama tamaml
 
 Kalibrasyon sayfasındaki yeşil kutu sıradaki işlemi gösterir. Kare göründükten sonra bir masanın köşelerine sırayla en az üç kez tıklayın; poligon hazır olduğunda **Poligonu Tamamla ve Masayı Ekle** düğmesi aktifleşir. Masa adı otomatik ilerler. Bu işlemi 14 masa için tekrarlayıp son olarak **Config JSON Kaydet** düğmesine basın.
 
+Sunucudan çıkarılan kalibrasyon karesi görünüyorsa tekrar **Kareyi Yakala** ile videoyu yüklemeniz gerekmez; doğrudan masa köşelerine tıklayın. Kaydetme sırasında düğme **Kaydediliyor...**, başarıdan sonra **Kalibrasyon Kaydedildi** yazar. Hata veya 15 saniyelik zaman aşımı sağ tarafta açıkça gösterilir.
+
 Uygulamayı kapatmak için açılan `T.UTYM#2 Sunucu` penceresini kapatın.
 
 ### “Python bulunamadı” uyarısı çıkarsa
