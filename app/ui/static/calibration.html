@@ -7,7 +7,8 @@
   <style>
     :root { color-scheme: light; font-family: Arial, sans-serif; }
     body { margin: 0; background: #f5f7fb; color: #172033; }
-    header { padding: 16px 24px; background: #102a43; color: white; }
+    header { align-items: center; display: flex; justify-content: space-between; padding: 16px 24px; background: #102a43; color: white; }
+    header a { color: white; font-weight: 700; }
     main { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; padding: 16px; }
     .card { background: white; border-radius: 12px; box-shadow: 0 2px 12px rgb(16 42 67 / 12%); padding: 16px; }
     .toolbar, .fields { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 12px; }
@@ -19,65 +20,177 @@
     button:disabled { background: #bcccdc; cursor: not-allowed; }
     .stage { position: relative; width: 100%; min-height: 420px; border: 2px dashed #9fb3c8; border-radius: 12px; overflow: hidden; background: #d9e2ec; }
     video, img, canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-    canvas { cursor: crosshair; }
+    video, img { background: #111; pointer-events: none; z-index: 1; }
+    .stage video:not([hidden]), .stage img:not([hidden]) { display: block !important; visibility: visible !important; }
+    canvas { background: transparent; cursor: crosshair; z-index: 2; }
     .hint { color: #486581; font-size: 13px; margin: 8px 0 0; }
+    .steps { background: #e8f4fc; border-left: 4px solid #0b69a3; border-radius: 8px; margin-bottom: 12px; padding: 10px 14px; }
+    .steps ol { margin: 6px 0 0; padding-left: 22px; }
+    .timeline { align-items: center; display: flex; gap: 8px; margin: 8px 0; }
+    .timeline input { flex: 1; }
     aside h2 { margin-top: 0; }
     .table-item { border: 1px solid #d9e2ec; border-radius: 10px; padding: 10px; margin-bottom: 10px; background: #f8fbff; }
     .table-item strong { display: block; }
     pre { max-height: 240px; overflow: auto; background: #102a43; color: #d9e2ec; padding: 12px; border-radius: 8px; }
     .status { min-height: 20px; color: #334e68; }
+    .video-status { background: #fff8d9; border-radius: 8px; font-weight: 700; margin: 0 0 12px; padding: 10px 12px; }
+    .workflow-status { background: #eafbea; border: 1px solid #8fd19e; border-radius: 8px; color: #164b26; font-weight: 700; margin: 0 0 12px; padding: 10px 12px; }
   </style>
 </head>
 <body>
-  <header><h1>Masa Kalibrasyonu</h1></header>
+  <header><h1>T.UTYM#2 Masa Kalibrasyonu</h1><a href="index.html">Doluluk Paneline Dön</a></header>
   <main>
     <section class="card">
+      <div class="steps">
+        <strong>Nasıl ilerleyeceksiniz?</strong>
+        <ol><li>Videoyu seçin.</li><li>Oynatıp masaların net göründüğü karede durdurun.</li><li>Kareyi yakalayın ve her masanın köşelerine tıklayın.</li><li>14 masayı ekleyip kaydedin.</li></ol>
+      </div>
       <div class="toolbar">
-        <label>Örnek fotoğraf yükle
-          <input id="imageInput" type="file" accept="image/*" />
+        <label>Kalibrasyon videosu yükle
+          <input id="videoInput" type="file" accept="video/*,.avi,.m4v,.mkv,.mov,.mp4" />
         </label>
         <button id="cameraButton" type="button">Kamerayı Aç</button>
+        <button id="playPauseButton" class="secondary" type="button" disabled>Videoyu Oynat</button>
         <button id="snapshotButton" class="secondary" type="button" disabled>Kareyi Yakala</button>
         <button id="undoButton" class="secondary" type="button">Son Noktayı Sil</button>
         <button id="clearButton" class="danger" type="button">Poligonu Temizle</button>
       </div>
+      <p id="videoStatus" class="video-status">Henüz video seçilmedi.</p>
+      <p id="workflowStatus" class="workflow-status">Adım 1/4: Kalibrasyon videosunu seçin.</p>
       <div class="fields">
         <label>Masa adı
-          <input id="tableName" type="text" placeholder="Örn. Masa 1" />
+          <input id="tableName" type="text" value="Masa 1" />
         </label>
         <label>Kapasite
-          <input id="capacity" type="number" min="1" step="1" value="4" />
+          <input id="capacity" type="number" min="1" step="1" value="1" />
         </label>
         <label>UTYM ID
-          <input id="utymId" type="text" value="UTYM-001" />
+          <input id="utymId" type="text" value="T.UTYM#2" />
         </label>
         <label>Kamera ID
-          <input id="cameraId" type="text" value="CAM-001" />
+          <input id="cameraId" type="text" value="TUTYM2-CAM-001" />
         </label>
-        <button id="addTableButton" type="button">Masayı Ekle</button>
+        <button id="addTableButton" type="button" disabled>Poligonu Tamamla ve Masayı Ekle</button>
       </div>
       <div class="stage" id="stage">
-        <video id="video" playsinline muted hidden></video>
+        <video id="video" playsinline muted preload="metadata" hidden></video>
         <img id="photo" alt="Kalibrasyon görseli" hidden />
         <canvas id="canvas"></canvas>
       </div>
-      <p class="hint">Görsel üzerinde tıklayarak en az 3 poligon noktası ekleyin. Noktalar gerçek görsel çözünürlüğüne göre kaydedilir.</p>
+      <div class="timeline">
+        <span id="currentTime">00:00</span>
+        <input id="seekInput" type="range" min="0" max="0" step="0.1" value="0" disabled aria-label="Video zamanı" />
+        <span id="duration">00:00</span>
+      </div>
+      <p class="hint">Videoyu uygun karede durdurun veya kareyi yakalayın; ardından en az 3 poligon noktası ekleyin.</p>
+      <p class="hint"><strong>Güvenlik:</strong> Gerçek görüntü, RTSP URL veya lokal config dosyasını GitHub'a yüklemeyin.</p>
+      <p id="targetStatus" class="status"></p>
       <p id="status" class="status"></p>
     </section>
     <aside class="card">
       <h2>Oluşturulan Masalar</h2>
       <div id="tableList"></div>
       <button id="saveButton" type="button">Config JSON Kaydet</button>
-      <button id="downloadButton" class="secondary" type="button">JSON İndir</button>
+      <p id="saveStatus" class="status">14 masa tamamlandığında kaydetme düğmesi aktifleşir.</p>
+      <a id="returnAfterSave" href="index.html?calibration=saved" hidden>Kaydı kontrol etmek için Doluluk Paneline Dön</a>
+      <button id="downloadButton" class="secondary" type="button">tutym2_cam_001.local.json İndir</button>
       <h3>Önizleme</h3>
       <pre id="jsonPreview"></pre>
     </aside>
   </main>
 <script>
-const state = { tables: [], points: [], width: 1280, height: 720, stream: null, source: null };
+// MERGE-CHECK: TARGET_TABLE_COUNT must stay 14 for T.UTYM#2 calibration.
+const TARGET_TABLE_COUNT = 14;
+const DEFAULT_CAPACITY = 1;
+const DOWNLOAD_FILENAME = 'tutym2_cam_001.local.json';
+const state = { tables: [], points: [], width: 1280, height: 720, stream: null, source: null, videoUrl: null, frameUrl: null, selectedFile: null, frameReady: false };
 const $ = (id) => document.getElementById(id);
 const canvas = $('canvas');
 const ctx = canvas.getContext('2d');
+
+function setVideoStatus(message) {
+  $('videoStatus').textContent = message;
+  $('status').textContent = message;
+}
+
+function formatTime(seconds) {
+  if (!Number.isFinite(seconds)) return '00:00';
+  const minutes = Math.floor(seconds / 60);
+  return `${String(minutes).padStart(2, '0')}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
+}
+
+function updatePlaybackControls() {
+  const video = $('video');
+  $('playPauseButton').textContent = video.paused ? 'Videoyu Oynat' : 'Videoyu Durdur';
+  $('seekInput').value = String(video.currentTime || 0);
+  $('currentTime').textContent = formatTime(video.currentTime);
+}
+
+function nextTableNumber() {
+  const used = new Set(state.tables.map((table) => Number(table.table_id.split('-')[1])));
+  for (let number = 1; number <= TARGET_TABLE_COUNT; number += 1) {
+    if (!used.has(number)) return number;
+  }
+  return TARGET_TABLE_COUNT + 1;
+}
+
+function updateWorkflowStatus() {
+  const nextNumber = nextTableNumber();
+  if (!state.selectedFile && !state.stream) {
+    $('workflowStatus').textContent = 'Adım 1/4: Kalibrasyon videosunu seçin.';
+  } else if (!state.frameReady) {
+    $('workflowStatus').textContent = 'Adım 2/4: Net bir görüntü seçip Kareyi Yakala düğmesine basın.';
+  } else if (state.tables.length === TARGET_TABLE_COUNT) {
+    $('workflowStatus').textContent = 'Adım 4/4: 14 masa tamamlandı. Config JSON Kaydet düğmesine basın.';
+  } else if (state.points.length < 3) {
+    $('workflowStatus').textContent = `Adım 3/4: Masa ${nextNumber} köşelerine sırayla tıklayın (${state.points.length} nokta).`;
+  } else {
+    $('workflowStatus').textContent = `Adım 3/4: Masa ${nextNumber} poligonu hazır. Mavi düğmeyle masayı ekleyin.`;
+  }
+}
+
+async function requestCalibrationFrame(timestamp = 0) {
+  if (!state.selectedFile) return false;
+  setVideoStatus(`Kalibrasyon karesi hazırlanıyor (${formatTime(timestamp)})...`);
+  let response;
+  try {
+    response = await fetch('/product/calibration-frame', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/octet-stream',
+        'X-Video-Filename': state.selectedFile.name,
+        'X-Video-Timestamp': String(timestamp),
+      },
+      body: state.selectedFile,
+    });
+  } catch (error) {
+    setVideoStatus(`Video sunucuya gönderilemedi: ${error.message}`);
+    return false;
+  }
+  if (!response.ok) {
+    if (response.status === 404) {
+      setVideoStatus('Eski sunucu hâlâ çalışıyor. Tüm T.UTYM#2 Sunucu pencerelerini kapatın ve TUTYM2_KONTROL.bat dosyasını yeniden açın.');
+      return false;
+    }
+    const error = await response.json();
+    setVideoStatus(`Kare çıkarılamadı: ${error.detail || response.statusText}`);
+    return false;
+  }
+  const blob = await response.blob();
+  if (state.frameUrl) URL.revokeObjectURL(state.frameUrl);
+  state.frameUrl = URL.createObjectURL(blob);
+  const photo = $('photo');
+  photo.onload = () => {
+    state.width = Number(response.headers.get('X-Frame-Width')) || photo.naturalWidth;
+    state.height = Number(response.headers.get('X-Frame-Height')) || photo.naturalHeight;
+    state.frameReady = true;
+    photo.hidden = false; $('video').hidden = true; $('video').pause();
+    fitCanvas(); render();
+    setVideoStatus(`Kare hazır (${formatTime(timestamp)}). Şimdi masanın köşelerine tıklayın.`);
+  };
+  photo.src = state.frameUrl;
+  return true;
+}
 
 function fitCanvas() {
   const rect = $('stage').getBoundingClientRect();
@@ -137,12 +250,21 @@ function configPayload() {
   return {
     utym_id: $('utymId').value.trim(),
     camera_id: $('cameraId').value.trim(),
+    source_type: 'rtsp',
+    stream_url: 'LOCAL_ONLY_DO_NOT_COMMIT_REAL_RTSP_URL',
     resolution: { width: state.width, height: state.height },
     tables: state.tables,
   };
 }
 
 function render() {
+  $('targetStatus').textContent = `T.UTYM#2 hedef masa sayısı: ${state.tables.length} / ${TARGET_TABLE_COUNT}`;
+  $('addTableButton').disabled = !state.frameReady || state.points.length < 3 || state.tables.length >= TARGET_TABLE_COUNT;
+  $('saveButton').disabled = state.tables.length !== TARGET_TABLE_COUNT;
+  if (state.tables.length === TARGET_TABLE_COUNT && $('saveStatus').textContent.startsWith('14 masa')) {
+    $('saveStatus').textContent = 'Hazır: 14 masa tamamlandı. Config JSON Kaydet düğmesine basın.';
+  }
+  updateWorkflowStatus();
   $('tableList').innerHTML = state.tables.length ? state.tables.map((table, index) => `
     <div class="table-item">
       <strong>${table.name}</strong>
@@ -154,7 +276,11 @@ function render() {
   draw();
 }
 
-window.removeTable = (index) => { state.tables.splice(index, 1); render(); };
+window.removeTable = (index) => {
+  state.tables.splice(index, 1);
+  $('tableName').value = `Masa ${nextTableNumber()}`;
+  render();
+};
 
 canvas.addEventListener('click', (event) => {
   const point = stageToImagePoint(event);
@@ -163,17 +289,66 @@ canvas.addEventListener('click', (event) => {
   render();
 });
 
-$('imageInput').addEventListener('change', (event) => {
+$('videoInput').addEventListener('click', (event) => { event.target.value = ''; });
+$('videoInput').addEventListener('change', (event) => {
   const file = event.target.files[0];
   if (!file) return;
+  state.selectedFile = file;
+  state.frameReady = false;
+  setVideoStatus(`Dosya seçildi: ${file.name}. Video hazırlanıyor...`);
+  if (state.videoUrl) URL.revokeObjectURL(state.videoUrl);
   const url = URL.createObjectURL(file);
-  $('photo').src = url; $('photo').hidden = false; $('video').hidden = true;
-  $('photo').onload = () => { state.width = $('photo').naturalWidth; state.height = $('photo').naturalHeight; state.source = 'image'; fitCanvas(); render(); };
+  state.videoUrl = url;
+  const video = $('video');
+  if ('srcObject' in video) video.srcObject = null;
+  video.src = url; video.hidden = false; $('photo').hidden = true;
+  $('playPauseButton').disabled = false;
+  video.onloadedmetadata = () => {
+    state.width = video.videoWidth; state.height = video.videoHeight; state.source = 'video_file';
+    $('seekInput').disabled = false; $('seekInput').max = String(video.duration || 0);
+    $('duration').textContent = formatTime(video.duration);
+    setVideoStatus(`Video hazır: ${file.name} (${state.width}×${state.height}). Net bir kare seçin.`);
+    fitCanvas(); render();
+    video.play().catch(() => { setVideoStatus('Video hazır. Başlatmak için Videoyu Oynat düğmesine basın.'); });
+  };
+  video.onloadeddata = () => {
+    $('snapshotButton').disabled = false;
+    video.hidden = false;
+    setVideoStatus(`Video çözüldü: ${file.name}. Kalibrasyon karesi hazırlanıyor...`);
+    requestCalibrationFrame(Math.min(1, video.duration || 0));
+  };
+  video.onerror = () => { setVideoStatus('Video açılamadı. Dosya bozuk veya tarayıcının desteklemediği bir codec kullanıyor olabilir. MP4 (H.264) deneyin.'); };
+  video.load();
+  window.setTimeout(() => {
+    if (video.readyState === 0 && video.src === url) setVideoStatus('Video hâlâ açılamadı. MP4/H.264 dosyası deneyin veya sayfayı Ctrl+F5 ile yenileyin.');
+  }, 5000);
+});
+
+$('playPauseButton').addEventListener('click', async () => {
+  const video = $('video');
+  if (video.paused) {
+    $('photo').hidden = true; video.hidden = false;
+    try { await video.play(); } catch (error) { setVideoStatus(`Video oynatılamadı: ${error.message}`); }
+  } else {
+    video.pause();
+    setVideoStatus('Video durduruldu. Bu kare uygunsa Kareyi Yakala düğmesine basın.');
+  }
+  updatePlaybackControls();
+});
+
+$('video').addEventListener('play', updatePlaybackControls);
+$('video').addEventListener('pause', updatePlaybackControls);
+$('video').addEventListener('timeupdate', updatePlaybackControls);
+$('seekInput').addEventListener('input', (event) => {
+  const video = $('video');
+  video.currentTime = Number(event.target.value);
+  updatePlaybackControls();
 });
 
 $('cameraButton').addEventListener('click', async () => {
   try {
     state.stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    state.frameReady = false;
     $('video').srcObject = state.stream; await $('video').play();
     $('video').hidden = false; $('photo').hidden = true; $('snapshotButton').disabled = false;
     state.width = $('video').videoWidth || 1280; state.height = $('video').videoHeight || 720; state.source = 'camera';
@@ -182,9 +357,19 @@ $('cameraButton').addEventListener('click', async () => {
 });
 
 $('snapshotButton').addEventListener('click', () => {
-  const snap = document.createElement('canvas'); snap.width = state.width; snap.height = state.height;
-  snap.getContext('2d').drawImage($('video'), 0, 0, state.width, state.height);
-  $('photo').src = snap.toDataURL('image/jpeg'); $('photo').hidden = false; $('video').hidden = true;
+  if ($('video').readyState < 2) { setVideoStatus('Video karesi henüz hazır değil. Birkaç saniye bekleyin veya başka MP4/H.264 dosyası deneyin.'); return; }
+  if (!$('photo').hidden && state.frameReady) {
+    setVideoStatus('Kalibrasyon karesi zaten hazır. Şimdi masanın köşelerine sırayla tıklayın.');
+    return;
+  }
+  const video = $('video');
+  video.pause();
+  video.hidden = false;
+  $('photo').hidden = true;
+  state.frameReady = true;
+  setVideoStatus('Kare sabitlendi. Video görüntüsü ekranda kalacak; şimdi masanın köşelerine sırayla tıklayın.');
+  updatePlaybackControls();
+  render();
 });
 
 $('undoButton').addEventListener('click', () => { state.points.pop(); render(); });
@@ -194,21 +379,57 @@ $('addTableButton').addEventListener('click', () => {
   if (!name) { $('status').textContent = 'Masa adı girin.'; return; }
   if (!Number.isInteger(capacity) || capacity < 1) { $('status').textContent = 'Kapasite pozitif tam sayı olmalı.'; return; }
   if (state.points.length < 3) { $('status').textContent = 'Poligon için en az 3 nokta ekleyin.'; return; }
-  state.tables.push({ table_id: `T-${String(state.tables.length + 1).padStart(3, '0')}`, name, capacity, polygon: [...state.points] });
-  state.points = []; $('tableName').value = ''; $('status').textContent = 'Masa eklendi.'; render();
+  if (state.tables.length >= TARGET_TABLE_COUNT) { $('status').textContent = `T.UTYM#2 için hedef masa sayısı ${TARGET_TABLE_COUNT}. Daha fazla masa eklenemez.`; return; }
+  const tableNumber = nextTableNumber();
+  state.tables.push({ table_id: `T-${String(tableNumber).padStart(3, '0')}`, name, capacity, polygon: [...state.points] });
+  state.points = [];
+  $('tableName').value = state.tables.length < TARGET_TABLE_COUNT ? `Masa ${nextTableNumber()}` : '';
+  $('capacity').value = String(DEFAULT_CAPACITY);
+  $('status').textContent = `Masa eklendi. ${state.tables.length} / ${TARGET_TABLE_COUNT}`;
+  render();
 });
 
 $('saveButton').addEventListener('click', async () => {
-  const response = await fetch('/calibration/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(configPayload()) });
-  const data = await response.json();
-  $('status').textContent = response.ok ? `Config kaydedildi: ${data.path}` : `Kaydetme hatası: ${data.detail}`;
+  const button = $('saveButton');
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 15000);
+  button.disabled = true;
+  button.textContent = 'Kaydediliyor...';
+  $('saveStatus').textContent = 'Kalibrasyon yerel dosyaya kaydediliyor...';
+  try {
+    const response = await fetch('/calibration/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(configPayload()),
+      signal: controller.signal,
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || response.statusText);
+    button.textContent = 'Kalibrasyon Kaydedildi';
+    $('saveStatus').textContent = 'Başarılı: 14 masa kalibrasyonu yerel dosyaya kaydedildi.';
+    $('returnAfterSave').hidden = false;
+    $('workflowStatus').textContent = 'Tamamlandı: Doluluk Paneline Dön bağlantısına basıp Yenile seçeneğini kullanın.';
+    $('status').textContent = 'Kalibrasyon kaydedildi. Doluluk Paneline Dön bağlantısıyla hazırlık durumunu yenileyin.';
+  } catch (error) {
+    const message = error.name === 'AbortError' ? 'Kaydetme 15 saniyede tamamlanamadı. Sunucu penceresini kontrol edin.' : error.message;
+    button.disabled = false;
+    button.textContent = 'Config JSON Kaydet';
+    $('saveStatus').textContent = `Kaydetme hatası: ${message}`;
+    $('status').textContent = `Kaydetme hatası: ${message}`;
+  } finally {
+    window.clearTimeout(timeout);
+  }
 });
 $('downloadButton').addEventListener('click', () => {
   const blob = new Blob([JSON.stringify(configPayload(), null, 2)], { type: 'application/json' });
-  const link = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'camera-config.json' });
+  const link = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: DOWNLOAD_FILENAME });
   link.click(); URL.revokeObjectURL(link.href);
 });
 window.addEventListener('resize', fitCanvas);
+window.addEventListener('beforeunload', () => {
+  if (state.videoUrl) URL.revokeObjectURL(state.videoUrl);
+  if (state.frameUrl) URL.revokeObjectURL(state.frameUrl);
+});
 fitCanvas(); render();
 </script>
 </body>
