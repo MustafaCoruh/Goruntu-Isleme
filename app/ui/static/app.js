@@ -107,9 +107,12 @@ async function loadOccupancy() {
 
 function renderReadiness(data) {
   const ready = data.ready_for_video_test === true;
+  const developmentFallback = (data.checks ?? []).some((check) => check.status === "warning");
   readinessPanel.classList.toggle("readiness-panel--ready", ready);
   readinessPanel.classList.toggle("readiness-panel--blocked", !ready);
-  readinessTitle.textContent = ready ? "Video testine hazır" : "Video testi için eksikler var";
+  readinessTitle.textContent = ready
+    ? (developmentFallback ? "Video testine hazır — geliştirme modu" : "Video testine hazır")
+    : "Video testi için eksikler var";
   readinessNextStep.textContent = data.next_step ?? "Ürün hazırlık sonucu alınamadı.";
   readinessChecks.replaceChildren();
   videoTestButton.disabled = !ready || !videoTestFile.files.length;
@@ -121,7 +124,8 @@ function renderReadiness(data) {
     const item = document.createElement("li");
     item.className = `readiness-check readiness-check--${check.status}`;
     const label = readinessLabels[check.name] ?? check.name ?? "Kontrol";
-    item.textContent = `${check.status === "pass" ? "✓" : "!"} ${label}: ${check.message}`;
+    const icon = check.status === "pass" ? "✓" : (check.status === "warning" ? "~" : "!");
+    item.textContent = `${icon} ${label}: ${check.message}`;
     readinessChecks.append(item);
   });
 }

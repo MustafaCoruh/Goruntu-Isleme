@@ -51,6 +51,10 @@ Sunucudan çıkarılan kalibrasyon karesi görünüyorsa tekrar **Kareyi Yakala*
 
 Kalibrasyon kaydı doluluk sayılarını tek başına değiştirmez; yalnızca 14 masa bölgesini tanımlar. Ana panelde **Kamera yapılandırması** ve **Masa kalibrasyonu** geçerken **Kişi tespit modeli** başarısız görünüyorsa sıradaki eksik gerçek `models/person_detector.onnx` dosyasıdır. Üç kontrol de geçtikten sonra lokal videoyu seçip **Videoyu İşle** düğmesine basınca doluluk sonuçları güncellenir.
 
+Model kurulumu için resmî kaynaktan temin edilmiş YOLOX-stili `yolox_nano.onnx` dosyasını `TUTYM2_MODEL_KUR.bat` dosyasının üzerine sürükleyip bırakın. Alternatif olarak `py -3 scripts/install_tutym2_person_model.py "C:\indirilen\yolox_nano.onnx"` komutunu kullanın. Ayrıntılı ve `.venv` uyumlu adımlar için [`models/README.md`](models/README.md) belgesini kullanın.
+
+Şirket politikası model indirmeyi engelliyorsa geliştirme testi durmaz: uygulama geçerli ONNX bulunmadığında OpenCV ile birlikte gelen, internet ve ayrı model dosyası gerektirmeyen HOG kişi dedektörüne geçer. Panelde **Video testine hazır — geliştirme modu** uyarısı görülür. HOG doğruluğu modern ONNX modellerinden düşüktür; yalnızca akışı doğrulamak içindir.
+
 Uygulamayı kapatmak için açılan `T.UTYM#2 Sunucu` penceresini kapatın.
 
 ### “Python bulunamadı” uyarısı çıkarsa

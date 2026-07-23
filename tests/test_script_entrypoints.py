@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
         "run_tutym2_rtsp_demo.py",
         "validate_tutym2_config.py",
         "validate_tutym2_table_accuracy_report.py",
+        "install_tutym2_person_model.py",
     ],
 )
 def test_script_can_be_started_directly_from_repository(script_name):

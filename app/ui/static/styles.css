@@ -220,6 +220,11 @@ button:hover {
   color: #991b1b;
 }
 
+.readiness-check--warning {
+  color: #92400e;
+  background: #fef3c7;
+}
+
 @media (max-width: 720px) {
   .readiness-panel,
   .video-test-panel {

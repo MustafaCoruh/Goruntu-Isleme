@@ -41,7 +41,7 @@ def check_product_assets(
         _check_calibration(config_path),
         _check_model(model_path, session_factory=session_factory),
     ]
-    ready = all(check.status == "pass" for check in checks)
+    ready = all(check.status in {"pass", "warning"} for check in checks)
     return {
         "ready_for_video_test": ready,
         "status": "READY" if ready else "NOT_READY",
@@ -51,13 +51,15 @@ def check_product_assets(
 
 
 def _next_step(checks: list[ProductCheck]) -> str:
-    failed = {check.name for check in checks if check.status != "pass"}
+    failed = {check.name for check in checks if check.status == "fail"}
     if "camera_config" in failed:
         return "Kalibrasyon dosyası geçerli değil. Kalibrasyon ekranında 14 masayı kaydedin."
     if "table_calibration" in failed:
         return "Masa kalibrasyonu tamamlanmadı. Video karesi üzerinde 14 gerçek masa poligonu çizin."
     if "person_model" in failed:
-        return "Kalibrasyon hazır. Sıradaki adım: models/person_detector.onnx konumuna gerçek ONNX kişi tespit modelini yerleştirin."
+        return "Kalibrasyon hazır ancak kişi dedektörü başlatılamadı. OpenCV kurulumunu kontrol edin."
+    if any(check.name == "person_model" and check.status == "warning" for check in checks):
+        return "Geliştirme testi hazır: ONNX yerine internet gerektirmeyen yerleşik OpenCV HOG kişi dedektörü kullanılacak."
     return "Hazır: Lokal T.UTYM#2 videosunu seçip Videoyu İşle düğmesine basın."
 
 
@@ -92,14 +94,18 @@ def _check_calibration(path: Path) -> ProductCheck:
 
 def _check_model(path: Path, *, session_factory: Callable[..., Any]) -> ProductCheck:
     if not path.is_file():
-        return ProductCheck("person_model", "fail", f"Model bulunamadı: {path.name}")
+        return ProductCheck(
+            "person_model",
+            "warning",
+            f"{path.name} bulunamadı; yerleşik OpenCV HOG geliştirme dedektörü kullanılacak.",
+        )
     try:
         session_factory(str(path), providers=["CPUExecutionProvider"])
     except Exception as error:
         return ProductCheck(
             "person_model",
-            "fail",
-            f"{path.name} geçerli bir ONNX modeli değil: {type(error).__name__}",
+            "warning",
+            f"{path.name} geçerli değil ({type(error).__name__}); yerleşik OpenCV HOG geliştirme dedektörü kullanılacak.",
         )
     return ProductCheck("person_model", "pass", f"{path.name} ONNX Runtime ile açıldı.")
 

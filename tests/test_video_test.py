@@ -7,7 +7,8 @@ import pytest
 from fastapi import HTTPException
 
 from app.api import routes_product
-from app.video_test import extract_video_frame, process_video
+from app.video_test import _create_detector, extract_video_frame, process_video
+from app.vision.detector import Detection
 
 
 def _write_config(path: Path) -> None:
@@ -119,6 +120,24 @@ def test_process_video_returns_fourteen_smoothed_table_results(tmp_path):
     assert len(result["tables"]) == 14
     assert all(table["status"] == "empty" for table in result["tables"])
     assert capture.released is True
+
+
+def test_detector_factory_falls_back_to_offline_hog(monkeypatch, tmp_path):
+    class FakeHogBackend:
+        def detect(self, frame):
+            return [Detection("person", 0.8, [1, 2, 3, 4])]
+
+    monkeypatch.setattr(
+        "app.video_test.OnnxPersonDetector",
+        lambda config: (_ for _ in ()).throw(RuntimeError("model unavailable")),
+    )
+    monkeypatch.setattr(
+        "app.video_test.OpenCvHogPersonDetector", lambda: FakeHogBackend()
+    )
+
+    detector = _create_detector(tmp_path / "missing.onnx")
+
+    assert detector.detect(object())[0].bbox == [1.0, 2.0, 3.0, 4.0]
 
 
 class FakeRequest:

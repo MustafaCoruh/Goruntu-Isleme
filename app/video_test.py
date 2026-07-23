@@ -9,6 +9,7 @@ from typing import Any, Callable
 from app.calibration.models import CameraConfig, UtymConfig
 from app.config import load_camera_config
 from app.vision.detector import PersonDetector
+from app.vision.hog_detector import OpenCvHogPersonDetector
 from app.vision.occupancy import OccupancySmoother, TableOccupancy, compute_table_occupancy
 from app.vision.onnx_detector import OnnxPersonDetector, OnnxPersonDetectorConfig
 
@@ -70,9 +71,7 @@ def process_video(
 
         capture_factory = cv2.VideoCapture
     if detector is None:
-        detector = PersonDetector(
-            OnnxPersonDetector(OnnxPersonDetectorConfig(model_path=str(model_path)))
-        )
+        detector = _create_detector(model_path)
 
     capture = capture_factory(str(source_path))
     if not capture.isOpened():
@@ -117,6 +116,14 @@ def process_video(
             for item in latest
         ],
     }
+
+
+def _create_detector(model_path: Path) -> PersonDetector:
+    try:
+        backend = OnnxPersonDetector(OnnxPersonDetectorConfig(model_path=str(model_path)))
+    except Exception:
+        backend = OpenCvHogPersonDetector()
+    return PersonDetector(backend)
 
 
 def _select_camera(config: UtymConfig | CameraConfig) -> CameraConfig:

@@ -58,10 +58,8 @@ def test_product_check_rejects_placeholder_calibration_and_invalid_model(tmp_pat
 
     assert result["ready_for_video_test"] is False
     assert result["status"] == "NOT_READY"
-    assert {check["name"] for check in result["checks"] if check["status"] == "fail"} == {
-        "table_calibration",
-        "person_model",
-    }
+    assert {check["name"] for check in result["checks"] if check["status"] == "fail"} == {"table_calibration"}
+    assert next(check for check in result["checks"] if check["name"] == "person_model")["status"] == "warning"
     assert "14 gerçek masa poligonu" in result["next_step"]
 
 
@@ -77,5 +75,5 @@ def test_product_check_explains_model_is_next_after_calibration(tmp_path):
         session_factory=lambda *args, **kwargs: (_ for _ in ()).throw(ValueError()),
     )
 
-    assert "Kalibrasyon hazır" in result["next_step"]
-    assert "models/person_detector.onnx" in result["next_step"]
+    assert result["ready_for_video_test"] is True
+    assert "OpenCV HOG" in result["next_step"]
