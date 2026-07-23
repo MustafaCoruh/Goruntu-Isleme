@@ -137,6 +137,22 @@ videoTestFile.addEventListener("change", () => {
   }
 });
 
+async function readResponsePayload(response) {
+  const text = await response.text();
+  if (!text) return {};
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { detail: text };
+  }
+}
+
+function errorDetail(data, response) {
+  if (data.detail?.next_step) return data.detail.next_step;
+  if (typeof data.detail === "string") return data.detail;
+  return `Sunucu hatası (HTTP ${response.status}): ${response.statusText || "Bilinmeyen hata"}`;
+}
+
 videoTestButton.addEventListener("click", async () => {
   const file = videoTestFile.files[0];
   if (!file) return;
@@ -148,12 +164,12 @@ videoTestButton.addEventListener("click", async () => {
       headers: { "Content-Type": "application/octet-stream", "X-Video-Filename": file.name },
       body: file,
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.detail?.next_step ?? data.detail ?? `HTTP ${response.status}`);
+    const data = await readResponsePayload(response);
+    if (!response.ok) throw new Error(errorDetail(data, response));
     videoTestStatus.textContent = `${data.processed_frames} kare işlendi; ${data.table_count} masa güncellendi.`;
     await loadOccupancy();
   } catch (error) {
-    videoTestStatus.textContent = `Video testi başarısız: ${error.message}`;
+    videoTestStatus.textContent = `Video testi başarısız: ${error.message}. T.UTYM#2 Sunucu penceresindeki son hata satırını kontrol edin.`;
   } finally {
     videoTestButton.disabled = false;
   }

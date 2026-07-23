@@ -195,6 +195,43 @@ def test_video_endpoint_processes_and_deletes_temporary_file(monkeypatch):
         routes_product.CURRENT_OCCUPANCY_SNAPSHOT.update(original_snapshot)
 
 
+def test_video_endpoint_returns_json_safe_processing_error_and_deletes_upload(monkeypatch):
+    monkeypatch.setattr(
+        routes_product,
+        "check_product_assets",
+        lambda config, model: {"ready_for_video_test": True},
+    )
+    temporary_paths = []
+
+    def fail_processing(path, config, model):
+        temporary_paths.append(path)
+        raise RuntimeError(f"decoder failed for {path}")
+
+    monkeypatch.setattr(routes_product, "process_video", fail_processing)
+
+    with pytest.raises(HTTPException) as error:
+        asyncio.run(routes_product.run_video_test(FakeRequest()))
+
+    assert error.value.status_code == 422
+    assert "Video işlenemedi (RuntimeError)" in error.value.detail
+    assert "<geçici-video>" in error.value.detail
+    assert temporary_paths and not temporary_paths[0].exists()
+
+
+def test_detector_factory_reports_both_backend_failures(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        "app.video_test.OnnxPersonDetector",
+        lambda config: (_ for _ in ()).throw(RuntimeError("bad onnx")),
+    )
+    monkeypatch.setattr(
+        "app.video_test.OpenCvHogPersonDetector",
+        lambda: (_ for _ in ()).throw(ImportError("opencv missing")),
+    )
+
+    with pytest.raises(RuntimeError, match="OpenCV HOG başlatılamadı"):
+        _create_detector(tmp_path / "missing.onnx")
+
+
 def test_calibration_frame_endpoint_returns_jpeg_and_deletes_upload(monkeypatch):
     temporary_paths = []
 

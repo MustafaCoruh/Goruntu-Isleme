@@ -31,6 +31,9 @@ def test_dashboard_displays_product_readiness():
     assert "Doluluk sonuçları model hazırlandıktan" in script
     assert "Video testine hazır — geliştirme modu" in script
     assert 'check.status === "warning"' in script
+    assert "async function readResponsePayload" in script
+    assert "return { detail: text }" in script
+    assert "Sunucu penceresindeki son hata satırını" in script
     calibration = (STATIC / "calibration.html").read_text(encoding="utf-8")
     assert "LOCAL_ONLY_DO_NOT_COMMIT_REAL_RTSP_URL" in calibration
     assert "source_type: 'rtsp'" in calibration

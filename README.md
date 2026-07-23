@@ -55,6 +55,8 @@ Model kurulumu için resmî kaynaktan temin edilmiş YOLOX-stili `yolox_nano.onn
 
 Şirket politikası model indirmeyi engelliyorsa geliştirme testi durmaz: uygulama geçerli ONNX bulunmadığında OpenCV ile birlikte gelen, internet ve ayrı model dosyası gerektirmeyen HOG kişi dedektörüne geçer. Panelde **Video testine hazır — geliştirme modu** uyarısı görülür. HOG doğruluğu modern ONNX modellerinden düşüktür; yalnızca akışı doğrulamak içindir.
 
+Video işleme başarısız olursa arayüz artık düz metin `Internal Server Error` yanıtını JSON sanıp `Unexpected token` hatası üretmez. Gerçek backend hata türünü gösterir ve `T.UTYM#2 Sunucu` penceresindeki son hata satırını kontrol etmenizi ister.
+
 Uygulamayı kapatmak için açılan `T.UTYM#2 Sunucu` penceresini kapatın.
 
 ### “Python bulunamadı” uyarısı çıkarsa

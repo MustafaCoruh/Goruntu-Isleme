@@ -121,8 +121,15 @@ def process_video(
 def _create_detector(model_path: Path) -> PersonDetector:
     try:
         backend = OnnxPersonDetector(OnnxPersonDetectorConfig(model_path=str(model_path)))
-    except Exception:
-        backend = OpenCvHogPersonDetector()
+    except Exception as onnx_error:
+        try:
+            backend = OpenCvHogPersonDetector()
+        except Exception as hog_error:
+            raise RuntimeError(
+                "ONNX dedektörü kullanılamadı "
+                f"({type(onnx_error).__name__}); OpenCV HOG başlatılamadı "
+                f"({type(hog_error).__name__}: {hog_error})"
+            ) from hog_error
     return PersonDetector(backend)
 
 

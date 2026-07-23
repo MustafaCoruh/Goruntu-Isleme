@@ -62,6 +62,16 @@ async def run_video_test(request: Request) -> dict[str, Any]:
             "processed_frames": snapshot["processed_frames"],
             "table_count": len(snapshot["tables"]),
         }
+    except HTTPException:
+        raise
+    except Exception as error:
+        message = " ".join(str(error).split()) or "Ayrıntı sağlanmadı."
+        if temporary_path is not None:
+            message = message.replace(str(temporary_path), "<geçici-video>")
+        raise HTTPException(
+            status_code=422,
+            detail=f"Video işlenemedi ({type(error).__name__}): {message[:400]}",
+        ) from error
     finally:
         if temporary_path is not None:
             temporary_path.unlink(missing_ok=True)
