@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>T.UTYM#2 R3 Demo Başlatıcı</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --navy: #102a43;
+      --blue: #0b69a3;
+      --green: #137333;
+      --yellow: #b7791f;
+      --red: #b42318;
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --muted: #627d98;
+      font-family: Arial, sans-serif;
+    }
+    body { margin: 0; background: var(--bg); color: #172033; }
+    header { background: var(--navy); color: #fff; padding: 20px 24px; }
+    header h1 { margin: 0 0 6px; font-size: 25px; }
+    header p { margin: 0; color: #d9e2ec; }
+    main { padding: 18px; display: grid; gap: 16px; max-width: 1180px; margin: 0 auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .card { background: var(--card); border-radius: 14px; box-shadow: 0 2px 12px rgb(16 42 67 / 12%); padding: 16px; }
+    .card h2 { margin-top: 0; }
+    .status { display: inline-block; border-radius: 999px; padding: 7px 11px; color: white; font-weight: 700; text-transform: uppercase; }
+    .pass { background: var(--green); }
+    .warn { background: var(--yellow); }
+    .fail { background: var(--red); }
+    .muted { color: var(--muted); }
+    .checklist { list-style: none; padding: 0; margin: 0; }
+    .checklist li { margin: 9px 0; padding: 10px; border-radius: 10px; background: #f8fbff; border: 1px solid #d9e2ec; }
+    .checklist strong { display: inline-block; min-width: 66px; }
+    .ok { color: var(--green); font-weight: 700; }
+    .bad { color: var(--red); font-weight: 700; }
+    button, a.button { display: inline-block; border: 0; border-radius: 8px; background: var(--blue); color: #fff; padding: 10px 12px; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }
+    .secondary { background: #486581; }
+    pre { white-space: pre-wrap; background: var(--navy); color: #d9e2ec; padding: 12px; border-radius: 8px; max-height: 260px; overflow: auto; }
+    .danger { border-left: 6px solid var(--red); }
+    .success { border-left: 6px solid var(--green); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>T.UTYM#2 R3 Demo Başlatıcı</h1>
+    <p>Terminal kullanmadan güvenli dashboard demosuna hazırlanmak için statik kontrol ekranı.</p>
+  </header>
+
+  <main>
+    <section class="card danger">
+      <h2>Güvenlik Kuralı</h2>
+      <p>Bu ekran gerçek kamera açmaz, RTSP bağlantısı kurmaz, görüntü/video göstermez ve credential istemez.</p>
+      <p><strong>Gösterilmeyecekler:</strong> gerçek RTSP URL, kamera IP, kullanıcı adı/parola, gerçek video, tam lokal path, kişi/yüz bilgisi.</p>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>R3 Durumu</h2>
+        <p><span id="overall" class="status pass">R3 DEMO HAZIR</span></p>
+        <p class="muted">R3, gerçek saha kabulü değil; güvenli dashboard demo/sunum seviyesidir.</p>
+        <a id="runCheck" class="button" href="#check-results" role="button">Terminalsiz R3 Kontrolü Gör</a>
+      </div>
+      <div class="card">
+        <h2>Dashboard'u Aç</h2>
+        <p>Kontrol başarılıysa dashboard'u açıp güvenli örnek state ile sunum yapabilirsin.</p>
+        <p><a class="button" href="tutym2_dashboard.html" target="_blank" rel="noopener">T.UTYM#2 Dashboard Aç</a></p>
+        <p><a class="button secondary" href="tutym2_r3_presentation.html" target="_blank" rel="noopener">R3 Sunum Akışını Aç</a></p>
+      </div>
+      <div class="card">
+        <h2>Operatör Dokümanları</h2>
+        <p><a href="../../../docs/deployment/tutym2_r3_dashboard_demo_smoke_plan.md">R3 smoke plan</a></p>
+        <p><a href="../../../docs/deployment/tutym2_operator_master_runbook.md">Ana runbook</a></p>
+        <p><a href="../../../docs/deployment/tutym2_operator_troubleshooting_guide.md">Hata/çözüm rehberi</a></p>
+      </div>
+    </section>
+
+    <section id="check-results" class="card">
+      <h2>Terminalsiz Kontrol Sonuçları</h2>
+      <p class="muted">Bu liste statik olarak görünür; JavaScript çalışmasa bile R3 demo kontrol sonucu okunabilir.</p>
+      <ul id="checks" class="checklist">
+        <li><strong class="ok">PASS</strong> Site T.UTYM#2</li>
+        <li><strong class="ok">PASS</strong> Kamera TUTYM2-CAM-001</li>
+        <li><strong class="ok">PASS</strong> 14 masa hedefi</li>
+        <li><strong class="ok">PASS</strong> RTSP URL yok</li>
+        <li><strong class="ok">PASS</strong> Credential yok</li>
+        <li><strong class="ok">PASS</strong> Görüntü/video yok</li>
+        <li><strong class="ok">PASS</strong> Tam lokal path yok</li>
+      </ul>
+    </section>
+
+    <section class="card success">
+      <h2>Sunumda Söylenecek Güvenli Cümle</h2>
+      <p>“Bu R3 demo gerçek kamera görüntüsü veya RTSP bilgisi göstermeden, güvenli örnek dashboard state üzerinden T.UTYM#2 operatör ekranını gösterir. R4 saha kabulü için gerçek saha raporları ve doğruluk ölçümü ayrıca gereklidir.”</p>
+    </section>
+
+    <section class="card">
+      <h2>Güvenli Örnek State Özeti</h2>
+      <pre id="statePreview"></pre>
+    </section>
+  </main>
+
+<script>
+const SAFE_R3_STATE = {
+  report_type: 'dashboard_state',
+  site: 'T.UTYM#2',
+  camera_id: 'TUTYM2-CAM-001',
+  table_count: 14,
+  safety: {
+    contains_rtsp_url: false,
+    contains_credentials: false,
+    contains_image_or_video: false,
+    contains_full_local_path: false,
+  },
+};
+
+const REQUIRED = [
+  ['Site T.UTYM#2', SAFE_R3_STATE.site === 'T.UTYM#2'],
+  ['Kamera TUTYM2-CAM-001', SAFE_R3_STATE.camera_id === 'TUTYM2-CAM-001'],
+  ['14 masa hedefi', SAFE_R3_STATE.table_count === 14],
+  ['RTSP URL yok', SAFE_R3_STATE.safety.contains_rtsp_url === false],
+  ['Credential yok', SAFE_R3_STATE.safety.contains_credentials === false],
+  ['Görüntü/video yok', SAFE_R3_STATE.safety.contains_image_or_video === false],
+  ['Tam lokal path yok', SAFE_R3_STATE.safety.contains_full_local_path === false],
+];
+
+function renderChecks() {
+  const list = document.getElementById('checks');
+  list.innerHTML = '';
+  let passCount = 0;
+  REQUIRED.forEach(([name, ok]) => {
+    if (ok) passCount += 1;
+    const item = document.createElement('li');
+    item.innerHTML = `<strong class="${ok ? 'ok' : 'bad'}">${ok ? 'PASS' : 'FAIL'}</strong> ${escapeHtml(name)}`;
+    list.appendChild(item);
+  });
+  const allPass = passCount === REQUIRED.length;
+  const overall = document.getElementById('overall');
+  overall.textContent = allPass ? 'R3 DEMO HAZIR' : 'R3 BLOKE';
+  overall.className = `status ${allPass ? 'pass' : 'fail'}`;
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+}
+
+document.getElementById('runCheck').addEventListener('click', renderChecks);
+document.getElementById('statePreview').textContent = JSON.stringify(SAFE_R3_STATE, null, 2);
+renderChecks();
+</script>
+</body>
+</html>
