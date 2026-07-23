@@ -10,7 +10,6 @@ from typing import Any, Protocol
 import cv2
 
 from app.calibration.models import CameraConfig, TablePolygon, UtymConfig
-from app.camera.capture import ImageFileSource, SUPPORTED_IMAGE_EXTENSIONS
 from app.config import load_camera_config
 from app.vision.detector import PersonDetector
 from app.vision.occupancy import (
@@ -94,7 +93,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
         "--config", required=True, help="Path to camera calibration JSON."
     )
     parser.add_argument(
-        "--source", required=True, help="Path to an image or video source."
+        "--source", required=True, help="Path to a local video source."
     )
     parser.add_argument(
         "--model",
@@ -168,14 +167,11 @@ def _load_person_detector(args: argparse.Namespace) -> PersonDetector:
 def _build_source(source_path: str | Path) -> FrameSource:
     path = Path(source_path)
     suffix = path.suffix.lower()
-    if suffix in SUPPORTED_IMAGE_EXTENSIONS:
-        return ImageFileSource(path)
     if suffix in SUPPORTED_VIDEO_EXTENSIONS:
         return VideoFileSource(path)
     raise ValueError(
         f"Unsupported source extension for {path}. "
-        f"Supported image extensions: {', '.join(sorted(SUPPORTED_IMAGE_EXTENSIONS))}; "
-        f"supported video extensions: {', '.join(sorted(SUPPORTED_VIDEO_EXTENSIONS))}"
+        f"Supported video extensions: {', '.join(sorted(SUPPORTED_VIDEO_EXTENSIONS))}"
     )
 
 
