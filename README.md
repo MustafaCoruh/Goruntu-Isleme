@@ -1,3 +1,92 @@
 # FTMC Occupancy
 
-FTMC/UTYM ortamlarında kamera görüntüsünden masa doluluk durumunu tespit eden offline çalışabilir görüntü işleme uygulaması.
+FTMC/UTYM ortamlarında **video görüntüsünden** masaların dolu veya boş olduğunu belirleyen, çevrimdışı çalışabilen görüntü işleme uygulaması.
+
+## T.UTYM#2 için gerçek çalışma akışı
+
+Bu sistemin kullanıcıdan beklediği ana girdi JSON raporu veya fotoğraf değil, **videodur**:
+
+1. **Geliştirme aşaması:** T.UTYM#2 kamerasından daha önce alınmış bir video dosyası bilgisayardan seçilir.
+2. Sistem videonun karelerini işler ve 14 masanın her biri için **dolu/boş** sonucu üretir.
+3. Sonuçlar masa doluluk panelinde izlenir; hatalı masalar için kalibrasyon veya model ayarı yapılır.
+4. **Ürün hazır olduğunda:** aynı işlem canlı kamera akışıyla veya kameradan alınmış eski bir video kaydıyla çalışır.
+
+Desteklenen lokal video uzantıları: `.avi`, `.m4v`, `.mkv`, `.mov`, `.mp4`.
+
+> Fotoğraf ve elle seçilen JSON raporları bu akışın girdisi değildir.
+
+## Kullanılacak ana ekranlar
+
+- Masa doluluk paneli: `app/ui/static/index.html`
+- Masa bölgelerini tanımlama/düzeltme: `app/ui/static/calibration.html`
+- Teknik hata ayıklama: `app/ui/static/debug.html`
+
+## Her PR sonrasında ürünü kontrol etme
+
+Windows bilgisayarda repository içindeki `TUTYM2_KONTROL.bat` dosyasına çift tıklayın. Dosya uygulamayı başlatır ve ana kontrol ekranını tarayıcıda açar. Terminal komutu yazmanız gerekmez.
+
+Başlatıcı açılışta eski sürümlerden lokal klasörde kalmış `tutym2_*.html` sayfalarını ve gereksiz `.gitkeep` dosyalarını da temizler. Böylece Git güncel olsa bile bilgisayarda kalan eski arayüz dosyaları tekrar görünmez.
+
+Ekranda şunları kontrol edin:
+
+1. **Video testi hazırlığı** kartında hangi girdilerin hazır veya eksik olduğu.
+2. 14 masa kartının dolu, boş veya belirsiz sonuçları.
+3. **Kalibrasyon** bağlantısında video seçme ve masa poligonu çizme akışı.
+4. **Teknik Görünüm** bağlantısında kamera/masa çizimleri.
+5. Ürün hazırlığı tamamlandığında **T.UTYM#2 videosunu test et** alanından lokal videoyu seçip **Videoyu İşle** düğmesiyle 14 masa sonucunu güncelleme.
+
+Kalibrasyon ekranında 14 masanın tamamı çizilip **Config JSON Kaydet** düğmesine basıldığında dosya ürünün kullandığı lokal konuma kaydedilir. Ana panele dönüp **Yenile** dediğinizde kalibrasyon kontrolü otomatik güncellenir.
+
+Video seçildikten sonra otomatik oynatma başlamazsa **Videoyu Oynat** düğmesine basın. Zaman çubuğuyla masaların net göründüğü kareye gidin, videoyu durdurun ve **Kareyi Yakala** düğmesine basın. Video hiç görüntülenmezse tarayıcı codec'i desteklemiyor olabilir; videoyu MP4/H.264 biçimine dönüştürüp yeniden seçin.
+
+**Kare çıkarılamadı: Not Found** uyarısı eski sunucu işleminin hâlâ 8000 portunda çalıştığını gösterir. Güncel başlatıcı 8000 portundaki eski işlemi kapatır ve yeni API'de kalibrasyon endpoint'ini doğrulamayı dener.
+
+Başlatıcı API doğrulamasını 20 saniyeye kadar tekrarlar. Doğrulama tamamlanmasa bile arayüzü açar; böyle bir durumda `T.UTYM#2 Sunucu` penceresindeki asıl Python hatasını kontrol edip tarayıcı sayfasını yenileyin.
+
+Kalibrasyon sayfasındaki yeşil kutu sıradaki işlemi gösterir. Kare göründükten sonra bir masanın köşelerine sırayla en az üç kez tıklayın; poligon hazır olduğunda **Poligonu Tamamla ve Masayı Ekle** düğmesi aktifleşir. Masa adı otomatik ilerler. Bu işlemi 14 masa için tekrarlayıp son olarak **Config JSON Kaydet** düğmesine basın.
+
+Sunucudan çıkarılan kalibrasyon karesi görünüyorsa tekrar **Kareyi Yakala** ile videoyu yüklemeniz gerekmez; doğrudan masa köşelerine tıklayın. Kaydetme sırasında düğme **Kaydediliyor...**, başarıdan sonra **Kalibrasyon Kaydedildi** yazar. Hata veya 15 saniyelik zaman aşımı sağ tarafta açıkça gösterilir.
+
+**Kareyi Yakala** düğmesi videoyu yalnızca durdurur; görüntüyü gizlemez veya başka bir katmana dönüştürmez. Sabit kalan video karesi üzerinde masa köşelerini işaretleyebilirsiniz. Tekrar oynatmak için **Videoyu Oynat** düğmesini kullanın.
+
+Kalibrasyon kaydı doluluk sayılarını tek başına değiştirmez; yalnızca 14 masa bölgesini tanımlar. Ana panelde **Kamera yapılandırması** ve **Masa kalibrasyonu** geçerken **Kişi tespit modeli** başarısız görünüyorsa sıradaki eksik gerçek `models/person_detector.onnx` dosyasıdır. Üç kontrol de geçtikten sonra lokal videoyu seçip **Videoyu İşle** düğmesine basınca doluluk sonuçları güncellenir.
+
+Model kurulumu için resmî kaynaktan temin edilmiş YOLOX-stili `yolox_nano.onnx` dosyasını `TUTYM2_MODEL_KUR.bat` dosyasının üzerine sürükleyip bırakın. Alternatif olarak `py -3 scripts/install_tutym2_person_model.py "C:\indirilen\yolox_nano.onnx"` komutunu kullanın. Ayrıntılı ve `.venv` uyumlu adımlar için [`models/README.md`](models/README.md) belgesini kullanın.
+
+Şirket politikası model indirmeyi engelliyorsa geliştirme testi durmaz: uygulama geçerli ONNX bulunmadığında OpenCV ile birlikte gelen, internet ve ayrı model dosyası gerektirmeyen HOG kişi dedektörüne geçer. Panelde **Video testine hazır — geliştirme modu** uyarısı görülür. HOG doğruluğu modern ONNX modellerinden düşüktür; yalnızca akışı doğrulamak içindir.
+
+Uygulamayı kapatmak için açılan `T.UTYM#2 Sunucu` penceresini kapatın.
+
+### “Python bulunamadı” uyarısı çıkarsa
+
+Başlatıcı sırasıyla repository içindeki `.venv`, `python` komutu ve Windows Python Launcher (`py -3`) seçeneklerini dener. Python kurulu olduğu hâlde üçü de çalışmıyorsa Python kurulumunu **Modify** ile açıp **Add Python to PATH** ve **Python Launcher** seçeneklerini etkinleştirin. Ardından `TUTYM2_KONTROL.bat` dosyasını yeniden açın.
+
+Python bulunduğu hâlde gerekli paketler eksikse başlatıcı bunları `requirements.txt` üzerinden otomatik kurmak için onay ister.
+
+## Geliştirme videosunu çalıştırma
+
+Terminal kullanabilen geliştirici, video dosyasını repo dışında tutarak aşağıdaki giriş noktasını kullanır:
+
+Önce yapılandırma, masa kalibrasyonu ve ONNX modelini kontrol edin:
+
+```bash
+python scripts/check_tutym2_product.py
+```
+
+Sonuç `READY` değilse video testi henüz başlamamalıdır. Kontrol başarılıysa:
+
+```bash
+python scripts/run_tutym2_local_demo.py \
+  --source "C:\\TUTYM2_DATA\\videos\\ornek.mp4" \
+  --config "configs\\local\\tutym2_cam_001.json" \
+  --output-dir "C:\\TUTYM2_DATA\\output"
+```
+
+Canlı kamera veya eski kamera kaydı aşamasında RTSP akışı için `scripts/run_tutym2_rtsp_demo.py` kullanılır. Gerçek video, RTSP adresi, kullanıcı adı, parola ve IP bilgileri repoya eklenmez.
+
+## Projenin tamamlanma ölçütü
+
+Proje aşağıdaki iki video doğrulamasının başarıyla tamamlanmasıyla hazır sayılır:
+
+- Lokal geçmiş videoda 14 masanın dolu/boş sonuçlarının doğrulanması.
+- Canlı kamera akışında veya eski kamera kaydında aynı sonuçların doğrulanması.
