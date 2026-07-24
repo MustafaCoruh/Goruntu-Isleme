@@ -227,9 +227,35 @@ def test_detector_factory_reports_both_backend_failures(monkeypatch, tmp_path):
         "app.video_test.OpenCvHogPersonDetector",
         lambda: (_ for _ in ()).throw(ImportError("opencv missing")),
     )
+    monkeypatch.setattr(
+        "app.video_test.OpenCvMotionPersonDetector",
+        lambda: (_ for _ in ()).throw(ImportError("motion missing")),
+    )
 
-    with pytest.raises(RuntimeError, match="OpenCV HOG başlatılamadı"):
+    with pytest.raises(RuntimeError, match="hareket dedektörü başlatılamadı"):
         _create_detector(tmp_path / "missing.onnx")
+
+
+def test_detector_factory_uses_motion_when_hog_is_unavailable(monkeypatch, tmp_path):
+    class FakeMotionBackend:
+        def detect(self, frame):
+            return [Detection("person", 0.6, [4, 5, 6, 7])]
+
+    monkeypatch.setattr(
+        "app.video_test.OnnxPersonDetector",
+        lambda config: (_ for _ in ()).throw(RuntimeError("bad onnx")),
+    )
+    monkeypatch.setattr(
+        "app.video_test.OpenCvHogPersonDetector",
+        lambda: (_ for _ in ()).throw(AttributeError("no HOGDescriptor")),
+    )
+    monkeypatch.setattr(
+        "app.video_test.OpenCvMotionPersonDetector", lambda: FakeMotionBackend()
+    )
+
+    detector = _create_detector(tmp_path / "missing.onnx")
+
+    assert detector.detect(object())[0].bbox == [4.0, 5.0, 6.0, 7.0]
 
 
 def test_calibration_frame_endpoint_returns_jpeg_and_deletes_upload(monkeypatch):

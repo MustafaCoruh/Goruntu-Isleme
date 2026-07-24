@@ -10,6 +10,7 @@ from app.calibration.models import CameraConfig, UtymConfig
 from app.config import load_camera_config
 from app.vision.detector import PersonDetector
 from app.vision.hog_detector import OpenCvHogPersonDetector
+from app.vision.motion_detector import OpenCvMotionPersonDetector
 from app.vision.occupancy import OccupancySmoother, TableOccupancy, compute_table_occupancy
 from app.vision.onnx_detector import OnnxPersonDetector, OnnxPersonDetectorConfig
 
@@ -125,11 +126,15 @@ def _create_detector(model_path: Path) -> PersonDetector:
         try:
             backend = OpenCvHogPersonDetector()
         except Exception as hog_error:
-            raise RuntimeError(
-                "ONNX dedektörü kullanılamadı "
-                f"({type(onnx_error).__name__}); OpenCV HOG başlatılamadı "
-                f"({type(hog_error).__name__}: {hog_error})"
-            ) from hog_error
+            try:
+                backend = OpenCvMotionPersonDetector()
+            except Exception as motion_error:
+                raise RuntimeError(
+                    "ONNX dedektörü kullanılamadı "
+                    f"({type(onnx_error).__name__}); OpenCV HOG başlatılamadı "
+                    f"({type(hog_error).__name__}: {hog_error}); hareket dedektörü "
+                    f"başlatılamadı ({type(motion_error).__name__}: {motion_error})"
+                ) from motion_error
     return PersonDetector(backend)
 
 

@@ -14,7 +14,7 @@ Kod, COCO sınıf sıralamasında kişi sınıfı `0` olan, YOLOX-stili tek gör
 
 ## 2. Modeli Adım Adım Kurma
 
-> Şirket ağı GitHub veya haricî model indirmeyi engelliyorsa bu adımı atlayabilirsiniz. Uygulama otomatik olarak OpenCV'nin yerleşik HOG kişi dedektörüyle **geliştirme modu**nda çalışır. Ayrı dosya veya internet gerekmez; ancak doğruluğu YOLOX'tan düşüktür ve üretim kabulü için kullanılmamalıdır.
+> Şirket ağı GitHub veya haricî model indirmeyi engelliyorsa bu adımı atlayabilirsiniz. Uygulama otomatik olarak OpenCV HOG kişi dedektörüyle; OpenCV paketinde HOG yoksa hareket tabanlı dedektörle **geliştirme modu**nda çalışır. Ayrı dosya veya internet gerekmez; ancak doğruluğu YOLOX'tan düşüktür ve üretim kabulü için kullanılmamalıdır.
 
 1. Kurumunuzun onaylı model deposundan veya [Megvii YOLOX projesinin resmî GitHub Releases sayfasından](https://github.com/Megvii-BaseDetection/YOLOX/releases) `yolox_nano.onnx` dosyasını indirin.
 2. Dosyayı örneğin Windows `Downloads` klasöründe tutun; adını elle `person_detector.onnx` yapmanız gerekmez.

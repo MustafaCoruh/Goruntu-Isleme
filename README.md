@@ -53,7 +53,7 @@ Kalibrasyon kaydı doluluk sayılarını tek başına değiştirmez; yalnızca 1
 
 Model kurulumu için resmî kaynaktan temin edilmiş YOLOX-stili `yolox_nano.onnx` dosyasını `TUTYM2_MODEL_KUR.bat` dosyasının üzerine sürükleyip bırakın. Alternatif olarak `py -3 scripts/install_tutym2_person_model.py "C:\indirilen\yolox_nano.onnx"` komutunu kullanın. Ayrıntılı ve `.venv` uyumlu adımlar için [`models/README.md`](models/README.md) belgesini kullanın.
 
-Şirket politikası model indirmeyi engelliyorsa geliştirme testi durmaz: uygulama geçerli ONNX bulunmadığında OpenCV ile birlikte gelen, internet ve ayrı model dosyası gerektirmeyen HOG kişi dedektörüne geçer. Panelde **Video testine hazır — geliştirme modu** uyarısı görülür. HOG doğruluğu modern ONNX modellerinden düşüktür; yalnızca akışı doğrulamak içindir.
+Şirket politikası model indirmeyi engelliyorsa geliştirme testi durmaz: uygulama geçerli ONNX bulunmadığında internet ve ayrı model dosyası gerektirmeyen OpenCV HOG kişi dedektörüne geçer. Bilgisayardaki OpenCV paketinde `HOGDescriptor` yoksa son çare olarak hareket tabanlı arka plan çıkarımı kullanılır. Panelde **Video testine hazır — geliştirme modu** uyarısı görülür. Her iki fallback de modern ONNX modellerinden daha düşük doğruluktadır; yalnızca akışı doğrulamak içindir.
 
 Video işleme başarısız olursa arayüz artık düz metin `Internal Server Error` yanıtını JSON sanıp `Unexpected token` hatası üretmez. Gerçek backend hata türünü gösterir ve `T.UTYM#2 Sunucu` penceresindeki son hata satırını kontrol etmenizi ister.
 

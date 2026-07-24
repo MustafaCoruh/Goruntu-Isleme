@@ -59,7 +59,7 @@ def _next_step(checks: list[ProductCheck]) -> str:
     if "person_model" in failed:
         return "Kalibrasyon hazır ancak kişi dedektörü başlatılamadı. OpenCV kurulumunu kontrol edin."
     if any(check.name == "person_model" and check.status == "warning" for check in checks):
-        return "Geliştirme testi hazır: ONNX yerine internet gerektirmeyen yerleşik OpenCV HOG kişi dedektörü kullanılacak."
+        return "Geliştirme testi hazır: ONNX yerine internet gerektirmeyen OpenCV HOG; HOG yoksa hareket tabanlı dedektör kullanılacak."
     return "Hazır: Lokal T.UTYM#2 videosunu seçip Videoyu İşle düğmesine basın."
 
 
@@ -97,7 +97,7 @@ def _check_model(path: Path, *, session_factory: Callable[..., Any]) -> ProductC
         return ProductCheck(
             "person_model",
             "warning",
-            f"{path.name} bulunamadı; yerleşik OpenCV HOG geliştirme dedektörü kullanılacak.",
+            f"{path.name} bulunamadı; OpenCV çevrimdışı geliştirme dedektörü kullanılacak.",
         )
     try:
         session_factory(str(path), providers=["CPUExecutionProvider"])
@@ -105,7 +105,7 @@ def _check_model(path: Path, *, session_factory: Callable[..., Any]) -> ProductC
         return ProductCheck(
             "person_model",
             "warning",
-            f"{path.name} geçerli değil ({type(error).__name__}); yerleşik OpenCV HOG geliştirme dedektörü kullanılacak.",
+            f"{path.name} geçerli değil ({type(error).__name__}); OpenCV çevrimdışı geliştirme dedektörü kullanılacak.",
         )
     return ProductCheck("person_model", "pass", f"{path.name} ONNX Runtime ile açıldı.")
 
