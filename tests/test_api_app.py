@@ -220,6 +220,17 @@ def test_calibration_config_route_is_registered() -> None:
     assert "/product/calibration-frame" in route_paths
 
 
+
+def test_default_calibration_config_path_targets_tutym2_windows_field_file(monkeypatch) -> None:
+    from app.api.routes_tables import _default_calibration_config_path
+
+    monkeypatch.delenv("FTMC_CALIBRATION_CONFIG_PATH", raising=False)
+
+    assert (
+        str(_default_calibration_config_path())
+        == r"C:\FTMC_FIELD_DATA\configs\tutym2_cam_001.local.json"
+    )
+
 def test_save_calibration_config_writes_validated_json(tmp_path, monkeypatch) -> None:
     from app.api.routes_tables import save_calibration_config
 
